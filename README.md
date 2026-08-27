@@ -74,12 +74,15 @@ happen.
 
 ## Read this first
 
-Four things, briefly. Each links to the full version further down. None of it
+Five things, briefly. Each links to the full version further down. None of it
 should stop you — this is considerably less dangerous than it sounds — but you
 should know it before you flash.
 
 - **This is not from 1010music**, not endorsed by them, and unsupported by
   anyone. See [What this is not](#what-this-is-not) and [Support](#support).
+- **Never pass the patched image on.** It is yours only because you supplied the
+  firmware it was built from. Send people this page and let them make their own —
+  it takes a minute. See [What this is not](#what-this-is-not).
 - **It cannot brick your module.** The bootloader is a separate program this
   patch never touches, and it is what does the flashing — so a bad image can
   always be replaced. See [Can this brick my module?](#can-this-brick-my-module)
@@ -177,6 +180,11 @@ The patched image **must also be called `MICRO.BIN`** — exact name, upper case
 for the module to find it. That is why it goes in its own folder: writing the
 output over your input would destroy the only stock copy you have, and that copy
 is your way back if anything goes wrong. The script refuses if you try.
+
+**That file is yours alone — do not pass it on.** Not to a friend, not in a
+forum thread, not to somebody who says they cannot run the script. Point them
+here and let them make their own. All of this rests on nobody handing out
+1010music's firmware, and a patched image is exactly that.
 
 Copy `patched/MICRO.BIN` to the card, and keep the original where it is.
 
@@ -775,6 +783,12 @@ included here. The script contains addresses and offsets — facts about where
 things sit in the binary — and machine code written from scratch. It cannot
 produce anything unless you supply the stock image yourself, and it refuses to
 run on anything except the exact 2.3.4 build.
+
+**And it must not become one.** The image you produce is yours only because you
+supplied the firmware it was built from. Send it to somebody else and that stops
+being true: you are handing out 1010music's code with twenty-eight bytes
+changed. Send them this page instead. The script takes seconds to run, and they
+will have their own copy inside a minute.
 
 **It is not a general feature framework.** It adds the controls listed above and
 nothing else. It does not add sends to recorded-sample pads (see below), does
