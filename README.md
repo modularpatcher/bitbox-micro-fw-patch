@@ -1,6 +1,6 @@
-# BitBox Micro, Unlocked — with MIDI Superpowers
+# Bitbox Micro, Unlocked — with MIDI Superpowers
 
-The BitBox Micro packs a great deal into a narrow module: eight pads that will
+The Bitbox Micro packs a great deal into a narrow module: eight pads that will
 play, slice, loop, multi-sample or granulate, eight configurable inputs, eight
 outputs, and delay and reverb on board.
 
@@ -60,9 +60,9 @@ included, and it refuses to run on anything but a byte-exact stock 2.3.4.
 
 ## Why this exists
 
-BitBox Micro firmware has been on **2.3.4 since May 2024**. In the same stretch
+Bitbox Micro firmware has been on **2.3.4 since May 2024**. In the same stretch
 1010music have updated most of the rest of the range — Bluebox in August 2026,
-Blackbox and Bento in July, the Nanobox line in January. The two BitBoxes, Micro
+Blackbox and Bento in July, the Nanobox line in January. The two Bitboxes, Micro
 and MK2, are the only products still on a 2024 release. Those dates are all on
 their own downloads page.
 
@@ -98,7 +98,7 @@ should know it before you flash.
 
 Four things, none of them exotic:
 
-- A **BitBox Micro** running firmware **2.3.4**.
+- A **Bitbox Micro** running firmware **2.3.4**.
 - **Your own copy of the stock 2.3.4 image**, downloaded from 1010music:
   <https://1010music.com/downloads>. The script will not run without it and
   none of it is redistributed here.
@@ -159,7 +159,7 @@ control here on its own.
 
 **You supply the firmware. This project does not.** What you have here is
 `patch_micro.py`, this guide and a licence file — three text files and not one
-byte of anyone's firmware. The BitBox Micro image is 1010music's, it is theirs
+byte of anyone's firmware. The Bitbox Micro image is 1010music's, it is theirs
 to distribute, and they do:
 
 > **<https://1010music.com/downloads>** → bitbox micro → **`MICRO234.zip`**
@@ -383,7 +383,7 @@ into it, and the manual says as much twice: loading a directory into a pad
 any other mode leaves it playing only the first file in the folder. So anything
 proven on a Sample pad is proven there too.
 
-**Two of the gaps are the module, not the patch.** The BitBox runs pads through
+**Two of the gaps are the module, not the patch.** The Bitbox runs pads through
 two different bits of firmware — one for Sample, Multi-Sample and Granular,
 another for Clip and Slicer — and they do not have identical features.
 
@@ -708,7 +708,7 @@ because in a good many cases you can have it today, without a patch at all.
 module, already worked, and already did exactly what they do now — you just had
 to reach over and turn them by hand. All this does is teach the firmware to
 listen for a MIDI message it was already ignoring, then hand the value to the
-module's own code, untouched. The BitBox does the work. The patch does the
+module's own code, untouched. The Bitbox does the work. The patch does the
 introductions.
 
 The twentieth barely counts as an exception: stopping a pad uses the module's own
@@ -1066,13 +1066,13 @@ who did not write it, and you should treat everything else they are offering
 you with the same suspicion.
 
 MIT — see the `LICENSE` file. It covers the patcher and this guide, and nothing
-else: the BitBox Micro firmware is 1010music's, is not included here in any
+else: the Bitbox Micro firmware is 1010music's, is not included here in any
 form, and no permission over it is granted or implied — not over the stock image
 you supply, and not over the patched image the script makes from it.
 
 The patch script is the author's own work and contains no 1010music code.
 
-BitBox Micro is a product of 1010music LLC. The name is used here only to say
+Bitbox Micro is a product of 1010music LLC. The name is used here only to say
 what hardware this runs on. This project is not affiliated with, endorsed by, or
 supported by 1010music.
 
@@ -1083,7 +1083,7 @@ device, and the consequences are entirely yours to enjoy.
 
 ## If you're from 1010music
 
-Hello. Genuinely — thank you for the BitBox Micro.
+Hello. Genuinely — thank you for the Bitbox Micro.
 
 People keep this module in their racks for years and are still finding new
 corners of it, which is a rare thing and the only reason any of this exists.
