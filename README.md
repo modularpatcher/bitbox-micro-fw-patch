@@ -102,8 +102,30 @@ Four things, none of them exotic:
 - **Your own copy of the stock 2.3.4 image**, downloaded from 1010music:
   <https://1010music.com/downloads>. The script will not run without it and
   none of it is redistributed here.
-- **Python 3.** Any version from the last several years. Nothing to install, no
-  compiler, no build step.
+- **Python 3.** Any version from the last several years — no compiler, no build
+  step, nothing to configure. Where to get it:
+
+  - **macOS** — usually there already.
+
+    The first time you type `python3`, macOS may offer to install its command
+    line tools. Say yes and let it finish. It is a big download, so give it a
+    few minutes — it has not hung.
+
+  - **Linux** — already there.
+
+    If a minimal install has left it out, your package manager has it under the
+    name `python3`.
+
+  - **Windows** — you will need to install it.
+
+    Download it from <https://www.python.org/downloads/> and run the installer.
+    On the very first screen, **tick "Add python.exe to PATH"** before you click
+    Install. Older installers word it "Add Python to PATH" — same box.
+
+    That one tickbox is the difference between this working and not, and it is
+    easy to click straight past. If you do miss it, nothing is broken — see
+    *If Windows cannot find Python* below.
+
 - A **microSD card** the module can read. Any working card is fine for this —
   the image is 656 KB and gets read once.
 
@@ -169,12 +191,55 @@ put on it. Unzip it and you get **`MICRO.BIN`**. The version lives in the zip's
 name and nowhere in the file's, which is worth knowing before you have four of
 them in a folder and no idea which is which.
 
-From a terminal, in the folder containing `patch_micro.py` and `MICRO.BIN`:
+You run the script from a terminal, in the folder that contains
+`patch_micro.py` and `MICRO.BIN`.
+
+**Getting the terminal into that folder**
+
+- **macOS** — open Terminal, type `cd ` (with the space), then drag the folder
+  from Finder onto the Terminal window and press Enter. It fills in the path
+  for you.
+- **Windows** — open the folder in File Explorer, click into the address bar at
+  the top, type `cmd` over what is there, and press Enter. (PowerShell does all
+  of this just as well if that is what you already use.)
+- **Linux** — most file managers have "Open Terminal Here" on the right-click
+  menu. The macOS drag trick works in most terminals too.
+
+Then enter the commands one line at a time, pressing Enter after each. Pasting
+both at once works, but going one at a time lets you see what each one did.
+
+Do not double-click `patch_micro.py`. It has to be run from a terminal, and
+double-clicking it will either open a text editor or flash a black window shut
+before you can read it.
+
+**On macOS and Linux**
 
 ```sh
 mkdir patched
 python3 patch_micro.py MICRO.BIN patched/MICRO.BIN
 ```
+
+**On Windows**
+
+The same thing, but the command is `python` rather than `python3`:
+
+```sh
+mkdir patched
+python patch_micro.py MICRO.BIN patched/MICRO.BIN
+```
+
+The forward slash is right on Windows too — Python reads that part itself, so
+the shell never sees it. You do not need to change it to a backslash.
+
+**On all three**, if you have patched before, `mkdir patched` will say the
+folder already exists. That is fine — the folder is what you wanted. Carry on
+to the next line.
+
+**If it says it cannot open `patch_micro.py`** — a long line ending in
+`[Errno 2] No such file or directory` — the terminal is not in the folder those
+two files are in. Nothing is missing and nothing is broken. The long path in
+that message is where the terminal looked, which tells you where it currently
+is. Go back to *Getting the terminal into that folder* above and try again.
 
 The patched image **must also be called `MICRO.BIN`** — exact name, upper case —
 for the module to find it. That is why it goes in its own folder: writing the
@@ -232,6 +297,33 @@ byte.
 
 Add `-v` if you want to watch it work — addresses, opcodes and byte counts for
 every change it makes.
+
+### If Windows cannot find Python
+
+Two different things can happen here, and neither means you have broken
+anything.
+
+**The Microsoft Store opens instead of running anything.**
+
+Python is not installed yet, and Windows is offering to sort that out. Take the
+Store's copy or install from python.org as above — both work.
+
+**It says `'python' is not recognized`.**
+
+Python is installed, but Windows does not know where to find it: the "Add
+python.exe to PATH" tickbox was missed during the install. Before you reinstall
+anything, try `py` instead of `python`:
+
+```sh
+py patch_micro.py MICRO.BIN patched/MICRO.BIN
+```
+
+`py` is a small launcher that comes with Python and gets added to PATH whether
+or not you ticked that box, so it usually works when `python` does not.
+
+If `py` does not work either, install Python again from
+<https://www.python.org/downloads/> and tick **Add python.exe to PATH** this
+time. Nothing is wrong with the script or your download.
 
 ### If it stops with an error
 

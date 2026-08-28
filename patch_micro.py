@@ -227,7 +227,13 @@ HOOKS = [
 ]
 
 
-USAGE = """
+# Windows has no "python3" -- there the command is plain "python", and printing
+# the wrong one sends a first-timer chasing a command that does not exist on
+# their machine, at the exact moment they are already unsure.
+PY = "python" if os.name == "nt" else "python3"
+
+
+USAGE = f"""
   Community enhancements for BitBox Micro
   ---------------------------------------
 
@@ -240,7 +246,7 @@ USAGE = """
   as MICRO234.zip; unzip it and you get MICRO.BIN.
 
     mkdir patched
-    python3 patch_micro.py MICRO.BIN patched/MICRO.BIN
+    {PY} patch_micro.py MICRO.BIN patched/MICRO.BIN
 
   The output must be called MICRO.BIN for the module to find it, which is why
   it goes in its own folder -- writing over your only stock copy would leave
@@ -770,7 +776,7 @@ def main():
                "Write the patched image somewhere else and copy it to the card:",
                "",
                "    mkdir patched",
-               f"    python3 patch_micro.py {inp} patched/MICRO.BIN")
+               f"    {PY} patch_micro.py {inp} patched/MICRO.BIN")
 
     print("\n  Checking your firmware...")
     try:
