@@ -4,15 +4,28 @@ The Bitbox Micro packs a great deal into a narrow module: eight pads that will
 play, slice, loop, multi-sample or granulate, eight configurable inputs, eight
 outputs, and delay and reverb on board.
 
-There is also a list of things owners have been asking for over many years. Most
-of them already exist on the module — behind a screen, reached one at a time.
+This patch does two things to it.
 
-Now they are accessible from your favourite MIDI controller, or modulated from
-your sequencer. Not one of them is invented here — every one is something owners
-have asked for. They stop being settings you go and find and become parameters
-you play, opening up an extended universe of sound design possibilities.
+**It frees the controls that were already there.** A long list of settings that
+owners have asked about for years exist on the module today — behind a screen,
+reached one at a time, with an encoder. They stop being settings you go and find,
+and become parameters you play.
 
-### 🎛️ The controls
+**And it opens the compressor, which nobody has ever been able to reach.**
+
+That second one is the bigger claim, so it is worth being plain about. Your
+Bitbox has a proper bus compressor sitting across Out 1 and 2. It has a
+threshold, a ratio, an attack, a release and a makeup gain, all doing their job
+every time you play a note. The module gives you exactly one control over it:
+**On** or **Off**. Every other value is fixed, invisible and unreachable — not
+buried in a menu, not hidden behind a mod matrix, simply not exposed to anyone by
+any means.
+
+Now all five compressor parameters are available over MIDI, and it arrives
+configured by default as a glue compressor much like the classic **SSL G-Series
+bus compressor** — which you can then adjust live, while you are performing.
+
+### 🎛️ The Controls
 
 Most of them on that pad's own channel, so eight pads answer independently — in
 the moment, not buried in a preset:
@@ -37,28 +50,41 @@ the moment, not buried in a preset:
 Recorded-sample pads are the one exception, and that is the module rather than
 this patch: they have no FX sends in stock firmware to begin with.
 
-The rest control the one delay effect the whole preset shares:
+These control the one delay effect the whole preset shares:
 
 - ✅ Delay beat-sync
 - ✅ Delay ping-pong
 - ✅ Delay filter on/off
 - ✅ Delay filter width
 
+And these are the new ones — the master bus compressor, never previously
+adjustable by MIDI or even on the device, other than on/off:
+
+- ✅ Compressor on / off
+- ✅ Compressor Threshold
+- ✅ Compressor Ratio
+- ✅ Compressor Attack
+- ✅ Compressor Release
+- ✅ Compressor Makeup gain
+
+---
+
+## The Patch
+
 **It costs you nothing to use.** Not one modulation slot. A pad has twelve, and
 every MIDI Learn binding spends one — these spend none. Nothing you have already
 built has to give way.
 
-**And you set it up once.** Fixed numbers, baked into the firmware, identical
-on every pad of every preset you will ever load. Nothing to map, nothing to
-learn, nothing to redo tomorrow.
+**And you set it up once.** Fixed numbers, baked into the firmware, identical on
+every pad of every preset you will ever load. Nothing to map, nothing to learn,
+nothing to redo tomorrow.
 
-You run a small script against **your own copy** of the stock firmware, and it
-writes out a patched image you flash yourself. Nothing of 1010music's is
-included, and it refuses to run on anything but a byte-exact stock 2.3.4.
+**You build it yourself.** You run a small script against **your own copy** of
+the stock firmware, and it writes out a patched image you flash. Nothing of
+1010music's is included, and it refuses to run on anything but a byte-exact stock
+2.3.4.
 
----
-
-## Why this exists
+## Why This Exists
 
 Bitbox Micro firmware has been on **2.3.4 since May 2024**. In the same stretch
 1010music have updated most of the rest of the range — Bluebox in August 2026,
@@ -72,7 +98,8 @@ happen.
 
 ---
 
-## Read this first
+
+## Read This First
 
 Five things, briefly. Each links to the full version further down. None of it
 should stop you — this is considerably less dangerous than it sounds — but you
@@ -94,7 +121,39 @@ should know it before you flash.
 
 ---
 
-## What you need
+
+## Contents
+
+**Getting Up and Running**
+
+- [What You Need](#what-you-need) — a Bitbox, a card reader, and your own copy of the stock firmware
+- [Patching](#patching) — building your own image
+- [Installing](#installing) — getting it onto the module
+- [Checking It Worked](#checking-it-worked) — the one thing to look at every time
+
+**Setting Up Your Controller**
+
+- [Which Pad Types Work](#which-pad-types-work) — what is possible where
+- [MIDI CC Map](#midi-cc-map) — every number, in one table
+- [Encoder Types](#encoder-types) — linear, logarithmic and stepped
+- [Use 14-Bit CC](#use-14-bit-cc-on-your-controller) — for feel, not resolution
+
+**The Controls**
+
+- [Playback](#playback) — looping, reverse, and stopping a pad
+- [Granular](#granular) — the five the module will not let you modulate
+- [Envelope](#envelope) — sustain, and why decay depends on it
+- [LFO](#lfo) — wave, sync, retrigger, and how to hear any of it
+- [Delay and Reverb](#delay-and-reverb) — per-pad sends and the shared delay
+- [The Compressor](#the-compressor) — the new one
+
+**Help and Background**
+
+- [Troubleshooting](#troubleshooting) — when something does not behave
+- [Support](#support) — and how to ask for features
+- [The Small Print](#the-small-print) — what this is, what it is not, and how it works
+
+## What You Need
 
 Four things, none of them exotic:
 
@@ -143,7 +202,7 @@ Two things worth doing first:
 2. **Back up your SD card.** The patch does not go anywhere near your presets or
    samples, but back it up anyway.
 
-### And presets built to make use of it
+### Presets Built to Make Use of It
 
 Worth knowing before you start, because it shapes what you get out of this.
 
@@ -177,6 +236,7 @@ control here on its own.
 
 ---
 
+
 ## Patching
 
 **You supply the firmware. This project does not.** What you have here is
@@ -190,6 +250,12 @@ That is a 1010music download, made by you, from them, under whatever terms they
 put on it. Unzip it and you get **`MICRO.BIN`**. The version lives in the zip's
 name and nowhere in the file's, which is worth knowing before you have four of
 them in a folder and no idea which is which.
+
+**Already running 2.3.5-mod?** Patch your **stock** `MICRO.BIN` again with the
+new script — not the patched image you flashed last time. The script checks, and
+will refuse a file that has already been through it. That is the safety net
+working, not a fault. If you no longer have the stock file, download
+`MICRO234.zip` from 1010music again.
 
 You run the script from a terminal, in the folder that contains
 `patch_micro.py` and `MICRO.BIN`.
@@ -261,6 +327,12 @@ You should see something like:
      ok   The code is where the patch expects to find it
 
   Embellishing your bitbox micro with community requests...
+     ok   Compressor on/off, ch 1      CC 40
+     ok   Compressor threshold, ch 1   CC 41
+     ok   Compressor ratio, ch 1       CC 42
+     ok   Compressor attack, ch 1      CC 43
+     ok   Compressor release, ch 1     CC 44
+     ok   Compressor makeup, ch 1      CC 45
      ok   Granular density, per pad    CC 79
      ok   Granular grain size, per pad CC 80
      ok   Granular window, per pad     CC 81
@@ -283,9 +355,9 @@ You should see something like:
      ok   Stop this pad                CC 120 / 123
      ok   Splash screen, so nobody blames 1010music for my work
 
-  Done. MICRO.BIN is ready -- 672,228 bytes.
+  Done. MICRO.BIN is ready -- 672,724 bytes.
 
-     Fingerprint  44abd62fc8ee536bb153bd70f9adfff8724b3ea38e907200aebfa3bf67ce789e
+     Fingerprint  63c5ec887a9ab6e37f7748f6b0f6838b33d23ae59f97576f5e6c0140674dba68
 ```
 
 It then tells you how to get the file onto the module, which is also written
@@ -298,48 +370,6 @@ byte.
 Add `-v` if you want to watch it work — addresses, opcodes and byte counts for
 every change it makes.
 
-### If Windows cannot find Python
-
-Two different things can happen here, and neither means you have broken
-anything.
-
-**The Microsoft Store opens instead of running anything.**
-
-Python is not installed yet, and Windows is offering to sort that out. Take the
-Store's copy or install from python.org as above — both work.
-
-**It says `'python' is not recognized`.**
-
-Python is installed, but Windows does not know where to find it: the "Add
-python.exe to PATH" tickbox was missed during the install. Before you reinstall
-anything, try `py` instead of `python`:
-
-```sh
-py patch_micro.py MICRO.BIN patched/MICRO.BIN
-```
-
-`py` is a small launcher that comes with Python and gets added to PATH whether
-or not you ticked that box, so it usually works when `python` does not.
-
-If `py` does not work either, install Python again from
-<https://www.python.org/downloads/> and tick **Add python.exe to PATH** this
-time. Nothing is wrong with the script or your download.
-
-### If it stops with an error
-
-Good. That is the safety check earning its keep. It will tell you what it found
-and what it expected, and it will not have written a thing.
-
-- *"That is not the stock 2.3.4 firmware"* — the input is a different version,
-  already patched, or a truncated download. Get a fresh copy from 1010music.
-- *"The code at … is not what it should be"* — the file passes the checksum but
-  the machine code underneath is wrong, which should be impossible. Something
-  strange is happening and forcing it will not make it less strange.
-
-The script checks every site before it writes anything, so there is no such
-thing as a half-patched file. It is all or nothing, and it prefers nothing.
-
----
 
 ## Installing
 
@@ -351,14 +381,15 @@ thing as a half-patched file. It is all or nothing, and it prefers nothing.
 
 Do not interrupt the power while it is writing.
 
-## Checking it worked
+
+## Checking It Worked
 
 The splash on the next boot should read:
 
 ```text
 bitbox micro
 community fw
-2.3.5-mod
+2.3.6-mod
 ```
 
 If it still says `by 1010music` and `2.3.4`, the module booted the old firmware
@@ -370,7 +401,7 @@ which image is actually running, and it takes one second — as against the
 twenty minutes you will otherwise spend proving that a CC does not work on
 firmware that was never installed.
 
-Then **test the CCs with your ears** — see *Use your ears, not the screen*
+Then **test the CCs with your ears** — see *Use Your Ears, Not the Screen*
 below. For all but two of them the display will not move, on this firmware or
 the stock one, so listening is the only way to tell. This catches everybody
 exactly once. The two that do show are Reverse and Loop Mode, which makes them
@@ -378,84 +409,17 @@ the quickest way to prove your controller is getting through at all.
 
 ---
 
-## MIDI CC map
 
-| CC | Controls | Send it on | Values |
-| ---- | -------- | ---------- | ------ |
-| **79** | Granular Density | that pad's MIDI channel | `0`–`127` |
-| **80** | Granular Grain Size | that pad's MIDI channel | `0`–`127` |
-| **81** | Granular Window | that pad's MIDI channel | `0`–`127` |
-| **82** | Granular Scatter | that pad's MIDI channel | `0`–`127` |
-| **83** | Granular Pan Rnd | that pad's MIDI channel | `0`–`127` |
-| **84** | Delay send | that pad's MIDI channel | `0`–`127`, follows the same curve as the on-screen knob |
-| **85** | Reverb send | that pad's MIDI channel | `0`–`127`, same curve |
-| **86** | Reverse | that pad's MIDI channel | `≥64` on, `<64` off |
-| **87** | Envelope Sustain | that pad's MIDI channel | `0`–`127` |
-| **88** | Loop Mode | that pad's MIDI channel | three even bands: None / Forward / Bidirectional |
-| **89** | Loop Crossfade | that pad's MIDI channel | `0`–`127` |
-| **90** | Play Through | that pad's MIDI channel | `≥64` on, `<64` off |
-| **91** | LFO Wave | that pad's MIDI channel | ten even bands across the waveform list |
-| **92** | LFO Beat Sync | that pad's MIDI channel | `≥64` on, `<64` off |
-| **93** | LFO Retrigger | that pad's MIDI channel | `≥64` on, `<64` off |
-| **108** | Delay beat-sync | any channel (global) | `≥64` on, `<64` off |
-| **109** | Delay ping-pong | any channel (global) | `≥64` on, `<64` off |
-| **110** | Delay filter on/off | any channel (global) | `≥64` on, `<64` off |
-| **111** | Delay filter width | any channel (global) | `0`–`127` |
-| **120** | Stop this pad — All Sound Off | that pad's MIDI channel | any value; releases the note |
-| **123** | Stop this pad — All Notes Off | that pad's MIDI channel | any value; releases the note, identically to 120 |
+## Setting Up Your Controller
 
-Every control the patch adds, on twenty-one numbers. Write them down somewhere.
+Everything you need to get your controller talking to the module, in the order
+you will want it: what works on which pad type, every CC number in one table,
+which channel to send each one on, and how to set your encoders up so the
+controls feel right under your hand.
 
-**Every one of them has been heard on the module** — nothing in this table rests
-on reading the code and hoping.
+You only do this once. After that it is the same on every preset you ever load.
 
-**There is nothing to set up.** Every one of these is fixed in the firmware and
-live on every pad of every preset the moment you flash. You do not map them,
-assign them, learn them or save them — send the CC on the pad's own channel and
-it works. That is the whole deal, and it is the opposite of every other CC on
-the module, which you *do* assign yourself, per preset, at a cost of one
-modulation slot each.
-
-**CC 79 through 93 are per-pad** — send them on the MIDI channel that pad is
-already set to listen on, the same channel you use to trigger it. Each pad
-responds independently, which is the entire point. CC 79–83 only do anything on
-a pad in Granular mode; everywhere else they are politely ignored.
-
-**CC 108 to 111 are global** and affect the single delay effect shared by the
-whole preset. They are handled in the MIDI dispatcher without a channel test,
-so they respond on whatever channel already reaches the module's CC handling.
-
-**CC 120 and 123 are the standard stop messages** — All Sound Off and All Notes
-Off. Both are per-channel in the MIDI spec, which on this module means per pad,
-so they stop exactly the pad you send them to and leave the rest playing.
-
-**The two are identical here — pick either.** They reach the very same code, so
-there is no difference at all between them on this module. **You do not need
-both: it is one or the other.** Sending both gains you nothing over sending one.
-
-They exist as a pair only because different gear sends different ones: a DAW's
-stop button usually sends 123, a panic button 120. The patch answers both so you
-never have to work out which yours uses — not so you would use the two together.
-
-**Neither cuts dead, though.** The module has one stop internally and it works
-by putting the voice into its release stage — the same thing that happens when
-you let go of a note. In the MIDI spec 120 is supposed to chop the tail off and
-123 to let it ring; here they both let it ring. So the pad stops *when you ask*,
-which is the useful part, but it stops by fading rather than vanishing. Want it
-truly abrupt? Pull that pad's Release down.
-
-**Delay Cutoff is not here, and does not need to be.** It is CC 104, one of the
-global FX destinations you map yourself, because the manual marks it
-"Mod Target? Yes" — it was always reachable. What it needed was the switch next
-to it: cutoff does nothing while the filter is off, and *that* is CC 110.
-
-**The numbers below 79 are yours.** This patch does not claim a single CC under
-79, and leaves 94 to 107 alone as well. That is where the CCs you assign
-yourself live — the ones the modulation system could always reach, at a cost of
-one modulation slot each. A pad has nine slots free for them, so the patch
-starts at 79 and pauses again between 93 and 108 to stay out of your way.
-
-### Which pad types work
+### Which Pad Types Work
 
 | Pad mode | Sends<br>84, 85 | Reverse<br>86 | Granular<br>79–83 | Loop<br>88, 89 | Play Thru<br>90 | Sustain + LFO<br>87, 91–93 | Stop<br>120/123 |
 | -------- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -503,34 +467,131 @@ every pad type that can use the FX sends at all.** Giving recorded-sample pads
 sends would mean building that capability from scratch, which this does not
 attempt.
 
+**The compressor is not in this table, because pad type is irrelevant to it.**
+It sits on the Out 1/2 bus, after everything has been mixed together, so it acts
+on every pad routed there whatever mode that pad is in — and on nothing routed to
+Out 3–6. It is the one control here that is not per-pad at all.
+
 ---
 
-## Getting the best out of it
 
-Eight things that will each save you an evening, learned the slow way.
+### MIDI CC Map
 
-### Use your ears, not the screen
+| CC | Controls | Send it on | Values | Encoder |
+| ---- | -------- | ---------- | ------ | ------- |
+| **40** | Compressor on/off | **channel 1 only** | `≥64` on, `<64` off | button |
+| **41** | Compressor Threshold | **channel 1 only** | −40 … 0 dB | linear |
+| **42** | Compressor Ratio | **channel 1 only** | 1:1 … 20:1 | linear |
+| **43** | Compressor Attack | **channel 1 only** | 0.5 … 100 ms | **logarithmic** |
+| **44** | Compressor Release | **channel 1 only** | 10 ms … 1 s | **logarithmic** |
+| **45** | Compressor Makeup gain | **channel 1 only** | −36 … +36 dB | linear |
+| **79** | Granular Density | that pad's MIDI channel | `0`–`127` | linear |
+| **80** | Granular Grain Size | that pad's MIDI channel | `0`–`127` | linear |
+| **81** | Granular Window | that pad's MIDI channel | `0`–`127` | linear |
+| **82** | Granular Scatter | that pad's MIDI channel | `0`–`127` | linear |
+| **83** | Granular Pan Rnd | that pad's MIDI channel | `0`–`127` | linear |
+| **84** | Delay send | that pad's MIDI channel | `0`–`127`, follows the same curve as the on-screen knob | linear |
+| **85** | Reverb send | that pad's MIDI channel | `0`–`127`, same curve | linear |
+| **86** | Reverse | that pad's MIDI channel | `≥64` on, `<64` off | button |
+| **87** | Envelope Sustain | that pad's MIDI channel | `0`–`127` | linear |
+| **88** | Loop Mode | that pad's MIDI channel | three even bands: None / Forward / Bidirectional | stepped, 3 |
+| **89** | Loop Crossfade | that pad's MIDI channel | `0`–`127` | linear |
+| **90** | Play Through | that pad's MIDI channel | `≥64` on, `<64` off | button |
+| **91** | LFO Wave | that pad's MIDI channel | ten even bands across the waveform list | stepped, 10 |
+| **92** | LFO Beat Sync | that pad's MIDI channel | `≥64` on, `<64` off | button |
+| **93** | LFO Retrigger | that pad's MIDI channel | `≥64` on, `<64` off | button |
+| **108** | Delay beat-sync | any channel (global) | `≥64` on, `<64` off | button |
+| **109** | Delay ping-pong | any channel (global) | `≥64` on, `<64` off | button |
+| **110** | Delay filter on/off | any channel (global) | `≥64` on, `<64` off | button |
+| **111** | Delay filter width | any channel (global) | `0`–`127` | linear |
+| **120** | Stop this pad — All Sound Off | that pad's MIDI channel | any value; releases the note | button |
+| **123** | Stop this pad — All Notes Off | that pad's MIDI channel | any value; releases the note, identically to 120 | button |
 
-**Send a CC and the value changes, but the display does not move.** Push CC 84
-up and the delay send really is going up. The FX page carries on displaying
-whatever number was last dialled in by hand, with total confidence.
+Every control the patch adds, on twenty-seven numbers. Write them down somewhere.
 
-Nothing is broken and the patch does not cause it. The module has always
-behaved this way, including for the CCs stock firmware handles itself —
-automate CC 7 and the volume changes without the screen ever admitting it. The
-patched CCs inherit exactly the same behaviour.
+**Every one of them has been heard on the module** — nothing in this table rests
+on reading the code and hoping.
 
-**Two exceptions.** Reverse on CC 86 shows on the display — send it and watch
-the pad flip. Loop Mode on CC 88 shows too: the setting steps visibly between
-None, Forward and Bidirectional as the CC crosses each third. Make the most of
-both, because the rest will tell you absolutely nothing.
+**There is nothing to set up.** Every one of these is fixed in the firmware and
+live on every pad of every preset the moment you flash. You do not map them,
+assign them, learn them or save them — send the CC and it works. That is the
+opposite of every other CC on the module, which you *do* assign yourself, per
+preset, at a cost of one modulation slot each.
 
-**So test the rest with your ears.** Send the CC, listen for the delay or the
-reverb coming up underneath the pad, and ignore the display completely. Sit
-watching the FX page waiting for a number to move and you will conclude the
-patch is dead at the exact moment it is working perfectly.
 
-### Use 14-bit CC on your controller — for feel, not resolution
+### Which Channel to Send On
+
+**CC 79 through 93 and 120/123 are per-pad.** Send them on the MIDI channel that
+pad is already set to listen on — the same channel you use to trigger it. Eight
+pads on eight channels answer independently.
+
+**CC 108 through 111 are global** and answer on any channel, because they control
+the one delay the whole preset shares.
+
+**CC 40 through 45 are the compressor, and they answer on channel 1 only.**
+
+That last one is the odd one out, and it is deliberate. **CC 40 to 45 sit in the
+fine-adjust range that almost nothing actually uses.** Formally, CC 32 to 63 are
+the LSB partners of CC 0 to 31 — so CC 40 is the low half of CC 8 — but hardly
+any device sends those, which leaves the numbers effectively free and means gear
+does use them for other things.
+
+"Effectively free" is not the same as free, and this is the one block in the
+patch sitting on numbers with a defined meaning. The other patched globals, CC
+108 to 111, live in 102–119, which genuinely is undefined. So the compressor is
+restricted to a single channel, to stop a stray message from elsewhere in your
+rig quietly changing it while you are not looking.
+
+**If the compressor does not respond to anything, this is why.** Put your
+controller on MIDI channel 1.
+
+
+### Encoder Types
+
+The right-hand column is a suggestion for how to set up each control on your
+controller, if it lets you choose. It changes the feel, not what the firmware
+does — the module always maps a CC evenly across the parameter's range.
+
+**Almost everything wants a plain linear encoder.** Two do not:
+
+**Attack and Release should be logarithmic if your controller offers it.** Both
+are times, and times are not heard evenly. Attack runs from 0.5 ms to 100 ms — a
+two-hundred-fold range — and the difference between 0.5 ms and 5 ms is enormous
+while the difference between 90 ms and 100 ms is nothing at all. On a linear
+encoder every useful fast setting is crammed into the first few percent of
+travel. Logarithmic spreads them out. Release has the same problem across 10 ms
+to 1 second.
+
+**Ratio is a borderline case and linear is fine.** Be aware that the gentle,
+musical settings live in the bottom quarter of the throw — 2:1 sits at about 5%
+and 4:1 at about 16% — so move slowly down there. If your controller does
+logarithmic easily it will feel better, but this is not one to go out of your
+way for.
+
+**Loop Mode and LFO Wave are lists, not sweeps — use a stepped encoder.** The
+firmware divides the CC range into even bands, one per entry, so what you want is
+a detented or stepped encoder with exactly the right number of positions:
+
+| Control | Steps | The list |
+| ------- | ----- | -------- |
+| **Loop Mode** | **3** | None / Forward / Bidirectional |
+| **LFO Wave** | **10** | the ten waveforms, in the order the module lists them |
+
+Set to ten steps, one click of the LFO Wave encoder moves you cleanly to the next
+waveform and you never land between two. Set it to anything else and you will
+skip shapes or hit the same one twice in a row, which reads as a broken control.
+
+If your controller cannot do stepped encoders, a slow linear sweep still works —
+you just have to find the bands by ear, and the edges are easy to sit on by
+accident.
+
+**The switches want buttons.** Anything marked `≥64 on` is a toggle. Set it up as
+a button sending 0 and 127 rather than as an encoder you have to sweep.
+
+---
+
+
+### Use 14-Bit CC on Your Controller
 
 Worth doing, and worth understanding why it helps, because it is not the reason
 you would guess.
@@ -563,12 +624,80 @@ helps nobody. The same goes for the two banded controls, Loop Mode and LFO
 Wave: they divide the range into three and ten steps, so finer resolution buys
 nothing.
 
-### The granular controls
 
-CC 79–83 only do anything on a pad set to **Granular** mode. These are the five
-Gran-page controls the module simply will not let you modulate: the manual marks
-them "Mod Target? No", there are no three boxes on the screen, and MIDI Learn
+---
+
+
+## The Controls
+
+What follows walks the signal path, from what a pad plays through to what leaves
+the outputs. Read it in order the first time and the whole thing will make more
+sense than a list of numbers ever could.
+
+```
+   sample playback   →   envelope   →   LFO        →   delay / reverb sends
+   loop, reverse                        modulation
+                                                              ↓
+   Out 3-6  ←──────────────────────────────────────────  bus sum
+                                                              ↓
+   Out 1/2  ←──  master volume  ←──  safety limiter  ←──  COMPRESSOR
+```
+
+---
+
+
+## Playback
+
+These decide what the sample actually does when a pad is triggered, and they are
+the first thing in the chain.
+
+**Loop Mode** picks between None, Forward and Bidirectional. On a controller it
+is three even bands across the throw. Bidirectional runs the sample forwards then
+backwards, which is either lovely or seasick depending on the material.
+
+**Loop Crossfade** softens the join. A loop that clicks usually just needs a
+little of this. Long crossfades on short loops start to blur the sound, which is
+sometimes what you want.
+
+**Reverse** plays the sample backwards. It works on Sample, Multi-Sample and
+Granular pads only — Clip and Slicer pads have no reverse setting in the module
+at all, so there is nothing for the control to reach.
+
+**Play Through** is a Slicer control and only a Slicer control. It decides
+whether playback carries on past the end of a slice into the next one. On any
+other pad type it does nothing, because there are no slices to carry on past.
+
+---
+
+### Stopping a Pad
+
+**Stop this pad** answers to the two standard MIDI panic messages — All Sound Off
+and All Notes Off — on that pad's own channel. Either one releases the note.
+
+It matters most on long clips. A four-bar loop that you have triggered and now
+want gone would otherwise play to its end, and this cuts it cleanly from wherever
+your controller sits. Both messages behave identically here, so use whichever
+your controller sends more conveniently.
+
+---
+
+
+## Granular
+
+These five only do anything on a pad set to **Granular** mode, and they are the
+part of this patch the module fights hardest. They are the Gran-page controls
+1010music marks "Mod Target? No" — no three boxes on the screen, and MIDI Learn
 looks straight through them. Until now the encoder was the only way in.
+
+**Density** is how many grains play at once. **Grain Size** is how long each one
+lasts. Between them they take you from a recognisable sample to a smeared pad to
+a sparse cloud of fragments.
+
+**Window** is the shape each grain fades in and out with. Softer windows sound
+smoother; harder ones click and click is sometimes the point.
+
+**Scatter** randomises grain timing, and **Pan Rnd** randomises their position in
+the stereo field. Both turn a regular texture into a diffuse one.
 
 **Scatter is the one that will fool you.** It does nothing whatsoever unless
 Density is below half — the manual says so plainly, and it is the module's
@@ -577,59 +706,373 @@ up and you will hear nothing and blame the patch. Pull Density down to a quarter
 first, where the grains are sparse enough to hear individually, and Scatter's
 effect on their timing is obvious.
 
-Speed is not here, and deliberately: it is marked "Mod Target? Yes", so it
-already works over MIDI without any of this.
+Speed is not here, and deliberately: the module already marks it "Mod Target?
+Yes", so it works over MIDI without any of this.
 
-These are also the ones most likely to cost you CPU — see *Why these controls
-were not already there* in the small print. Density is the one the manual warns
+These are also the ones most likely to cost you CPU — see *Why These Controls
+Were Not Already There* in the small print. Density is the one the manual warns
 about.
 
-### Sustain and Decay only make sense together
+---
 
-Decay is how long the sound takes to fall *from the initial peak to the sustain
-level*. So with Sustain at full, Decay has nowhere to travel and does nothing you
-can hear — which is why a decay knob so often feels dead. Pull Sustain down and
-it comes alive: at zero the pad falls from its peak to silence over the decay
-time, making Decay a **length** control.
 
-**That pairing is the point.** Attack, Decay and Release were always modulation
-targets, so you could automate them; Sustain never was, which meant you could
-drive Decay all you liked while the one control that decides whether Decay
-matters stayed fixed at whatever the preset said. Both are on CCs now, and the
-shape of a held pad is finally yours to move while it plays.
+## Envelope
 
-### Making the LFO audible
+**Sustain is the control this patch adds, and Decay is why it matters.**
 
-Three of these controls — Wave, Beat Sync and Retrigger — shape an LFO. If that
-LFO is not modulating anything, all three will seem broken, and this catches
-people because **the manual never explains how to connect it.**
+Decay is how long the sound takes to fall *from its initial peak down to the
+sustain level*. So with Sustain at full, Decay has nowhere to travel and does
+nothing you can hear — which is exactly why a decay knob so often feels dead.
+Pull Sustain down and it comes alive: at zero, the pad falls from its peak to
+silence over the decay time, and Decay becomes a **length** control.
 
-The LFO is a modulation *source*, like velocity or the mod wheel. It does
-nothing until you point it at a destination:
+### The Hi-Hat, Which Is the Case That Makes It Click
+
+Load a hi-hat and you have two very different instruments in one sample,
+depending entirely on where these two sit:
+
+| | Sustain | Decay | You get |
+| --- | --- | --- | --- |
+| **Open, splashy** | high | long | the hat rings on, washes into the next bar, sits back in the mix |
+| **Tight, crisp** | low | short | a short chip that punches and gets out of the way |
+
+Same sample. Same pad. The difference between a hat that drives a track and one
+that clutters it is those two controls, and until now Sustain was frozen at
+whatever the preset happened to be saved with.
+
+**Now you can move between the two while the pattern is playing.** Open the hats
+through a build, tighten them for the drop, and do it from a knob rather than by
+loading a different preset. That is the whole argument for putting Sustain on a
+CC, and once you have heard it on a hat you will start using it on snares, claps
+and anything else with a tail.
+
+**Attack, Decay and Release were always modulation targets**, so you could
+already automate those. Sustain never was — which meant you could drive Decay all
+you liked while the one control that decides whether Decay does anything stayed
+fixed. Both are yours now.
+
+---
+
+
+## LFO
+
+Three controls here — **Wave**, **Beat Sync** and **Retrigger** — and they shape
+an LFO rather than making a sound themselves. If that LFO is not pointed at
+anything, all three will seem broken, and this catches people because **the
+manual never explains how to connect it.**
+
+The LFO is a modulation *source*, like velocity or the mod wheel. It does nothing
+until you give it a destination:
 
 1. Touch the pad, then **right arrow twice** to Pad Parameters.
-2. Scroll to **Filter** on the Main page. The three small boxes on the right
-   edge mark it as something that can be modulated.
+2. Scroll to **Filter** on the Main page. The three small boxes on the right edge
+   mark it as something that can be modulated.
 3. **Right arrow** again for the Modulation Parameters screen.
 4. Find a **Source** slot reading `None` and turn the bottom knob to **LFO**.
-5. **Turn up the Amount for that slot.** It starts at 0%, so the LFO is
-   connected and inaudible until you do. This is the step everyone misses.
+5. **Turn up the Amount for that slot.** It starts at 0%, so the LFO is connected
+   and inaudible until you do. This is the step everyone misses.
 
 Filter is the best first destination because it is the most obvious to the ear,
-and it doubles as your test rig for the three LFO CCs.
+and it doubles as your test rig for the three LFO controls.
+
+**Wave** picks the shape — ten of them, as ten even bands across the throw.
+**Beat Sync** locks the rate to the tempo instead of running free. **Retrigger**
+restarts the LFO from the top on every note, which is the difference between a
+wobble that lines up with your hits and one that drifts against them.
 
 **If the bottom knob will not change a `None` slot**, the pad is full. Each pad
-has twelve modulation slots, three of which the firmware claims for itself, and
-a preset with lots of mapped CCs can easily use the rest. It reads exactly like
-a dead encoder. Free a slot by removing a mapping you are not using, and it will
-spring back to life.
+has twelve modulation slots, three of which the firmware claims for itself, and a
+preset with lots of mapped CCs can easily use the rest. It reads exactly like a
+dead encoder. Free a slot by removing a mapping you are not using and it will
+spring back.
 
-Worth knowing: the Source list on that screen is longer than the manual
-suggests. The MIDI chapter lists the MIDI sources, the CV chapter lists EXT 1–8,
-and no page lists the whole thing — LFO is in there, several clicks further
-round than you might stop.
+Worth knowing: the Source list on that screen is longer than the manual suggests.
+The MIDI chapter lists the MIDI sources, the CV chapter lists EXT 1–8, and no page
+lists the whole thing — LFO is in there, several clicks further round than you
+might stop.
 
-### Getting the full range out of a CC
+---
+
+
+## Delay and Reverb
+
+**Delay send** and **Reverb send** are per pad, so each of your eight can sit in
+the effects by a different amount, changed live. This is the pair people reach for
+first, and it is the fastest way to make a static loop move.
+
+Recorded-sample pads are the exception: they have no FX sends in stock firmware
+at all, so there is nothing for the control to reach. That is the module, not this
+patch.
+
+**The delay itself is shared by the whole preset**, and four of its controls are
+here. These answer on any channel:
+
+**Beat Sync** locks the delay time to tempo rather than milliseconds. **Ping-pong**
+bounces repeats across the stereo field. **Filter on/off** and **Filter width**
+shape the tone of the repeats — darkening each successive echo is the classic dub
+move, and width is how aggressively it happens.
+
+The delay's time and feedback are not here, because the module already lets you
+modulate them — they work over MIDI without this patch.
+
+---
+
+
+## The Compressor
+
+**This is the one that was never available to anyone.**
+
+Your Bitbox has a real bus compressor across Out 1 and 2. It has always been
+there, it has always been running, and it has always been shaping every note you
+play through those outputs. The module gives you one control over it: **On** or
+**Off**.
+
+Threshold, ratio, attack, release, makeup gain — all fixed, all invisible, all
+unreachable. Not buried three menus deep. Not hidden behind the modulation
+system. Simply never exposed, to anyone, by any route. Which is why it is the
+most underused feature in the module: not because it is bad, but because a
+compressor you cannot adjust is a compressor you cannot use for anything except
+the one thing its designer picked for you.
+
+Everything else in this patch takes a control you could already reach and makes
+it playable. **This one hands you five parameters that have never been on the
+table at all**, and turns a fixed safety net into an instrument you can shape
+while the music runs.
+
+### Where It Sits in the Chain
+
+```
+   all pads routed to Out 1/2   →   delay and reverb returns
+                                              ↓
+                                        COMPRESSOR          ← yours now
+                                              ↓
+                                      safety limiter        ← untouched
+                                              ↓
+                                      master volume
+                                              ↓
+                                          Out 1/2
+```
+
+Three things follow from that, and they all matter in practice:
+
+**It sees everything.** The compressor is on the sum of every pad routed to Out
+1/2, including the delay and reverb returns. This is a mix bus compressor, not a
+channel strip — it hears the whole thing at once.
+
+**Pads on Out 3–6 bypass it completely.** That is your clean path, and it is
+useful (see below).
+
+**Master volume is after it.** So turning the module down does not change how
+hard the compressor works — the setting on the front panel and the setting on
+your controller are independent, which is what you want.
+
+**And behind it sits a safety limiter that this patch does not touch.** It is the
+last thing before the outputs, it is not adjustable, and it is what stops a
+careless setting from reaching your speakers. You can push the compressor hard
+without worrying that you will damage anything.
+
+### You Will Want to Know How a Compressor Works
+
+This guide is not the place to learn that, and there are far better resources
+than anything that would fit here. But a one-line version, so the controls below
+make sense:
+
+> A compressor turns the loud parts down, then you turn the whole thing back up.
+> The result is a smaller gap between loud and quiet — which sounds denser,
+> steadier, and louder at the same peak level.
+
+The five controls decide *how loud is loud enough to act on*, *how much to turn
+it down*, *how fast to react*, *how fast to let go*, and *how much to put back*.
+
+### What Each Control Does
+
+**Threshold** — how loud a sound has to get before the compressor pays any
+attention. Everything below it passes untouched. Bring it down and more of the
+music gets caught.
+
+**Ratio** — how hard it clamps once the threshold is crossed. At 2:1, a sound
+going 10 dB over the threshold only comes out 5 dB over. At 10:1 it comes out 1 dB
+over. Low ratios shape; high ratios flatten.
+
+**Attack** — how quickly it reacts. Fast attacks catch the very front of a
+transient and squash it. Slow attacks let the initial hit through and only then
+clamp down, which is what keeps drums punchy.
+
+**Release** — how quickly it lets go again. Short releases pump and breathe with
+the track. Long releases are smoother and less obvious.
+
+**Makeup gain** — how much level you put back afterwards, to compensate for what
+the compression took away.
+
+### It Arrives Set Up as a Bus Glue Compressor
+
+You do not have to configure anything. Switch it on and you have gentle,
+musical bus compression — the sort that pulls a mix together rather than
+announcing itself. "Glue" is the usual word for it.
+
+The starting values are deliberately close to the classic SSL bus compressor
+setting, which is the most-copied mix-glue recipe there is:
+
+| Control | Starts at | Which is |
+| ------- | --------- | -------- |
+| **Threshold** | 70% | −12 dB |
+| **Ratio** | 5% | 2:1 |
+| **Attack** | 30% | 30 ms |
+| **Release** | 29% | 300 ms |
+| **Makeup gain** | 50% | 0 dB |
+
+Three of those four are literally switch positions on an SSL: **2:1**, a slow
+**30 ms** attack, and a **300 ms** release. The slow attack is the important one
+— it is what lets the front of every kick and snare through before the compressor
+clamps, and it is the difference between glue and mush.
+
+**Why −12 dB and 2:1, specifically.** Threshold is the one setting that depends
+on how loud your material is, and a default has to work without knowing that. At
+2:1, being wrong is cheap: a sound 10 dB over the threshold comes out only 5 dB
+over, so even if the threshold is far lower than ideal you get a gentle squeeze
+rather than a crushed mix. Pair that with −12 dB and you get roughly:
+
+| If your mix peaks around | You get |
+| --- | --- |
+| −1 dBFS (hot) | about 5–6 dB of gain reduction — firm, still musical |
+| −6 dBFS (sensible headroom) | about 3 dB — textbook glue |
+| −12 dBFS | nothing |
+| quieter than that | nothing at all |
+
+It does the right thing at sensible levels, stays musical if you run hot, and
+quietly steps aside if you run quiet. It cannot crush you.
+
+**On input level and makeup gain.** Aim to have your mix peaking somewhere
+around **−6 dBFS** before the compressor. That is good practice anyway, and it is
+the level these defaults are built around. Makeup gain starts at 0 dB, so
+switching the compressor on can only ever make things slightly *quieter* — never
+louder, never clipping. Once you have set a threshold you like, bring makeup up
+until engaged and bypassed sound about the same loudness. That is the honest way
+to judge whether it is helping: match the levels first, then compare.
+
+If you run much hotter than −6 dBFS, the compressor works harder and you will
+want more makeup. If you run cold, it will barely engage and you should bring the
+threshold down rather than reaching for makeup.
+
+### Put It on a Button
+
+If your controller can send several CCs from one button press, **set one up with
+the five values in the table above.**
+
+That gives you a home to come back to. Experiment as violently as you like — pull
+the threshold to the floor, crank the ratio, make it pump — and when you have had
+enough, one press puts you back at a known good glue setting instantly. It turns
+the whole thing from something you have to be careful with into something you can
+throw around.
+
+### Setting It by Ear
+
+**The module's screen never shows any of this**, and there is no gain reduction
+meter. That is true of everything this patch adds — the display does not redraw
+when a CC arrives — and a compressor is invisible anyway. Your controller is the
+display. If you turn an encoder on the module itself, the module wins.
+
+**Finding the threshold is the only fiddly part**, and there is a technique:
+
+> Bring the **threshold** down slowly while something busy is playing. At first
+> nothing happens. Then the loud parts start to lean back a little. **That point
+> is the threshold** — leave it just past there. If it starts sounding squashed
+> or breathless, you have gone too far.
+
+The others are quicker to hear:
+
+- **Ratio** — sweep it top to bottom on a busy loop. Transparent, then obviously
+  squashed.
+- **Release** — short, on a kick loop. It should pump hard. The most audible of
+  the four by a wide margin.
+- **Attack** — long, on the same loop. The click of the kick comes back.
+- **Makeup gain** — level, and nothing else.
+
+### Two Things That Will Confuse You Once
+
+**Nothing happens while the compressor is off.** The five settings are
+remembered, but nothing applies them until it is running. So if you set
+everything up with it switched off and hear no change, that is expected — switch
+it on and it all arrives at once.
+
+**Makeup gain at zero is −36 dB and will silence you.** If that encoder happens
+to be parked at the bottom when you first touch it, the sound vanishes and it
+looks like something has broken. It has not. Turn it up.
+
+### What It Will Not Do
+
+**There is no sidechaining.** You cannot duck the mix from a kick on another
+channel, or key the compressor from anything but the signal passing through it.
+The detector is wired to the audio it is compressing and there is no key input to
+redirect it, so this is a limit of the module rather than something the patch
+chose not to expose.
+
+What gets you close: ordinary bus compression already ducks the mix when the kick
+lands — that is what glue compression does, and with a fast attack and a loud kick
+it pumps convincingly. The difference is that the kick is compressed too. And if
+you sequence CCs, you can draw a threshold envelope in time with the kick, which
+is automation rather than sidechaining but reaches a similar place.
+
+**There is no wet/dry mix either.** The module cannot blend compressed and
+uncompressed signal — there is no mix control and no way to add one.
+
+What you can do instead: **pads routed to Out 3–6 skip the compressor entirely.**
+Put the same sample on two pads with the same MIDI channel and Pad Note, route one
+to Out 1/2 and the other to Out 3/4, and mix them outside the box. Squash the
+compressed one hard and blend it underneath. That is parallel compression, using
+stock routing.
+
+It costs a pad and an output pair, so most people will not bother — but it is
+there if you want it.
+
+### Settings Last Until You Power Off
+
+Your compressor settings live in the module's memory for as long as it is
+switched on, and **they survive changing presets** — unlike everything else in
+this patch. A power cycle puts them back to the glue values in the table above.
+
+There is no way to save them into a preset, and no reset control. Power off is
+the reset.
+
+---
+
+**Used well, this is the control that makes eight pads sound like one record.**
+Everything else here shapes a sound; the compressor is what makes all of them sit
+together, breathe together and hit as a single thing. That is what glue means,
+and it is why this is the addition worth learning properly.
+
+---
+
+
+## Troubleshooting
+
+Most things that look broken are one of a handful of well-worn gotchas. In rough
+order of how often they catch people:
+
+
+### Use Your Ears, Not the Screen
+
+**Send a CC and the value changes, but the display does not move.** Push CC 84
+up and the delay send really is going up. The FX page carries on displaying
+whatever number was last dialled in by hand, with total confidence.
+
+Nothing is broken and the patch does not cause it. The module has always
+behaved this way, including for the CCs stock firmware handles itself —
+automate CC 7 and the volume changes without the screen ever admitting it. The
+patched CCs inherit exactly the same behaviour.
+
+**Two exceptions.** Reverse on CC 86 shows on the display — send it and watch
+the pad flip. Loop Mode on CC 88 shows too: the setting steps visibly between
+None, Forward and Bidirectional as the CC crosses each third. Make the most of
+both, because the rest will tell you absolutely nothing.
+
+**So test the rest with your ears.** Send the CC, listen for the delay or the
+reverb coming up underneath the pad, and ignore the display completely. Sit
+watching the FX page waiting for a number to move and you will conclude the
+patch is dead at the exact moment it is working perfectly.
+
+
+### Getting the Full Range Out of a CC
 
 This is about the module rather than the patch, but it will catch you out the
 first time and it looks exactly like a broken mapping.
@@ -668,7 +1111,8 @@ written directly rather than through the modulation system, so they all cover
 their full range no matter what the pad was saved with. The rule above is about
 the CCs you map yourself in a preset.
 
-### Changing preset wipes everything you sent
+
+### Changing Preset Wipes Everything You Sent
 
 Load a new preset and every value you set by CC is gone. The pad comes up with
 whatever that preset was saved with, and nothing you did with your controller
@@ -685,7 +1129,13 @@ calls it. Fire that after loading and you are back where you were in a second.
 This is the module, not the patch. A CC mapped through a preset behaves the same
 way, and so does CC 7 on stock firmware.
 
-### Can CV control these?
+**The compressor is the exception.** Its settings are not stored in a preset at
+all, so loading one leaves them exactly as you left them — the five parameters
+because the patch holds them, and the on/off state because the module keeps that
+with its own global settings. Everything else in this list is wiped.
+
+
+### Can CV Control These?
 
 **No — and the patch does not change that.**
 
@@ -706,7 +1156,59 @@ answer if CV is how you want to play them.
 
 ---
 
-## If something goes wrong
+### If Windows Cannot Find Python
+
+Two different things can happen here, and neither means you have broken
+anything.
+
+**The Microsoft Store opens instead of running anything.**
+
+Python is not installed yet, and Windows is offering to sort that out. Take the
+Store's copy or install from python.org as above — both work.
+
+**It says `'python' is not recognized`.**
+
+Python is installed, but Windows does not know where to find it: the "Add
+python.exe to PATH" tickbox was missed during the install. Before you reinstall
+anything, try `py` instead of `python`:
+
+```sh
+py patch_micro.py MICRO.BIN patched/MICRO.BIN
+```
+
+`py` is a small launcher that comes with Python and gets added to PATH whether
+or not you ticked that box, so it usually works when `python` does not.
+
+If `py` does not work either, install Python again from
+<https://www.python.org/downloads/> and tick **Add python.exe to PATH** this
+time. Nothing is wrong with the script or your download.
+
+
+### If It Stops with an Error
+
+Good. That is the safety check earning its keep. It will tell you what it found
+and what it expected, and it will not have written a thing.
+
+- *"That is not the stock 2.3.4 firmware"* — the input is a different version,
+  already patched, or a truncated download.
+
+  **If you are upgrading from an earlier version of this patch, this is almost
+  certainly why.** You have pointed the script at the patched image you flashed
+  last time rather than at stock. Patch your original `MICRO.BIN` again — the
+  one straight out of `MICRO234.zip`. There is no upgrade-in-place path, and
+  there deliberately never will be: every safety check in the script is written
+  against stock bytes, which is exactly why it caught this. Download
+  `MICRO234.zip` from 1010music again if you no longer have it.
+- *"The code at … is not what it should be"* — the file passes the checksum but
+  the machine code underneath is wrong, which should be impossible. Something
+  strange is happening and forcing it will not make it less strange.
+
+The script checks every site before it writes anything, so there is no such
+thing as a half-patched file. It is all or nothing, and it prefers nothing.
+
+---
+
+### Going Back to Stock
 
 **The bootloader is untouched.** It lives in a separate region of flash that
 this patch never writes to, and it is what performs the update. That means a
@@ -716,8 +1218,6 @@ To go back to stock: rename your original 1010music download to `MICRO.BIN`, put
 it in the card root, and follow the same install steps. The module overwrites the
 patched image with it and forgets any of this ever happened. This is also the
 answer if you simply decide you preferred it before.
-
----
 
 ## Support
 
@@ -741,7 +1241,7 @@ not exist.
 And before you ask anywhere, "it doesn't work" is one of seven things roughly
 every time, and you can rule out all seven in about two minutes.
 
-**1. Did it actually flash?** The splash must read `community fw` / `2.3.5-mod`.
+**1. Did it actually flash?** The splash must read `community fw` / `2.3.6-mod`.
 If it still says `by 1010music`, nothing was installed and nothing below will
 work. Check the file is named `MICRO.BIN` and sits in the card root.
 
@@ -774,7 +1274,7 @@ half. That is the module's behaviour, documented in the manual.
 *The LFO controls* change how the LFO behaves, and the LFO only makes a sound
 once you have pointed it at something. On a fresh pad it is wired to nothing, so
 Wave, Beat Sync and Retrigger will all appear dead. Route the LFO to the filter
-first — see *Making the LFO audible* above — and they come alive together.
+first — see the *LFO* section above — and they come alive together.
 
 **7. Does the encoder do it?** This is the one that settles it. Turn the same
 parameter by hand on the device. **If the encoder doesn't change it either, the
@@ -787,7 +1287,7 @@ stopping a single pad — it is the only thing here the module cannot do by hand
 Survive all seven and you have found something real. Write down what you did and
 what happened, in that order.
 
-### Feature requests
+### Feature Requests
 
 **The low-hanging fruit is already picked.** These came from working
 through the manual's parameter tables, taking everything owners had asked for
@@ -796,16 +1296,21 @@ that could actually be reached, and stopping where the reaching got hard.
 If something you want is not here, it is worth knowing why before you ask —
 because in a good many cases you can have it today, without a patch at all.
 
-**Almost none of it is new.** All but one already existed on the
-module, already worked, and already did exactly what they do now — you just had
-to reach over and turn them by hand. All this does is teach the firmware to
-listen for a MIDI message it was already ignoring, then hand the value to the
-module's own code, untouched. The Bitbox does the work. The patch does the
-introductions.
+**Almost none of it is new.** All but one were already adjustable on the module,
+already worked, and already did exactly what they do now — you just had to reach
+over and turn them by hand. All this does is teach the firmware to listen for a
+MIDI message it was already ignoring, then hand the value to the module's own
+code, untouched. The Bitbox does the work. The patch does the introductions.
 
-The twentieth barely counts as an exception: stopping a pad uses the module's own
+Stopping a pad barely counts as an exception either: it uses the module's own
 stop, which was already there. What is new is being able to aim it at one pad
 instead of all of them.
+
+**The compressor is the one real exception**, and even then the DSP is
+1010music's. It has always existed and always worked — it has been shaping your
+output every time you played a note. What it never had was any way to adjust it,
+which is a different thing from not being there. The patch does not add a
+compressor; it adds the controls the compressor never had.
 
 That is the whole design, and it is why it is as safe as it is: nothing is
 reimplemented, so there is nothing new to get wrong.
@@ -843,7 +1348,7 @@ shows you every address as it works.
 If you want another parameter, that file tells you how the existing ones were
 done, and adding one is a far better outcome than asking for it.
 
-### When a new firmware comes out
+### When a New Firmware Comes Out
 
 The patcher will refuse it, and it is being stubborn on your behalf. The
 addresses it writes to are specific to 2.3.4; on a different build they point
@@ -853,12 +1358,13 @@ engineering first.
 
 ---
 
-## The small print
+
+## The Small Print
 
 Everything below is detail rather than instruction. Worth reading once, ideally
 while something is rendering; definitely not worth reading before you flash.
 
-### What this is not
+### What This Is Not
 
 **It is not from 1010music, and it is not endorsed by them.** It is an
 unofficial modification made by a customer with too much time. The patched image
@@ -878,7 +1384,7 @@ run on anything except the exact 2.3.4 build.
 
 **And it must not become one.** The image you produce is yours only because you
 supplied the firmware it was built from. Send it to somebody else and that stops
-being true: you are handing out 1010music's code with twenty-eight bytes
+being true: you are handing out 1010music's code with thirty-one bytes
 changed. Send them this page instead. The script takes seconds to run, and they
 will have their own copy inside a minute.
 
@@ -891,7 +1397,7 @@ modulation system can already reach.
 verified on one unit. It comes with no warranty of any kind. You
 are modifying your own hardware at your own risk.
 
-### Was this built with AI?
+### Was This Built with AI?
 
 Yes, and a good deal of it — reading ARM assembly, testing where a value lands,
 working out why a setter did something unexpected. It would have taken far longer
@@ -909,7 +1415,7 @@ listening settles it.
 
 Nor do you have to take any of it on trust. The script is short and heavily
 commented, it refuses to run on anything but a byte-exact stock 2.3.4, it changes
-28 bytes, and it prints a fingerprint so you can confirm you built the same file
+31 bytes, and it prints a fingerprint so you can confirm you built the same file
 as everybody else. The bootloader is untouched, so the worst case is a reflash.
 What should worry anyone is unreadable code shipped as a binary you cannot check.
 This is the opposite of that.
@@ -917,7 +1423,7 @@ This is the opposite of that.
 In short — it does not matter whether AI helped build it, so long as it works
 for you. Flash it, listen, and judge it on that.
 
-### Can this brick my module?
+### Can This Brick My Module?
 
 **No.** Not because the script is careful, though it is, but because of how the
 module is put together.
@@ -944,7 +1450,7 @@ about two minutes later.
 
 Some other things that make this narrower than it sounds:
 
-- **28 bytes of the original image change**, and 852 are added at the end.
+- **31 bytes of the original image change**, and 1,348 are added at the end.
   Nothing is deleted, moved or overwritten.
 - **Size is not a problem.** Official releases already differ by about 4 KB
   (2.2.9 is 667,324 bytes, 2.3.4 is 671,376), so the bootloader has no fixed-size
@@ -980,11 +1486,11 @@ Practical position:
   to running modified firmware, say so. Restoring stock to tidy up an unrelated
   hardware fault is reasonable; using it to hide a relevant detail is not, and
   it is how goodwill for projects like this gets destroyed for everyone.
-- **This patch cannot physically damage the module.** It changes 28 bytes of a
-  firmware image, and the worst case is a reflash — see *Can this brick my
+- **This patch cannot physically damage the module.** It changes 31 bytes of a
+  firmware image, and the worst case is a reflash — see *Can This Brick My
   module?* above.
 
-### Why these controls were not already there
+### Why These Controls Were Not Already There
 
 Worth saying plainly, because it is the thing most likely to bite you:
 
@@ -1006,7 +1512,7 @@ simplify the preset.
 None of this is a reason not to use it. It is a reason to find out where the
 edge is at home, rather than in front of people.
 
-### Known limitations
+### Known Limitations
 
 The honest list.
 
@@ -1047,10 +1553,11 @@ control on screen, two parameters underneath, and BeatSync picking between
 them. If your LFO Rate knob dies the moment you flip that switch, this is why,
 and the same fix applies.
 
-### How it works, briefly
 
-Three small blocks of code are bolted onto the end of the firmware image, and
-three existing instructions are pointed at them:
+### How It Works, Briefly
+
+Five small blocks of code are bolted onto the end of the firmware image, and four
+existing instructions are pointed at them:
 
 - Two hooks extend the per-pad Control Change handlers — there are two, because
   Sample-family and Clip-family pads use different voice classes with different
@@ -1060,6 +1567,8 @@ three existing instructions are pointed at them:
   internal messages the FX screen knobs send. The delay has no CC handler of its
   own, and the modulation system cannot drive an on/off switch, so this is the
   route that works.
+- Two more handle the compressor, and they work differently from everything else
+  here — see below.
 
 Four different techniques, depending on what the parameter needs:
 
@@ -1086,11 +1595,23 @@ the firmware keeps every parameter twice, in two places, and its own setter
 writes both every time. So this arm writes both as well, rather than setting one
 and leaving the two halves disagreeing about how loud the pad is.
 
-In total **28 bytes of the original image change** — 11 of them executable code,
-the other 17 being splash text — plus 852 bytes appended. Nothing is removed,
+In total **31 bytes of the original image change** — 14 of them executable code,
+the other 17 being splash text — plus 1,348 bytes appended. Nothing is removed,
 relocated, or overwritten.
 
-### Why fixed numbers, and not MIDI Learn
+**The compressor is the exception to all of the above.** Every other control in
+this patch hands its value to 1010music's own code and gets out of the way — that
+is the whole safety argument for the rest of it. The compressor has no such
+handler to hand anything to, because none of its parameters were ever meant to be
+set from outside.
+
+So the patch keeps those five values itself and applies them to the audio path
+continuously, rather than writing them once and hoping. That is why they survive
+a preset change when nothing else does, and why a power cycle is what resets
+them. It is a bigger step than the rest of the patch takes, and it seemed worth
+saying plainly rather than letting it pass as more of the same.
+
+### Why Fixed Numbers, and Not MIDI Learn
 
 The obvious question. The module already has MIDI Learn — why not make these
 learnable and let everyone pick their own?
@@ -1119,7 +1640,7 @@ load. Set your controller up once and never think about it again.
 The cost is that changing them means re-patching. If they clash with something in
 your rig, see below.
 
-### Choice of numbers
+### Choice of Numbers
 
 Stock firmware handles four CCs per pad on its own — **CC 1** (modwheel),
 **CC 7** (volume), **CC 10** (pan) and **CC 64** — and nothing above 64. These
@@ -1146,7 +1667,8 @@ has, so write down what you did somewhere you will find it.
 
 ---
 
-## Licence and attribution
+
+## Licence and Attribution
 
 **This is free.** Free to download, free to use, free to pass on, and there is
 nothing to buy at any point. No trial, no unlock code, no email address to hand
@@ -1173,7 +1695,7 @@ device, and the consequences are entirely yours to enjoy.
 
 ---
 
-## If you're from 1010music
+## If You're from 1010music
 
 Hello. Genuinely — thank you for the Bitbox Micro.
 
@@ -1197,7 +1719,7 @@ one are yours already: your parameters, your setters, your clamping and lookups
 and recomputes, doing exactly what they do when somebody turns the encoder. The
 last uses your own stop, only aimed at a single pad. The patch teaches the
 firmware to listen for a MIDI message it was already ignoring, then gets out of
-the way — all of twenty-eight bytes changed.
+the way — all of thirty-one bytes changed.
 
 I reimplemented nothing, and not out of restraint — there was no need. You had
 already written every bit of it properly, and the most useful thing anyone
@@ -1216,7 +1738,8 @@ somebody who loves this thing.
 
 ---
 
-## Now go and make some music — and twiddle some knobs
+
+## Now Go and Make Some Music — and Twiddle Some Knobs
 
 Every one of them, on eight pads, all under your fingers at once — or
 under your sequencer's. These are ordinary Control Changes, so anything that
@@ -1267,12 +1790,23 @@ patch:
   the other seven run.
 - **Ride the sustain on a held pad** so it breathes with the arrangement instead
   of sitting still.
+- **Squeeze the whole mix and let it go.** Pull the compressor's threshold down
+  through a build and everything tightens and leans back together; take it off as
+  the drop lands and the mix opens up like a held breath let out. Shorten the
+  release and the whole track starts pumping with the kick. This is the one
+  control here that acts on all eight pads at once, and it is the difference
+  between eight things playing and one record moving.
 
-All of it per pad, from wherever your hands already are — no stopping, no
-leaning over, no hunting for a page.
+All of it per pad — apart from the compressor, which takes the lot — and all from
+wherever your hands already are. No stopping, no leaning over, no hunting for a
+page.
 
 Start with the delay send. It is still the most fun of the lot: throw one pad
 into it on the drop and see what happens.
+
+Then spend an evening with the compressor. It is the one thing here nobody has
+been able to play with before, it is already set up as a glue compressor, and it
+is the control that makes the other seven sound like they belong together.
 
 Enjoy your BitBox Micro, enhanced with MIDI superpowers. It was a wonderful
 little thing already, and it is a better one now.

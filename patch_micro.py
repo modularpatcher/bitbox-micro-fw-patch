@@ -151,6 +151,7 @@ CC7_TO_1000_MUL, CC7_TO_1000_SHIFT = 8063, 10
 # where engine commands are meant to be posted from).
 MIDI_POST_CALL = 0x08093f14   # 'bl FUN_080950c0' that posts the CC event
 MIDI_POST_FN   = 0x080950c0   # the function it calls
+MSG_CHAN_SP    = 0x80         # MIDI channel 0-15, caller-frame offset
 MSG_CC_SP      = 0x84         # CC number,   caller-frame offset
 MSG_VAL_SP     = 0x88         # 14-bit value, caller-frame offset
 SETPARAM_FN    = 0x080937f4   # cmd39: (manager, padKey, paramId, value, 0, 0)
@@ -166,6 +167,142 @@ P_BEATSYNC, P_PINGPONG = 0x17, 0x18
 P_DLYFILTER, P_DLYWIDTH = 0xab, 0xac
 DLYFX_GUARD_VA, DLYFX_GUARD = 0x080a7ca8, 0xf0002bab   # 'cmp r3,#0xab'
 BOOL_THRESHOLD = 8192          # half of 16383: >= is "on"
+
+# --- the compressor (new in 2.3.6) ---------------------------------------
+# The module has a compressor across Out 1 and 2. It ships, it works, and the
+# only control the UI gives you is On/Off -- everything else is compiled in.
+#
+# Unlike every other control here, these are DIRECT FIELD WRITES. The
+# compressor object has no set-parameter handler at all, so there is no setter
+# to hand a value to. That is safe only because each field is consumed raw:
+# the gain computer reads threshold and ratio out of the object every block,
+# and nothing is derived or cached from them. See COMPRESSOR-DESIGN.md.
+#
+# The addresses are RAM, so they cannot be checked directly. Each one is
+# instead proved by an instruction in the image that computes it, and those
+# are guarded below -- an offset is only as trustworthy as its proof.
+# The session is NOT at a fixed address. MANAGER is the engine; the session
+# hangs off it as a POINTER, and everything the compressor needs is an offset
+# from that pointer's target. Reading it at runtime is the only correct way --
+# treating MANAGER as the session lands ~150 KB away, in memory belonging to
+# something else entirely.
+# CC 40 writes the on/off flag on the SESSION, which is allocated once at boot
+# and is therefore a safe target. CCs 41-45 do NOT write the engine at all --
+# they write the patch's own store, and hook E stamps that onto whichever
+# compressor object the audio is actually processing, every block. That is what
+# makes the values survive: hardware testing showed that a direct
+# write to the compressor object is undone after a variable period.
+# The compressor block listens on ONE channel, unlike every other patched
+# global. CC 108-111 get away with answering on all sixteen because they sit in
+# 102-119, which the MIDI spec genuinely leaves undefined. 40-45 do not: CC 32-63
+# are the fine-adjust LSBs of CC 0-31, so CC 40 is formally the LSB of CC 8.
+# Almost nothing sends those, which is why the range looked free -- but gear does
+# help itself to the numbers, and a patched global consumes a CC on
+# every channel. A stray CC 45 at value 0 sets makeup to -36 dB, which is silence
+# and reads exactly like a firmware fault. Confirmed on hardware.
+COMP_CHANNEL   = 0            # 0 = MIDI channel 1
+
+CC_COMP_ONOFF  = 40
+CC_COMP_FIRST  = 41           # 41 thresh, 42 ratio, 43 attack, 44 release, 45 makeup
+CC_COMP_COUNT  = 5
+COMP_ONOFF_OFF = 0x28cc0      # session -> on/off byte
+
+# The patch's own parameter store. Chosen from a 60 KB run of AXI SRAM with no
+# literal references anywhere in the image, and below the two MPU regions at
+# 0x24060000/0x24070000 which are configured for DMA. UNVERIFIED -- "no literal
+# references" does not prove "not reached by pointer arithmetic". The magic word
+# means a clobber degrades to the feature switching itself off rather than
+# stamping garbage into the audio path. See COMPRESSOR-DESIGN.md milestone M1.
+# Where the patch keeps its five parameters. This has to be memory the module
+# does not use, and "no code mentions it" is NOT enough -- a heap hands out
+# addresses it computes at runtime. Beta 4 put the store at 0x24054000, which
+# is two-thirds of the way UP the heap; it worked until the heap grew into it,
+# then allocations ate the tail of the store and the compressor went silent.
+#
+#   0x2402e128  heap start   \  malloc's own bounds, read out of its
+#   0x24068aa8  heap end     /   literal pool at 0x080bcbe4 / 0x080bcbe0
+#   0x240692a8  initial SP -- ARM stacks are full-descending, so nothing
+#               above this is ever stack (vector table word 0)
+#   0x24080000  end of AXI SRAM
+#
+# So the 93 KB above the stack pointer is above the heap AND above the stack.
+# Nothing in the image references it, and a DMA engine cannot target a buffer
+# whose address appears nowhere. The guards below pin all three boundaries, so
+# a firmware that moves any of them fails the patch instead of corrupting RAM.
+HEAP_LO_VA, HEAP_LO   = 0x080bcbe4, 0x2402e128   # malloc's heap start
+HEAP_HI_VA, HEAP_HI   = 0x080bcbe0, 0x24068aa8   # malloc's heap end
+STACK_VA,   STACK_TOP = 0x08040000, 0x240692a8   # vector table word 0 = initial SP
+SRAM_END              = 0x24080000
+
+PATCH_RAM   = 0x2406c000      # above heap end and above the stack top
+PATCH_MAGIC = 0x1010c0de      # +0 magic, +4 thresh, +8 ratio, +12 atk, +16 rel, +20 makeup
+PATCH_SUM   = 24              # +24 checksum = magic XOR all five values
+
+# What the compressor comes up as. 1010music ship -4 dB / 4:1 / 10 ms / 250 ms
+# / -4 dB, which is a headroom trim rather than a musical setting -- it exists
+# so the stock module cannot clip itself, not because it sounds like anything.
+# Since the patch has to own these five values anyway, it may as well start
+# somewhere useful: gentle bus glue. Every one stays adjustable, and the guide
+# gives the numbers to put the stock voicing back on a button.
+# Three of these five are literally SSL bus-compressor switch positions -- 2:1,
+# 30 ms, 0.3 s -- which is the classic mix-glue setting. The threshold is the one
+# the SSL does not give you a number for either: on that unit you turn it until
+# the meter shows 2-4 dB of reduction. -12 dB puts us there at sensible levels,
+# does less rather than more if the module is run cold, and cannot crush at 2:1
+# even if it is badly wrong. Makeup stays at 0 dB so switching the compressor on
+# can only ever reduce the level, never clip someone.
+DEFAULTS = [
+    (struct.unpack("<I", struct.pack("<f", -12.0))[0], "threshold -12.0 dB   70%"),
+    (struct.unpack("<I", struct.pack("<f",   2.0))[0], "ratio       2:1       5%"),
+    (1440,                                             "attack     30 ms     30%"),
+    (14400,                                            "release   300 ms     29%"),
+    (struct.unpack("<I", struct.pack("<f",   0.0))[0], "makeup      0.0 dB   50%"),
+]
+DEFAULT_SUM = PATCH_MAGIC
+for _w, _n in DEFAULTS:
+    DEFAULT_SUM ^= _w
+
+assert PATCH_RAM > HEAP_HI,   "patch store must sit above malloc's heap"
+assert PATCH_RAM > STACK_TOP, "patch store must sit above the initial stack pointer"
+assert PATCH_RAM + PATCH_SUM + 4 <= SRAM_END, "patch store must fit in AXI SRAM"
+
+# Field offsets on the compressor object, proved by its own two constructors.
+COMP_F_THRESH, COMP_F_RATIO   = 0x428, 0x42c
+COMP_F_MAKEUP                 = 0x430
+COMP_F_ATTACK, COMP_F_RELEASE = 0x448, 0x44c
+
+# (scale, offset, is_integer) per CC, for a 0..CC_MAX input
+COMP_RANGES = [
+    (-40.0,     0.0,   False),   # 41 threshold, dB
+    (  1.0,    20.0,   False),   # 42 ratio
+    ( 24.0,  4800.0,   True ),   # 43 attack,  samples (0.5 .. 100 ms @ 48 k)
+    (480.0, 48000.0,   True ),   # 44 release, samples (10 ms .. 1 s @ 48 k)
+    (-36.0,    36.0,   False),   # 45 makeup, dB
+]
+
+# Finding the session for CC 40. Not by arithmetic -- scan the engine's pointer
+# slots and PROVE each candidate by reading back the safety limiter's two timing
+# constants. Nothing else in memory carries 192 then 36000 at those offsets, and
+# nothing on the module ever writes them.
+SCAN_LO, SCAN_HI = MANAGER + 0xa000, MANAGER + 0xa400
+RAM_LO, RAM_SPAN = 0x24000000, 0x50000     # every deref is range-checked first
+PROOF_A_OFF, PROOF_A_VAL = 0xffa0, 192     # safety-stage attack,  samples
+PROOF_R_OFF, PROOF_R_VAL = 0xffa4, 36000   # safety-stage release, samples
+
+# Image guards. The RAM offsets above are only as trustworthy as the
+# instructions that prove them, and those are all in the image.
+COMP_DISP_VA, COMP_DISP = 0x0809704c, 0x3038f64f   # movw r0,#0xfb38
+COMP_FLAG_VA, COMP_FLAG = 0x08097030, 0x00028cc0   # the on/off flag's offset
+COMP_INIT_VA, COMP_INIT = 0x080b9d88, 0x6085f504   # add.w r0,r4,#0x428
+COMP_DFLT_VA, COMP_DFLT = 0x080b9dc0, 0xc0800000   # the -4.0 default
+COMP_SESS_VA, COMP_SESS = 0x08094146, 0x2804f24a   # movw r8,#0xa204
+
+# hook E: the one call site where the engine hands us the live compressor
+COMP_DSP_CALL, COMP_DSP_CALL_GUARD = 0x08097056, 0xfd55f022
+COMP_DSP_FN = 0x080b9b04
+
+# movw r8,#0xa204 -- proves where the session pointer is kept on the engine
+COMP_SESS_VA, COMP_SESS = 0x08094146, 0x2804f24a
 
 # (label, hook VA, return VA, cc-value stack slot, [(cc, kind, byte offset)])
 # kind 'send' -> taper(value/16383) as a float;  'bool' -> 1 byte, 0 or 1
@@ -308,6 +445,10 @@ FROZEN = {
         ,
         {'$t': 94, '$d': 90, 'cbs': 28, 'cpp': 32, 'cfl': 36, 'cwd': 50, 'cbool': 38, 'csend': 64, '_sC': 0, 'cpost': 6, 'csetp': 90},
     ),
+    "hookD": ("ddf880c0bcf1000f40f07f80ddf884c0bcf1280f04d0acf12903042b2cd974e04cf67810c2f202404cf67851c2f202410268a2f11053b3f5a02f0cd24ff6a073d358b3f1c00f06d14ff6a473d35848f6a04c634503d004308842e9d355e0ddf888c0bcf5005fb4bf0023012348f6c041c0f20201535448e04cf20002c2f2064211684cf2de0cc1f2100c61450ed0c2f800c01fa002f1040102f1180c90ed000a81ed000a043004316145f7d3ddf888c000ee10cab8ee400a03eb430019a101eb8001d1ed000a91ed011a886820ee200a30ee010a002801d0bceec00a02eb830080ed010ad2f800c053688cea030c93688cea030cd3688cea030c13698cea030c53698cea030cc2f818c00000000000bf000040c100000040a005000040380000000000008002203b000020c2000000006002983a0000803f000000005542953e0000c04101000000e7a239400000f043010000004002903b000010c200000000",
+        {'$t': 0, 'dout': 266, 'donoff': 32, 'dparam': 120, 'dscan': 48, 'dnextc': 86, 'dfound': 94, 'dseeded': 172, 'dstock': 272, 'dseed': 156, 'dscale': 292, 'dstore': 220, '$d': 266, '_sD': 0, 'dnext': 266}),
+    "hookE": ("4cf20002c2f2064213684cf2de0cc1f2100c634519d0c2f800c040f20003ccf24013536040f20003c4f20003936040f2a053d36043f64003136140f2000353614ff63e53c9f25013936153688cea030c93688cea030cd3688cea030c13698cea030c53698cea030c936963450ed15368c0f828349368c0f82c34d368c0f848341369c0f84c345369c0f8303400000000",
+        {'$t': 0, 'everify': 74, 'eout': 140, '$d': 140, '_sE': 0, 'enext': 140}),
 }
 
 REASSEMBLE = False
@@ -317,6 +458,12 @@ VERBOSE = False
 # summary the user reads is generated from the same constants that do the work
 # and cannot drift into a comfortable lie.
 FEATURES = [
+    ("Compressor on/off, ch 1", f"CC {CC_COMP_ONOFF}"),
+    ("Compressor threshold, ch 1", f"CC {CC_COMP_FIRST}"),
+    ("Compressor ratio, ch 1", f"CC {CC_COMP_FIRST + 1}"),
+    ("Compressor attack, ch 1", f"CC {CC_COMP_FIRST + 2}"),
+    ("Compressor release, ch 1", f"CC {CC_COMP_FIRST + 3}"),
+    ("Compressor makeup, ch 1", f"CC {CC_COMP_FIRST + 4}"),
     ("Granular density, per pad", f"CC {CC_GDENSITY}"),
     ("Granular grain size, per pad", f"CC {CC_GSIZE}"),
     ("Granular window, per pad", f"CC {CC_GWINDOW}"),
@@ -720,6 +867,215 @@ csetp:
     return bytes(code)
 
 
+def build_comp_hook(org, hookc):
+    """CC 40-45, chained in front of hook C.
+
+    CC 40 writes the session's on/off flag directly -- the session is allocated
+    once at boot, so that target is stable, and hardware testing confirms it.
+    It is found by proof rather than arithmetic: scan the engine's pointer slots
+    and validate each candidate by reading back the safety limiter's two timing
+    constants, which nothing on the module ever writes.
+
+    CC 41-45 do not touch the engine at all. They write the patch's own store,
+    which hook E applies to the live object every block.
+    """
+    CCMAX = CC_MAX
+    dstock = "\n".join(f"    .word  {w:#010x}   /* {n} */" for w, n in DEFAULTS)
+    rng = "".join(
+        f"    .float {(hi - lo) / CCMAX!r}\n    .float {lo!r}\n    .word  {1 if i else 0}\n"
+        for lo, hi, i in COMP_RANGES)
+    src = f"""
+    .syntax unified
+    .thumb
+    .section .text
+    .global _sD
+    .thumb_func
+_sD:
+    ldr     r12, [sp, #{MSG_CHAN_SP:#x}]   /* compressor CCs are channel-gated */
+    cmp     r12, #{COMP_CHANNEL}
+    bne.w   dout
+    ldr     r12, [sp, #{MSG_CC_SP:#x}]
+    cmp     r12, #{CC_COMP_ONOFF}
+    beq     donoff
+    sub.w   r3, r12, #{CC_COMP_FIRST}
+    cmp     r3, #{CC_COMP_COUNT - 1}
+    bls     dparam
+    b       dout
+donoff:
+    movw    r0, #{SCAN_LO & 0xffff}
+    movt    r0, #{SCAN_LO >> 16}
+    movw    r1, #{SCAN_HI & 0xffff}
+    movt    r1, #{SCAN_HI >> 16}
+dscan:
+    ldr     r2, [r0]
+    sub.w   r3, r2, #{RAM_LO:#x}
+    cmp.w   r3, #{RAM_SPAN:#x}
+    bhs     dnextc
+    movw    r3, #{PROOF_A_OFF:#x}
+    ldr     r3, [r2, r3]
+    cmp.w   r3, #{PROOF_A_VAL}
+    bne     dnextc
+    movw    r3, #{PROOF_R_OFF:#x}
+    ldr     r3, [r2, r3]
+    movw    r12, #{PROOF_R_VAL}
+    cmp     r3, r12
+    beq     dfound
+dnextc:
+    adds    r0, #4
+    cmp     r0, r1
+    blo     dscan
+    b       dout
+dfound:
+    ldr     r12, [sp, #{MSG_VAL_SP:#x}]
+    cmp.w   r12, #{BOOL_THRESHOLD}
+    ite     lt
+    movlt   r3, #0
+    movge   r3, #1
+    movw    r1, #{COMP_ONOFF_OFF & 0xffff}
+    movt    r1, #{COMP_ONOFF_OFF >> 16}
+    strb    r3, [r2, r1]
+    b       dout
+dparam:
+    movw    r2, #{PATCH_RAM & 0xffff}
+    movt    r2, #{PATCH_RAM >> 16}
+    ldr     r1, [r2]
+    movw    r12, #{PATCH_MAGIC & 0xffff}
+    movt    r12, #{PATCH_MAGIC >> 16}
+    cmp     r1, r12
+    beq     dseeded
+    str     r12, [r2]                  /* first touch: seed from stock */
+    adr     r0, dstock
+    add     r1, r2, #4
+    add.w   r12, r2, #{4 + 4 * CC_COMP_COUNT}
+dseed:
+    vldr    s0, [r0]
+    vstr    s0, [r1]
+    adds    r0, #4
+    adds    r1, #4
+    cmp     r1, r12
+    blo     dseed
+dseeded:
+    ldr     r12, [sp, #{MSG_VAL_SP:#x}]
+    vmov    s0, r12
+    vcvt.f32.u32 s0, s0
+    add.w   r0, r3, r3, lsl #1
+    adr     r1, dscale
+    add.w   r1, r1, r0, lsl #2
+    vldr    s1, [r1]
+    vldr    s2, [r1, #4]
+    ldr     r0, [r1, #8]
+    vmul.f32 s0, s0, s1
+    vadd.f32 s0, s0, s2
+    cmp     r0, #0
+    beq     dstore
+    vcvt.u32.f32 s0, s0
+dstore:
+    add.w   r0, r2, r3, lsl #2
+    vstr    s0, [r0, #4]
+    ldr     r12, [r2]                  /* checksum = magic XOR all five */
+    ldr     r3, [r2, #4]
+    eor.w   r12, r12, r3
+    ldr     r3, [r2, #8]
+    eor.w   r12, r12, r3
+    ldr     r3, [r2, #12]
+    eor.w   r12, r12, r3
+    ldr     r3, [r2, #16]
+    eor.w   r12, r12, r3
+    ldr     r3, [r2, #20]
+    eor.w   r12, r12, r3
+    str     r12, [r2, #{PATCH_SUM}]
+dout:
+    .global dnext
+dnext:
+    .short 0,0
+    .align 2
+dstock:
+{dstock}
+dscale:
+{rng}"""
+    code, syms = assemble("hookD", src)
+    code = bytearray(code)
+    code[syms["dnext"]:syms["dnext"] + 4] = enc_b_bl(org + syms["dnext"], hookc, False)
+    return bytes(code)
+
+
+def build_comp_dsp_hook(org):
+    """Hook E -- the one that makes the values stick.
+
+    The engine calls the compressor's processing function once per audio block
+    with the live object in r0. Stamping our store onto it there means the patch
+    owns those five parameters continuously: whatever the engine does to the
+    object, the next block puts them back. A magic word gates the whole thing,
+    so a clobbered store switches the feature off rather than writing rubbish
+    into the audio path.
+
+    r0 and r1 belong to the real DSP and are untouched; r2, r3 and ip are
+    caller-saved and free.
+    """
+    # First audio block after power-on: lay down the defaults so the module
+    # comes up as a working compressor rather than 1010music's headroom trim.
+    # Costs nothing after that -- the magic word means this runs exactly once.
+    _lines = ["    str     r12, [r2]                  /* claim the store */"]
+    for _i, (_w, _n) in enumerate(DEFAULTS):
+        _lines.append(f"    movw    r3, #{_w & 0xffff:#06x}")
+        if _w >> 16:
+            _lines.append(f"    movt    r3, #{_w >> 16:#06x}")
+        _lines.append(f"    str     r3, [r2, #{4 + _i * 4}]              /* {_n} */")
+    _lines.append(f"    movw    r3, #{DEFAULT_SUM & 0xffff:#06x}")
+    _lines.append(f"    movt    r3, #{DEFAULT_SUM >> 16:#06x}")
+    _lines.append(f"    str     r3, [r2, #{PATCH_SUM}]             /* checksum */")
+    eseed = "\n".join(_lines)
+
+    src = f"""
+    .syntax unified
+    .thumb
+    .section .text
+    .global _sE
+    .thumb_func
+_sE:
+    movw    r2, #{PATCH_RAM & 0xffff}
+    movt    r2, #{PATCH_RAM >> 16}
+    ldr     r3, [r2]
+    movw    r12, #{PATCH_MAGIC & 0xffff}
+    movt    r12, #{PATCH_MAGIC >> 16}
+    cmp     r3, r12
+    beq     everify
+{eseed}
+everify:
+    ldr     r3, [r2, #4]               /* verify the whole store, not just */
+    eor.w   r12, r12, r3               /* the magic -- a half-eaten store  */
+    ldr     r3, [r2, #8]               /* must switch the feature OFF, not */
+    eor.w   r12, r12, r3               /* stamp rubbish into the audio.    */
+    ldr     r3, [r2, #12]
+    eor.w   r12, r12, r3
+    ldr     r3, [r2, #16]
+    eor.w   r12, r12, r3
+    ldr     r3, [r2, #20]
+    eor.w   r12, r12, r3
+    ldr     r3, [r2, #{PATCH_SUM}]
+    cmp     r3, r12
+    bne     eout
+    ldr     r3, [r2, #4]
+    str.w   r3, [r0, #{COMP_F_THRESH:#x}]
+    ldr     r3, [r2, #8]
+    str.w   r3, [r0, #{COMP_F_RATIO:#x}]
+    ldr     r3, [r2, #12]
+    str.w   r3, [r0, #{COMP_F_ATTACK:#x}]
+    ldr     r3, [r2, #16]
+    str.w   r3, [r0, #{COMP_F_RELEASE:#x}]
+    ldr     r3, [r2, #20]
+    str.w   r3, [r0, #{COMP_F_MAKEUP:#x}]
+eout:
+    .global enext
+enext:
+    .short 0,0
+"""
+    code, syms = assemble("hookE", src)
+    code = bytearray(code)
+    code[syms["enext"]:syms["enext"] + 4] = enc_b_bl(org + syms["enext"], COMP_DSP_FN, False)
+    return bytes(code)
+
+
 def write_slot(d, va, expect, new):
     """Overwrite one 16-byte string slot, guarding on its current contents.
 
@@ -755,7 +1111,7 @@ def main():
         sys.exit(USAGE)
 
     inp, outp = argv[0], argv[1]
-    ver = argv[2] if len(argv) > 2 else "2.3.5-mod"
+    ver = argv[2] if len(argv) > 2 else "2.3.6-mod"
 
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -835,7 +1191,20 @@ def main():
                            # Width, and at these ids -- the decompiler missed
                            # this stretch, so the disassembly is the evidence.
                            ("delay filter/width",
-                            DLYFX_GUARD_VA, DLYFX_GUARD)):
+                            DLYFX_GUARD_VA, DLYFX_GUARD),
+                           # The compressor's fields are in RAM, so these four
+                           # are the only way to check them: each is the
+                           # instruction or literal that computes an address
+                           # the patch is about to write to.
+                           ("compressor dispatch", COMP_DISP_VA, COMP_DISP),
+                           ("compressor on/off offset", COMP_FLAG_VA, COMP_FLAG),
+                           ("compressor field offset", COMP_INIT_VA, COMP_INIT),
+                           ("compressor default", COMP_DFLT_VA, COMP_DFLT),
+                           ("session pointer", COMP_SESS_VA, COMP_SESS),
+                           ("compressor DSP call", COMP_DSP_CALL, COMP_DSP_CALL_GUARD),
+                           ("heap start", HEAP_LO_VA, HEAP_LO),
+                           ("heap end", HEAP_HI_VA, HEAP_HI),
+                           ("initial stack pointer", STACK_VA, STACK_TOP)):
         got, = struct.unpack_from("<I", d, va - BASE)
         if got != expect:
             refuse(f"The {nm} code at {va:#x} is not what it should be.",
@@ -877,11 +1246,41 @@ def main():
     if len(code) % 4:
         code += b"\x00" * (4 - len(code) % 4)
     d += code
-    d[off:off + 4] = enc_b_bl(MIDI_POST_CALL, org, True)
+    hookc_org = org
     vprint(f"{'C delay FX':16} {len(code):3} bytes at {org:#010x}   "
            f"CC{CC_BEATSYNC}->beatsync(0x17), CC{CC_PINGPONG}->pingpong(0x18), "
            f"CC{CC_DLYFILTER}->filtenable(0xab), CC{CC_DLYWIDTH}->filtquality(0xac) "
            f"@ key {DELAY_KEY:#x}")
+
+    # --- fourth block: the compressor, chained in FRONT of hook C ---------
+    org = BASE + len(d)
+    assert org % 4 == 0
+    code = build_comp_hook(org, hookc_org)
+    if len(code) % 4:
+        code += b"\x00" * (4 - len(code) % 4)
+    d += code
+    d[off:off + 4] = enc_b_bl(MIDI_POST_CALL, org, True)
+    vprint(f"{'D compressor CC':16} {len(code):3} bytes at {org:#010x}   "
+           f"CC{CC_COMP_ONOFF}->on/off +{COMP_ONOFF_OFF:#x} (session by proof), "
+           f"CC{CC_COMP_FIRST}-{CC_COMP_FIRST + CC_COMP_COUNT - 1}->store @{PATCH_RAM:#x}, "
+           f"then -> hook C {hookc_org:#010x}")
+
+    # --- fifth block: stamp the store onto the live compressor each block ---
+    off_e = COMP_DSP_CALL - BASE
+    cur = bytes(d[off_e:off_e + 4])
+    want = enc_b_bl(COMP_DSP_CALL, COMP_DSP_FN, True)
+    if cur != want:
+        refuse(f"The compressor call at {COMP_DSP_CALL:#x} is not what it should be.",
+               f"found {cur.hex()}, expected {want.hex()}")
+    org = BASE + len(d)
+    assert org % 4 == 0
+    code = build_comp_dsp_hook(org)
+    if len(code) % 4:
+        code += b"\x00" * (4 - len(code) % 4)
+    d += code
+    d[off_e:off_e + 4] = enc_b_bl(COMP_DSP_CALL, org, True)
+    vprint(f"{'E compressor DSP':16} {len(code):3} bytes at {org:#010x}   "
+           f"store {PATCH_RAM:#x} -> live object, then -> DSP {COMP_DSP_FN:#010x}")
 
     for what, cc in FEATURES:
         print(f"     ok   {what:<28} {cc}")
