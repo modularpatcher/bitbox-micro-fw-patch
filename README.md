@@ -1808,5 +1808,5 @@ Then spend an evening with the compressor. It is the one thing here nobody has
 been able to play with before, it is already set up as a glue compressor, and it
 is the control that makes the other seven sound like they belong together.
 
-Enjoy your BitBox Micro, enhanced with MIDI superpowers. It was a wonderful
+Enjoy your Bitbox Micro, enhanced with MIDI superpowers. It was a wonderful
 little thing already, and it is a better one now.

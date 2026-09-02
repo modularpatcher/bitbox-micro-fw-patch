@@ -371,12 +371,14 @@ PY = "python" if os.name == "nt" else "python3"
 
 
 USAGE = f"""
-  Community enhancements for BitBox Micro
+  Community enhancements for Bitbox Micro
   ---------------------------------------
 
-  Adds MIDI control of the five unmodulatable granular controls, the per-pad
-  delay and reverb sends, per-pad reverse, and the global delay beat-sync and
-  ping-pong switches.
+  Adds MIDI control of the master bus compressor -- threshold, ratio, attack,
+  release and makeup gain, none of which the module exposes to anyone -- plus
+  the five unmodulatable granular controls, the per-pad delay and reverb sends,
+  reverse, envelope sustain, loop mode and crossfade, play through, the three
+  LFO controls, the global delay switches and filter, and per-pad stop.
 
   You need your own copy of the stock 2.3.4 firmware, from
   https://1010music.com/downloads -- none of it is included here. It arrives
