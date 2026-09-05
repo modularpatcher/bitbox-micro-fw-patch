@@ -1,0 +1,995 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Bitbox Micro Firmware: CC Reference</title>
+<style>
+/* Bitbox Micro — shared design system.
+ * Single source of truth for palette, typography and common document
+ * furniture. Consumed by bitbox_micro_presets/slice_map.py (slice maps)
+ * and docs/bitbox-firmware/render_docs.py (published documentation).
+ * Component CSS specific to one consumer stays with that consumer.
+ */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  :root {
+    --paper: #E7E9E3; --panel: #F2F3EE; --sunk: #DDE0D8;
+    --rule: #C7CBC1; --rule-lo: #D8DBD2;
+    --ink: #171A16; --muted: #6C7268;
+    --k1: #2E5E8C; --k1-lo: #2E5E8C1F;
+    --k2: #8C3A5E; --k2-lo: #8C3A5E1F;
+    --k3: #2F6B5B; --k3-lo: #2F6B5B1F;
+    --k4: #8A5A1F; --k4-lo: #8A5A1F1F;
+    --k5: #4B4A8C; --k5-lo: #4B4A8C1F;
+    --k6: #7A4030; --k6-lo: #7A40301F;
+    --warn: #8A6A1F; --warn-lo: #8A6A1F1A;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #141815; --panel: #1D211D; --sunk: #101412;
+      --rule: #343B34; --rule-lo: #262C26;
+      --ink: #E2E6DD; --muted: #969E93;
+      --k1: #77ADDC; --k1-lo: #77ADDC24;
+      --k2: #DE8CAF; --k2-lo: #DE8CAF24;
+      --k3: #6FBBA4; --k3-lo: #6FBBA424;
+      --k4: #D5A055; --k4-lo: #D5A05524;
+      --k5: #9A98DE; --k5-lo: #9A98DE24;
+      --k6: #D08A72; --k6-lo: #D08A7224;
+      --warn: #C8A44E; --warn-lo: #C8A44E1F;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #141815; --panel: #1D211D; --sunk: #101412;
+    --rule: #343B34; --rule-lo: #262C26;
+    --ink: #E2E6DD; --muted: #969E93;
+    --k1: #77ADDC; --k1-lo: #77ADDC24;
+    --k2: #DE8CAF; --k2-lo: #DE8CAF24;
+    --k3: #6FBBA4; --k3-lo: #6FBBA424;
+    --k4: #D5A055; --k4-lo: #D5A05524;
+    --k5: #9A98DE; --k5-lo: #9A98DE24;
+    --k6: #D08A72; --k6-lo: #D08A7224;
+    --warn: #C8A44E; --warn-lo: #C8A44E1F;
+  }
+
+  :root[data-theme="light"] {
+    --paper: #E7E9E3; --panel: #F2F3EE; --sunk: #DDE0D8;
+    --rule: #C7CBC1; --rule-lo: #D8DBD2;
+    --ink: #171A16; --muted: #6C7268;
+    --k1: #2E5E8C; --k1-lo: #2E5E8C1F;
+    --k2: #8C3A5E; --k2-lo: #8C3A5E1F;
+    --k3: #2F6B5B; --k3-lo: #2F6B5B1F;
+    --k4: #8A5A1F; --k4-lo: #8A5A1F1F;
+    --k5: #4B4A8C; --k5-lo: #4B4A8C1F;
+    --k6: #7A4030; --k6-lo: #7A40301F;
+    --warn: #8A6A1F; --warn-lo: #8A6A1F1A;
+  }
+
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans);
+         line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 1.5rem 5rem;
+          display: flex; flex-direction: column; gap: 3rem; }
+
+  .eyebrow { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em;
+             text-transform: uppercase; color: var(--muted); }
+
+  .masthead { display: flex; flex-direction: column; gap: 1rem; }
+  .masthead h1 { font-family: var(--mono); font-size: clamp(1.4rem, 4vw, 2.1rem);
+                 font-weight: 700; letter-spacing: -0.02em; line-height: 1.15;
+                 text-wrap: balance; margin: 0; overflow-wrap: anywhere; }
+  .masthead p { margin: 0; max-width: 64ch; color: var(--muted); font-size: 0.95rem; }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+  .facts li { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em;
+              padding: 0.3rem 0.6rem; border: 1px solid var(--rule);
+              background: var(--panel); font-variant-numeric: tabular-nums; }
+
+  h2.sec { font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+           letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+           margin: 0; padding-bottom: 0.6rem; border-bottom: 1px solid var(--rule); }
+
+  .section { display: flex; flex-direction: column; gap: 1rem; }
+
+  code { font-family: var(--mono); font-size: 0.87em; background: var(--sunk);
+         padding: 0.05em 0.35em; border: 1px solid var(--rule); }
+
+  /* ---- tables ---- */
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--rule); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-family: var(--mono);
+          font-size: 0.76rem; font-variant-numeric: tabular-nums; background: var(--panel); }
+  thead th { text-align: right; font-weight: 600; font-size: 0.63rem; letter-spacing: 0.1em;
+             text-transform: uppercase; color: var(--muted); padding: 0.6rem 0.8rem;
+             border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  thead th:first-child, thead th.l { text-align: left; }
+  tbody td { text-align: right; padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--rule-lo); white-space: nowrap; }
+  tbody td:first-child, tbody td.l { text-align: left; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody td.key { color: var(--rowkey); font-weight: 700; box-shadow: inset 3px 0 0 var(--rowkey); }
+  tbody tr.on td { background: var(--accent-lo); }
+  tbody tr.on td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+  .src { color: var(--muted); max-width: 26ch; overflow: hidden; text-overflow: ellipsis; }
+  .barcell { width: 30%; }
+  .minibar { display: block; height: 8px; background: var(--accent); opacity: 0.55; min-width: 1px; }
+
+  /* ---- definition cards ---- */
+
+  .settinggrid { display: grid; gap: 0.5rem;
+                 grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .settingcard { background: var(--panel); border: 1px solid var(--rule); padding: 0.7rem 0.85rem; }
+  .settingcard.wide { margin-top: 0.5rem; }
+  .settingcard-head { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em;
+                      text-transform: uppercase; color: var(--muted);
+                      padding-bottom: 0.45rem; margin-bottom: 0.45rem;
+                      border-bottom: 1px solid var(--rule); }
+  .settingcard dl { margin: 0; display: grid; grid-template-columns: auto 1fr;
+                    gap: 0.2rem 0.9rem; font-family: var(--mono); font-size: 0.72rem;
+                    font-variant-numeric: tabular-nums; }
+  .settingcard dt { color: var(--muted); white-space: nowrap; }
+  .settingcard dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+  .settings-source { font-family: var(--mono); font-size: 0.64rem; color: var(--muted);
+                     margin-top: 0.5rem; }
+  .settings-missing { font-size: 0.9rem; color: var(--muted); max-width: 70ch; margin: 0; }
+
+  /* ---- observations ---- */
+
+  .notes { display: flex; flex-direction: column; gap: 1rem; }
+  .note { border-left: 3px solid var(--rule); background: var(--panel);
+          padding: 0.85rem 1.1rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .note.warn { border-left-color: var(--warn); background: var(--warn-lo); }
+  .note-where { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em;
+                text-transform: uppercase; color: var(--muted); }
+  .note h3 { font-family: var(--mono); font-size: 0.76rem; letter-spacing: 0.06em;
+             text-transform: uppercase; margin: 0; font-weight: 700; }
+  .note.warn h3 { color: var(--warn); }
+  .note p { margin: 0; font-size: 0.9rem; max-width: 70ch; }
+  .note .hits { margin: 0.35rem 0 0; padding: 0; list-style: none;
+                display: flex; flex-direction: column; gap: 0.25rem; }
+  .note .hits li { font-family: var(--mono); font-size: 0.7rem;
+                   font-variant-numeric: tabular-nums; color: var(--ink);
+                   padding-left: 0.85rem; text-indent: -0.85rem; overflow-wrap: anywhere; }
+  .note .hits li::before { content: "\2192 "; color: var(--muted); }
+
+  footer { font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
+           border-top: 1px solid var(--rule); padding-top: 1rem; line-height: 1.7; }
+
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 2rem 1rem 3.5rem; gap: 2.25rem; }
+  }
+
+  /* ---- documentation layer -------------------------------------------
+     The shared file supplies the substrate: paper, hairline rules, spacing,
+     tabular figures. The documents express it as an editorial manual --
+     serif display against sans body, one restrained accent, numbered
+     sections.
+     Fonts are system stacks only: a downloaded folder must render with no
+     network and no bundled assets.
+     ------------------------------------------------------------------- */
+
+  :root {
+    --measure: 54rem;
+    --serif: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --accent: #8C3A2E;
+    --accent-lo: #8C3A2E14;
+    --callout: #EFEDE7;
+    --paper: #FBFAF7; --panel: #F4F2ED; --sunk: #EFEDE7;
+    --rule: #D8D4CC; --rule-lo: #E7E3DB;
+    --ink: #1A1815; --muted: #6E6A62;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #D98A78; --accent-lo: #D98A7820; --callout: #22201D;
+      --paper: #14130F; --panel: #1C1A17; --sunk: #100F0D;
+      --rule: #35322C; --rule-lo: #262420;
+      --ink: #E8E4DC; --muted: #9A948A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --accent: #D98A78; --accent-lo: #D98A7820; --callout: #22201D;
+    --paper: #14130F; --panel: #1C1A17; --sunk: #100F0D;
+    --rule: #35322C; --rule-lo: #262420;
+    --ink: #E8E4DC; --muted: #9A948A;
+  }
+
+  body { background: var(--paper); color: var(--ink); }
+
+  /* Sidebar and text column. The measure stays near 70ch for readability --
+     widening prose to fill a large screen is worse to read, not better -- so
+     the horizontal space goes to persistent navigation instead, which also
+     lifts the contents list out of the vertical flow. */
+  .wrap { display: grid; gap: 0 3rem; align-items: start;
+          grid-template-columns: 16.5rem minmax(0, 1fr);
+          justify-content: center; max-width: 100rem; margin: 0 auto;
+          padding: 2rem 2rem 4rem; }
+  .main { min-width: 0; }
+
+  .side { position: sticky; top: 2.5rem; display: flex; flex-direction: column;
+          gap: 1.5rem; padding-right: 1.5rem;
+          border-right: 1px solid var(--rule);
+          max-height: calc(100vh - 5rem); overflow-y: auto;
+          scrollbar-width: thin; }
+  .brand { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.09em;
+           text-transform: uppercase; color: var(--muted); margin: 0;
+           line-height: 1.5; }
+
+  /* ---- running head and foot ---- */
+
+  footer { font-family: var(--sans); font-size: 0.68rem; color: var(--muted);
+           border-top: 1px solid var(--rule); padding-top: 0.9rem;
+           margin-top: 2.5rem; display: flex; justify-content: space-between;
+           gap: 1rem; line-height: 1.6; }
+
+  /* ---- masthead ---- */
+
+  .masthead { gap: 0; margin-bottom: 2.2rem; }
+  .masthead h1 { font-family: var(--serif); font-weight: 700;
+                 font-size: clamp(2rem, 6vw, 3.1rem); letter-spacing: -0.015em;
+                 line-height: 1.05; margin: 0 0 0.5rem; text-wrap: balance; }
+  .masthead .eyebrow { font-family: var(--sans); font-weight: 700; color: var(--accent);
+                       letter-spacing: 0.1em; font-size: 0.7rem;
+                       border-top: 2px solid var(--ink); padding-top: 0.55rem; }
+  .masthead p { font-family: var(--sans); color: var(--muted); font-size: 0.95rem;
+                max-width: 78ch; margin: 0.9rem 0 0; }
+
+  .nav { display: flex; flex-direction: column; gap: 0.15rem; margin: 0; }
+  .nav a { font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.02em;
+           font-weight: 600; padding: 0.28rem 0; border: 0; background: none;
+           color: var(--muted); text-decoration: none; }
+  .nav a:hover { color: var(--ink); }
+  .nav a[aria-current] { color: var(--accent); box-shadow: none; }
+
+  /* ---- contents ---- */
+
+  .toc { display: flex; flex-direction: column; gap: 0.1rem; margin: 0;
+         padding-top: 1.2rem; border-top: 1px solid var(--rule); }
+  .toc-label { font-family: var(--sans); font-weight: 700; font-size: 0.62rem;
+               letter-spacing: 0.12em; text-transform: uppercase;
+               color: var(--muted); margin: 0 0 0.5rem; }
+  .toc a { display: grid; grid-template-columns: 1rem 1fr; gap: 0.5rem;
+           align-items: baseline; font-family: var(--sans); font-size: 0.8rem;
+           color: var(--muted); text-decoration: none; padding: 0.24rem 0;
+           border: 0; background: none; line-height: 1.35; }
+  .toc a:hover { color: var(--accent); }
+  .toc a .n { font-variant-numeric: tabular-nums; color: var(--accent);
+              font-weight: 700; }
+  .toc a.sub { color: var(--muted); }
+  .toc a.sub:hover { color: var(--accent); }
+
+  /* ---- numbered sections ---- */
+
+  /* Major sections get real air between them. A numbered heading under a
+     heavy rule is a strong signal, and it needs room above it or the page
+     reads as one continuous column. */
+  .section { display: block; margin: 3.4rem 0 0; }
+  h2.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+           font-weight: 700; letter-spacing: -0.01em; text-transform: none;
+           color: var(--ink); margin: 0 0 1.9rem; padding-bottom: 0.5rem;
+           border-bottom: 2px solid var(--ink); display: flex; gap: 0.7rem;
+           align-items: baseline; text-wrap: balance; }
+  h2.sec .n { font-variant-numeric: tabular-nums; color: var(--ink);
+              font-weight: 400; flex: none; }
+  h2.sec .n::after { content: " /"; color: var(--muted); }
+
+  /* ---- prose ---- */
+
+  .doc { font-family: var(--sans); font-size: 1.02rem; }
+  .doc h3 { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+            letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+            margin: 2.6rem 0 1rem; border: 0; padding: 0; }
+  .doc h3:first-child { margin-top: 0; }
+  .doc h4 { font-family: var(--sans); font-size: 0.98rem; font-weight: 700;
+            color: var(--ink); letter-spacing: 0; text-transform: none;
+            margin: 1.8rem 0 0.6rem; }
+
+  .doc p { margin: 0.75rem 0 0; max-width: var(--measure); }
+  .doc > :first-child { margin-top: 0; }
+  .doc h3 + p, .doc h4 + p, .doc h3 + ul, .doc h3 + ol,
+  .doc h3 + .tablewrap { margin-top: 0; }
+  .doc a { color: var(--accent); text-underline-offset: 0.18em;
+           text-decoration-thickness: 1px; }
+  .doc a:hover { text-decoration-thickness: 2px; }
+
+  .doc ul { margin: 0.75rem 0 0; padding-left: 1.1rem; max-width: var(--measure);
+            display: flex; flex-direction: column; gap: 0.4rem; }
+  .doc ul li::marker { color: var(--accent); }
+
+  /* numbered procedures: accent numeral in its own column */
+  .doc ol { margin: 0.9rem 0 0; padding: 0; max-width: var(--measure); list-style: none;
+            counter-reset: step; display: flex; flex-direction: column; gap: 0.6rem; }
+  .doc ol { padding-left: 2.1rem; }
+  .doc ol li { counter-increment: step; position: relative; }
+  .doc ol li::before { content: counter(step); position: absolute;
+                       left: -2.1rem; width: 1.5rem; text-align: right;
+                       color: var(--accent); font-weight: 700;
+                       font-variant-numeric: tabular-nums; font-size: 0.86rem; }
+
+  .doc pre { font-family: var(--mono); font-size: 0.82rem; line-height: 1.65;
+             background: var(--sunk); border: 1px solid var(--rule);
+             padding: 0.85rem 1rem; margin: 1rem 0 0; overflow-x: auto; }
+  .doc pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  code { background: var(--sunk); border: 1px solid var(--rule-lo);
+         font-size: 0.85em; padding: 0.02em 0.22em; }
+
+  .doc img { display: block; width: 100%; max-width: var(--measure); height: auto;
+             margin: 1.4rem 0 0; }
+
+  .doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2.2rem 0 0; }
+
+  /* Commands are meant to be run, so they are meant to be copied. The button
+     is only drawn once the script has attached, so a page with no scripting
+     shows a plain block rather than a control that does nothing. */
+  .doc .pre-wrap { position: relative; }
+  .doc .pre-wrap .copy { position: absolute; top: 0.45rem; right: 0.45rem;
+                         font-family: var(--sans); font-size: 0.68rem;
+                         letter-spacing: 0.04em; line-height: 1;
+                         padding: 0.35rem 0.5rem; cursor: pointer;
+                         color: var(--muted); background: var(--panel);
+                         border: 1px solid var(--rule); border-radius: 0;
+                         opacity: 0; transition: opacity 0.12s ease; }
+  .doc .pre-wrap:hover .copy,
+  .doc .pre-wrap .copy:focus-visible { opacity: 1; }
+  .doc .pre-wrap .copy:hover { color: var(--ink); border-color: var(--ink); }
+  .doc .pre-wrap .copy[data-done] { color: var(--accent); border-color: var(--accent);
+                                    opacity: 1; }
+  @media print { .doc .pre-wrap .copy { display: none; } }
+
+  /* ---- callout ---- */
+
+  .doc .note { margin: 1.3rem 0 0; max-width: var(--measure); background: var(--callout);
+               border: 0; border-left: 4px solid var(--muted);
+               padding: 0.9rem 1.1rem; }
+  .doc .note.warn { border-left-color: var(--accent); background: var(--accent-lo); }
+  .doc .note p { margin: 0; max-width: none; font-size: 0.97rem; }
+  .doc .note p + p { margin-top: 0.5rem; }
+
+  /* ---- tables ----
+     Two-column tables are definition lists and get the borderless treatment:
+     bold term, hairline row rules, no header. Wider tables keep a shaded
+     header row so a 5-column CC map stays readable. */
+
+  .doc .tablewrap { margin-top: 1.2rem; border: 0; overflow-x: auto; }
+  .doc table { width: auto; max-width: min(100%, var(--measure)); }
+  .doc table.defs, .doc table.wide { width: 100%; }
+  .doc table { background: none; font-family: var(--sans); font-size: 0.94rem;
+               min-width: 0; }
+  .doc thead th { font-family: var(--sans); font-size: 0.68rem; font-weight: 700;
+                  letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--ink); background: var(--panel);
+                  border-bottom: 1px solid var(--rule); padding: 0.6rem 0.8rem;
+                  text-align: left; }
+  .doc thead th.num { text-align: right; }
+  .doc tbody td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--rule-lo);
+                  text-align: left; white-space: normal; vertical-align: top; }
+  .doc tbody td.num { text-align: right; white-space: nowrap;
+                      font-variant-numeric: tabular-nums; }
+  .doc tbody tr:last-child td { border-bottom: 1px solid var(--rule); }
+
+  /* A boxed code chip reads well in a sentence and badly in a 27-row table,
+     where every cell would carry one. Inside a table it keeps the monospace
+     and loses the box. */
+  .doc table code { background: none; border: 0; padding: 0;
+                    color: var(--ink); font-size: 0.88em; }
+
+  .doc table.defs thead { display: none; }
+  .doc table.defs tbody td:first-child { font-weight: 700; width: 12rem;
+                                         padding-left: 0; }
+  .doc table.defs tbody td:last-child { padding-right: 0; }
+
+  @media (max-width: 74rem) {
+    .wrap { grid-template-columns: minmax(0, 1fr); gap: 2rem;
+            padding: 1.75rem 1.5rem 3rem; }
+    .side { position: static; border-right: 0; padding-right: 0;
+            padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule);
+            flex-direction: row; flex-wrap: wrap; align-items: baseline;
+            gap: 0.5rem 1.5rem; }
+    .side .brand { width: 100%; }
+    .nav { flex-direction: row; flex-wrap: wrap; gap: 1.1rem; }
+    .toc { border-top: 0; padding-top: 0; width: 100%; }
+    .toc a { display: inline-grid; }
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 1.5rem 1rem 3rem; }
+    .doc table.defs tbody td:first-child { width: auto; }
+    .doc table.defs tbody tr { display: grid; }
+    .doc table.defs tbody td { border-bottom: 0; padding: 0.15rem 0; }
+    .doc table.defs tbody tr { border-bottom: 1px solid var(--rule-lo);
+                               padding: 0.5rem 0; }
+  }
+
+  @media print {
+    .side { display: none; }
+    .wrap { display: block; max-width: none; padding: 0; }
+    h2.sec { break-after: avoid; }
+    .doc table, .doc .note, .doc pre { break-inside: avoid; }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="side">
+    <p class="brand">Bitbox Micro<br>community modification</p>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html" aria-current="page">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="DEVICES.html">Devices</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="toc">
+      <p class="toc-label">On this page</p>
+      <a href="#which-cc-which-channel"><span class="n">1</span><span>Which CC, Which Channel</span></a><a class="sub" href="#which-pad-types-work"><span class="n"></span><span>Which Pad Types Work</span></a><a class="sub" href="#midi-cc-map"><span class="n"></span><span>MIDI CC Map</span></a><a class="sub" href="#which-channel-to-send-on"><span class="n"></span><span>Which Channel to Send On</span></a><a href="#setting-up-your-controller"><span class="n">2</span><span>Setting Up Your Controller</span></a><a class="sub" href="#recommended-controller"><span class="n"></span><span>Recommended Controller</span></a><a class="sub" href="#encoder-types"><span class="n"></span><span>Encoder Types</span></a><a class="sub" href="#getting-the-full-range"><span class="n"></span><span>Getting the Full Range</span></a><a class="sub" href="#use-14-bit-cc"><span class="n"></span><span>Use 14-Bit CC</span></a><a href="#when-a-control-seems-dead"><span class="n">3</span><span>When a Control Seems Dead</span></a><a class="sub" href="#does-the-encoder-do-it"><span class="n"></span><span>Does the Encoder Do It?</span></a>
+    </nav>
+  </aside>
+  <main class="main">
+    <header class="masthead">
+      <p class="eyebrow">Look it up</p>
+      <h1>Bitbox Micro Firmware: CC Reference</h1>
+      <p>Which CC, which channel, which pad types answer it.</p>
+    </header>
+  <div class="doc">
+    <p>The numbers. Which CC does what, which channel it goes on, which pad types answer it, and what to check when one appears to do nothing.</p>
+    <p>See <a href="PAD-CONTROLS.html">pad controls</a> for what each control does, and <a href="DEVICES.html">devices</a> for the two that act on the whole mix. Start at <a href="index.html">the overview</a> if you have not installed it yet.</p>
+  </div>
+  <section class="section" id="which-cc-which-channel">
+  <h2 class="sec"><span class="n">1</span>Which CC, Which Channel</h2>
+  <div class="doc">
+    <p>Everything you need to get your controller talking to the module: what works on which pad type, every CC number in one table, and which channel to send each one on. Three tables. That is the whole section.</p>
+    <h3 id="which-pad-types-work">Which Pad Types Work</h3>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>Control</th>
+      <th>CC</th>
+      <th>Sample</th>
+      <th>Granular</th>
+      <th>Clip</th>
+      <th>Slicer</th>
+      <th>Multi</th>
+      <th>Rec</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Sends</td>
+        <td>84, 85</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td>Reverse</td>
+        <td>86</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>—</td>
+        <td>—</td>
+        <td>✅</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td>Granular</td>
+        <td>79–83</td>
+        <td>—</td>
+        <td>✅</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Loop</td>
+        <td>88, 89</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>—</td>
+        <td>—</td>
+        <td>✅</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td>Play Thru</td>
+        <td>90</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>✅</td>
+        <td>—</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td>Sustain + LFO</td>
+        <td>87, 91–93</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td>Stop</td>
+        <td>120/123</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>❌</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p><strong>Multi-Sample</strong>: Sample mode, not a separate pad mode. It is a Sample pad with a folder of WAVs loaded into it. The manual says so twice: loading a directory "will automatically be changed to Sample", and switching a multi-sample pad to any other mode leaves it playing only the first file in the folder. Anything proven on a Sample pad is proven there too.</p>
+    <p>Two of the gaps belong to the module, not the patch. The Bitbox runs pads through two different bits of firmware: one for Sample, Multi-Sample and Granular, another for Clip and Slicer, and they do not have identical features.</p>
+    <p><strong>Reverse</strong>: does not exist in the Clip/Slicer half, since there is no setting for CC 86 to point at, so it can never work on those pads. <strong>Play Through</strong> is narrower still: a <strong>Slicer</strong> parameter only, since a Clip pad has no slices to carry on past. CC 90 does nothing anywhere except a Slicer pad.</p>
+    <p>Loop Mode and Loop Crossfade are the same story: Clip and Slicer pads handle looping their own way and have no equivalent setting.</p>
+    <p>Sustain and the three LFO controls, by contrast, <strong>do</strong> work on every pad type. The Clip/Slicer half keeps its parameters in a separate place with two copies of everything, so those arms hand the value to the firmware's own setter rather than writing it directly.</p>
+    <p><strong>Recorded-sample pads</strong>: no FX sends in stock firmware, either. The delay and reverb knobs on the FX screen do nothing on one, even with content recorded, and that is stock behaviour. Confirmed on hardware. Only two routines send audio to the FX bus, both patched here, so <strong>this covers every pad type that can use the FX sends.</strong> Giving recorded-sample pads sends would mean building that capability from scratch, which this does not attempt.</p>
+    <p>The compressor is not in this table: pad type is irrelevant to it. It sits on the Out 1/2 bus, post-mix, so it acts on every pad routed there and on nothing routed to Out 3–6.</p>
+    <h3 id="midi-cc-map">MIDI CC Map</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr>
+      <th class="num">CC</th>
+      <th>Controls</th>
+      <th>Channel</th>
+      <th>Values</th>
+      <th>Encoder</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td class="num"><strong>40</strong></td>
+        <td>Compressor on/off</td>
+        <td><strong>1 only</strong></td>
+        <td><code>≥64</code> on, <code>&lt;64</code> off</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>41</strong></td>
+        <td>Compressor Threshold</td>
+        <td><strong>1 only</strong></td>
+        <td>−40 … 0 dB</td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>42</strong></td>
+        <td>Compressor Ratio</td>
+        <td><strong>1 only</strong></td>
+        <td>1:1 … 20:1</td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>43</strong></td>
+        <td>Compressor Attack</td>
+        <td><strong>1 only</strong></td>
+        <td>0.5 … 100 ms</td>
+        <td><strong>exponential</strong></td>
+      </tr>
+      <tr>
+        <td class="num"><strong>44</strong></td>
+        <td>Compressor Release</td>
+        <td><strong>1 only</strong></td>
+        <td>10 ms … 1 s</td>
+        <td><strong>exponential</strong></td>
+      </tr>
+      <tr>
+        <td class="num"><strong>45</strong></td>
+        <td>Compressor Makeup gain</td>
+        <td><strong>1 only</strong></td>
+        <td>−36 … +36 dB</td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>50</strong></td>
+        <td>EQ mode</td>
+        <td><strong>1 only</strong></td>
+        <td>ten bands, one per mode</td>
+        <td>stepped, 10</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>51</strong></td>
+        <td>EQ encoder 2</td>
+        <td><strong>1 only</strong></td>
+        <td><code>0</code>–<code>127</code>, centre neutral</td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>52</strong></td>
+        <td>EQ encoder 3</td>
+        <td><strong>1 only</strong></td>
+        <td><code>0</code>–<code>127</code>, centre neutral</td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>53</strong></td>
+        <td>EQ encoder 4</td>
+        <td><strong>1 only</strong></td>
+        <td><code>0</code>–<code>127</code>, centre neutral</td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>54</strong></td>
+        <td>EQ encoder 2 push</td>
+        <td><strong>1 only</strong></td>
+        <td><code>≥64</code> held, <code>&lt;64</code> released</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>55</strong></td>
+        <td>EQ encoder 3 push</td>
+        <td><strong>1 only</strong></td>
+        <td><code>≥64</code> held, <code>&lt;64</code> released</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>56</strong></td>
+        <td>EQ encoder 4 push</td>
+        <td><strong>1 only</strong></td>
+        <td><code>≥64</code> held, <code>&lt;64</code> released</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>57</strong></td>
+        <td>EQ master bypass</td>
+        <td><strong>1 only</strong></td>
+        <td><code>≥64</code> out, <code>&lt;64</code> in</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>59</strong></td>
+        <td>EQ filter slope</td>
+        <td><strong>1 only</strong></td>
+        <td><code>≥64</code> is 24 dB, <code>&lt;64</code> is 12 dB</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>79</strong></td>
+        <td>Granular Density</td>
+        <td>pad channel</td>
+        <td><code>0</code>–<code>127</code></td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>80</strong></td>
+        <td>Granular Grain Size</td>
+        <td>pad channel</td>
+        <td><code>0</code>–<code>127</code></td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>81</strong></td>
+        <td>Granular Window</td>
+        <td>pad channel</td>
+        <td><code>0</code>–<code>127</code></td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>82</strong></td>
+        <td>Granular Scatter</td>
+        <td>pad channel</td>
+        <td><code>0</code>–<code>127</code></td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>83</strong></td>
+        <td>Granular Pan Rnd</td>
+        <td>pad channel</td>
+        <td><code>0</code>–<code>127</code></td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>84</strong></td>
+        <td>Delay send</td>
+        <td>pad channel</td>
+        <td><code>0</code>–<code>127</code>, same curve as the knob</td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>85</strong></td>
+        <td>Reverb send</td>
+        <td>pad channel</td>
+        <td><code>0</code>–<code>127</code>, same curve</td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>86</strong></td>
+        <td>Reverse</td>
+        <td>pad channel</td>
+        <td><code>≥64</code> on, <code>&lt;64</code> off</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>87</strong></td>
+        <td>Envelope Sustain</td>
+        <td>pad channel</td>
+        <td><code>0</code>–<code>127</code></td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>88</strong></td>
+        <td>Loop Mode</td>
+        <td>pad channel</td>
+        <td>three bands: None / Forward / Bidirectional</td>
+        <td>stepped, 3</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>89</strong></td>
+        <td>Loop Crossfade</td>
+        <td>pad channel</td>
+        <td><code>0</code>–<code>127</code></td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>90</strong></td>
+        <td>Play Through</td>
+        <td>pad channel</td>
+        <td><code>≥64</code> on, <code>&lt;64</code> off</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>91</strong></td>
+        <td>LFO Wave</td>
+        <td>pad channel</td>
+        <td>ten bands across the waveform list</td>
+        <td>stepped, 10</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>92</strong></td>
+        <td>LFO Beat Sync</td>
+        <td>pad channel</td>
+        <td><code>≥64</code> on, <code>&lt;64</code> off</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>93</strong></td>
+        <td>LFO Retrigger</td>
+        <td>pad channel</td>
+        <td><code>≥64</code> on, <code>&lt;64</code> off</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>108</strong></td>
+        <td>Delay beat-sync</td>
+        <td>any (global)</td>
+        <td><code>≥64</code> on, <code>&lt;64</code> off</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>109</strong></td>
+        <td>Delay ping-pong</td>
+        <td>any (global)</td>
+        <td><code>≥64</code> on, <code>&lt;64</code> off</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>110</strong></td>
+        <td>Delay filter on/off</td>
+        <td>any (global)</td>
+        <td><code>≥64</code> on, <code>&lt;64</code> off</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>111</strong></td>
+        <td>Delay filter width</td>
+        <td>any (global)</td>
+        <td><code>0</code>–<code>127</code></td>
+        <td>linear</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>120</strong></td>
+        <td>Stop this pad — All Sound Off</td>
+        <td>pad channel</td>
+        <td>any value; releases the note</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>123</strong></td>
+        <td>Stop this pad — All Notes Off</td>
+        <td>pad channel</td>
+        <td>any value; same as 120</td>
+        <td>button</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>Every control the patch adds, on thirty-six numbers. Write them down somewhere.</p>
+    <p><strong>Every one of them has been heard on the module</strong>: nothing in this table rests on reading the code and hoping.</p>
+    <p>There is nothing to set up. Every one of these is fixed in the firmware and live on every pad of every preset the moment you flash. You do not map them, assign them, learn them or save them: send the CC and it works. That is the opposite of every other CC on the module, which you <em>do</em> assign yourself, per preset, at a cost of one modulation slot each.</p>
+    <p>Fixed numbers work here where MIDI Learn cannot. MIDI Learn works through the modulation system, exactly what these controls cannot reach: the reason they needed patching. Fixed CCs cost no modulation slot and work the same on every preset. The numbers clear the four CCs stock firmware already claims (1, 7, 10, 64) and the MIDI spec's reserved 96–101 range. <strong>CC 120 and 123 are the exceptions: Channel Mode messages</strong> (All Sound Off, All Notes Off), which most DAWs already send on stop.</p>
+    <h3 id="which-channel-to-send-on">Which Channel to Send On</h3>
+    <p><strong>CC 79 through 93 and 120/123</strong>: per-pad. Send them on the MIDI channel that pad is already set to listen on, the same channel you use to trigger it. Eight pads on eight channels answer independently.</p>
+    <p><strong>CC 108 through 111</strong>: global. They answer on any channel, because they control the one delay the whole preset shares.</p>
+    <p><strong>CC 40 through 45</strong>: the compressor, and they answer on channel 1 only.</p>
+    <p><strong>CC 50 through 57, and 59</strong>: the master EQ and filter, on channel 1 only as well. See <a href="EQ-FILTER.html">the EQ and filter</a> for what each one does in each of the ten modes. Send CC 50 as plain 7-bit: a 14-bit pair would put its second half on CC 82, inside the per-pad range above.</p>
+    <p>That last one is the odd one out. It is deliberate. <strong>CC 40 to 45 sit in the fine-adjust range that almost nothing actually uses.</strong> Formally, CC 32 to 63 are the LSB partners of CC 0 to 31, so CC 40 is the low half of CC 8, but hardly any device sends those, which leaves the numbers effectively free. It also means some gear uses them for other things.</p>
+    <p>"Effectively free" is not the same as free, and this is the one block in the patch sitting on numbers with a defined meaning. The other patched globals, CC 108 to 111, live in 102–119. That is genuinely undefined. So the compressor is restricted to a single channel, to stop a stray message from elsewhere in your rig quietly changing it while you are not looking.</p>
+    <p>If the compressor does not respond to anything, this is why: put your controller on MIDI channel 1.</p>
+  </div>
+  </section>
+  <section class="section" id="setting-up-your-controller">
+  <h2 class="sec"><span class="n">2</span>Setting Up Your Controller</h2>
+  <div class="doc">
+    <p>Do this once. It sticks. Every preset behaves the same after that. Nothing to redo, ever.</p>
+    <h3 id="recommended-controller">Recommended Controller</h3>
+    <p>The per-pad CCs, 79 to 93, plus 120 and 123, send on each pad's own MIDI channel, so a controller needs to set the MIDI channel per control, not merely per device. Many controllers assign one channel per device or preset and cannot do this.</p>
+    <p>The <strong><a href="https://www.neuzeit-instruments.com/products/drop/" rel="noreferrer noopener">Neuzeit Instruments Drop</a></strong> is one controller that can. Its manual says each control element mapped to a device "can either send to the default channel or a specific channel 1-16": one assignment can override its device's default channel. In practice, one Drop device slot covers all eight pads plus the global controls, since every assignment carries its own channel and CC number, leaving the other seven slots free.</p>
+    <p>Any controller with the same per-control channel capability works as well.</p>
+    <h3 id="encoder-types">Encoder Types</h3>
+    <p>The <strong>Encoder</strong> column in the <a href="#midi-cc-map">MIDI CC map</a> is a suggestion for how to set up each control on your controller. It changes the feel, not what the firmware does: the module always maps a CC evenly across the parameter's range.</p>
+    <p>Almost everything wants a plain linear encoder. Two do not:</p>
+    <p><strong>Attack and Release</strong>: anything but linear. Both are times, and times are not heard evenly. Attack runs 0.5 ms to 100 ms, the difference between 0.5 ms and 5 ms is enormous, and on a linear encoder every useful fast setting is crammed into the first few percent of travel. You want the curve that <strong>starts gradually and then ramps up</strong>. Vendors name it inconsistently, so go by shape. On the Drop it is <strong>Exponential minus</strong>, which sags low and climbs late; the plus variant rises early and would make the crowding worse. Test it at halfway travel. Attack should be sending about <code>8</code> there, and Release about <code>12</code>. Near <code>64</code> is still linear.</p>
+    <p><strong>Ratio</strong>: a borderline case, and linear is fine. The gentle, musical settings live in the bottom quarter of the throw: 2:1 sits at about 5% and 4:1 at about 16%, so move slowly down there. Not one to go out of your way for.</p>
+    <p><strong>Loop Mode and LFO Wave</strong>: lists, not sweeps. Use a stepped encoder. The firmware divides the CC range into even bands, one per entry, so it needs exactly the right number of positions:</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr>
+      <th>Control</th>
+      <th class="num">Steps</th>
+      <th>The list</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Loop Mode</strong></td>
+        <td class="num"><strong>3</strong></td>
+        <td>None / Forward / Bidirectional</td>
+      </tr>
+      <tr>
+        <td><strong>LFO Wave</strong></td>
+        <td class="num"><strong>10</strong></td>
+        <td>the ten waveforms, in the module's order</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>Set to ten steps, one click moves cleanly to the next waveform and never lands between two. Set it to anything else and you will skip shapes or hit the same one twice, which reads as a broken control.</p>
+    <p>If your controller cannot do stepped encoders, a slow linear sweep still works: you just have to find the bands by ear, and the edges are easy to sit on by accident.</p>
+    <p>The switches want buttons: anything marked <code>≥64 on</code> is a toggle. Set it up as a button sending 0 and 127 rather than as an encoder you have to sweep.</p>
+    <h3 id="getting-the-full-range">Getting the Full Range</h3>
+    <p>This is about the module rather than the patch, but it will catch you out the first time and it looks exactly like a broken mapping.</p>
+    <p>A CC mapped to a parameter <strong>through a preset</strong> moves that parameter <em>upward from whatever value it was saved with</em>. It does not sweep the full range. Save a parameter sitting halfway and your CC reaches the top half of it and stops, looking for all the world like a broken cable.</p>
+    <p>So before you save, set the parameter to its <strong>minimum</strong> on the device:</p>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>Parameter</th>
+      <th>Set it to</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Delay time, Beat Sync on</td>
+        <td><code>1/64</code>, the first entry</td>
+      </tr>
+      <tr>
+        <td>Delay time, Beat Sync off</td>
+        <td><code>0%</code></td>
+      </tr>
+      <tr>
+        <td>Delay feedback</td>
+        <td><code>0</code></td>
+      </tr>
+      <tr>
+        <td>Delay cutoff</td>
+        <td><code>0</code>, and see the note below</td>
+      </tr>
+      <tr>
+        <td>Reverb decay, damping, pre-delay</td>
+        <td><code>0</code></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>Now the CC has somewhere to go.</p>
+    <p>Two things worth knowing:</p>
+    <p>Cutoff reads oddly. The screen shows it running negative for low-pass and positive for high-pass, but it is stored as a plain 0-1000 with the midpoint as neutral. So its minimum really is zero: it just means fully low-passed, and the delay will sound very dark until the CC brings it up.</p>
+    <p>Your preset will sound different unmodulated. Feedback at zero is a single slap rather than a delay, so the preset is duller before any MIDI arrives. That is the trade for full CC range, and it is only worth making on parameters you really are going to drive.</p>
+    <p>None of this applies to any CC in this patch. Every one of them is written directly rather than through the modulation system, so they all cover their full range no matter what the pad was saved with. The rule above is about the CCs you map yourself in a preset.</p>
+    <h3 id="use-14-bit-cc">Use 14-Bit CC</h3>
+    <p>Worth doing, and worth understanding why it helps, because it is not the reason you would guess.</p>
+    <p>The module widens every incoming CC internally, but on the Control Change path it reads only the value byte and shifts it: <strong>the LSB of a 14-bit CC pair is discarded</strong>. Your lovely high-resolution controller sends 16,384 values and the module cheerfully throws away 16,256 of them. It can land on 128 positions and no more, however you send them, and there is no getting between them.</p>
+    <p>What 14-bit mode does change is the <em>feel</em>. In 7-bit, one detent is one value, and on a sweep-heavy parameter that lurches. In 14-bit the controller only advances the MSB once every 128 internal steps, so the same physical turn sends far fewer messages and the parameter moves smoothly instead of leaping.</p>
+    <p>Recommended for anything you sweep by hand. Filter cutoff and resonance are your own CC lanes rather than anything this patch adds, and they are listed because they show the problem most clearly:</p>
+  <div class="tablewrap">
+  <table class="defs">
+    <thead><tr>
+      <th></th>
+      <th></th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Filter cutoff, resonance</strong></td>
+        <td>The two that step most obviously</td>
+      </tr>
+      <tr>
+        <td><strong>Granular Density, Window, Scatter</strong></td>
+        <td>Slow sweeps are the point</td>
+      </tr>
+      <tr>
+        <td><strong>Delay and reverb sends</strong></td>
+        <td>Riding a send wants smooth</td>
+      </tr>
+      <tr>
+        <td><strong>Envelope Sustain, Loop Crossfade</strong></td>
+        <td>Both step audibly in 7-bit</td>
+      </tr>
+      <tr>
+        <td><strong>Delay filter Width</strong></td>
+        <td>Bandwidth wants the same smoothing</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>Leave the switches on plain 7-bit: Reverse, Play Through, LFO Beat Sync, LFO Retrigger, and the delay's Beat Sync, Ping-Pong and Filter. They only want to know which side of halfway you are on, and giving them extra precision to ignore helps nobody. The same goes for the two banded controls, Loop Mode and LFO Wave: they divide the range into three and ten steps. Finer resolution buys nothing.</p>
+  </div>
+  </section>
+  <section class="section" id="when-a-control-seems-dead">
+  <h2 class="sec"><span class="n">3</span>When a Control Seems Dead</h2>
+  <div class="doc">
+    <p>One test settles most of it. Try the encoder. If a control does nothing, the question is whether the module can do it at all, and the encoder answers that faster than any amount of MIDI. Things the module will not do are listed in <a href="LIMITATIONS.html">limitations</a>. Read those next.</p>
+    <h3 id="does-the-encoder-do-it">Does the Encoder Do It?</h3>
+    <p>Turn the same parameter by hand on the device. If the encoder changes it, your MIDI is fine and the fault is elsewhere. If the encoder does not change it either, the patch is not your problem. You are asking for something the module itself does not do, and no quantity of MIDI will talk it round.</p>
+    <p>The one exception is the stop pair, CC 120 and 123. There is no encoder for stopping a single pad, so that is the one thing here the module cannot do by hand.</p>
+  </div>
+  </section>
+    <footer><span>Unofficial. Not endorsed by or affiliated with 1010music. Supplied as is, under the MIT licence in LICENSE.</span><span>Bitbox Micro Firmware: CC Reference</span></footer>
+  </main>
+</div>
+<script>
+// Adds a copy control to each code block. Written here rather than fetched:
+// a downloaded folder has no network, and the pages must work from file://.
+// navigator.clipboard is unavailable on file:// in some browsers, so fall
+// back to a selection-based copy rather than failing silently.
+(function () {
+  var blocks = document.querySelectorAll('.doc pre');
+  Array.prototype.forEach.call(blocks, function (pre) {
+    var wrap = document.createElement('div');
+    wrap.className = 'pre-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy this block');
+    wrap.appendChild(btn);
+
+    btn.addEventListener('click', function () {
+      var text = pre.innerText;
+      var done = function () {
+        btn.textContent = 'Copied';
+        btn.setAttribute('data-done', '');
+        setTimeout(function () {
+          btn.textContent = 'Copy';
+          btn.removeAttribute('data-done');
+        }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'Select and copy'; }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

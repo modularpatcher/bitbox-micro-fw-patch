@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Bitbox Micro Firmware: Pad Controls</title>
+<style>
+/* Bitbox Micro — shared design system.
+ * Single source of truth for palette, typography and common document
+ * furniture. Consumed by bitbox_micro_presets/slice_map.py (slice maps)
+ * and docs/bitbox-firmware/render_docs.py (published documentation).
+ * Component CSS specific to one consumer stays with that consumer.
+ */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  :root {
+    --paper: #E7E9E3; --panel: #F2F3EE; --sunk: #DDE0D8;
+    --rule: #C7CBC1; --rule-lo: #D8DBD2;
+    --ink: #171A16; --muted: #6C7268;
+    --k1: #2E5E8C; --k1-lo: #2E5E8C1F;
+    --k2: #8C3A5E; --k2-lo: #8C3A5E1F;
+    --k3: #2F6B5B; --k3-lo: #2F6B5B1F;
+    --k4: #8A5A1F; --k4-lo: #8A5A1F1F;
+    --k5: #4B4A8C; --k5-lo: #4B4A8C1F;
+    --k6: #7A4030; --k6-lo: #7A40301F;
+    --warn: #8A6A1F; --warn-lo: #8A6A1F1A;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #141815; --panel: #1D211D; --sunk: #101412;
+      --rule: #343B34; --rule-lo: #262C26;
+      --ink: #E2E6DD; --muted: #969E93;
+      --k1: #77ADDC; --k1-lo: #77ADDC24;
+      --k2: #DE8CAF; --k2-lo: #DE8CAF24;
+      --k3: #6FBBA4; --k3-lo: #6FBBA424;
+      --k4: #D5A055; --k4-lo: #D5A05524;
+      --k5: #9A98DE; --k5-lo: #9A98DE24;
+      --k6: #D08A72; --k6-lo: #D08A7224;
+      --warn: #C8A44E; --warn-lo: #C8A44E1F;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #141815; --panel: #1D211D; --sunk: #101412;
+    --rule: #343B34; --rule-lo: #262C26;
+    --ink: #E2E6DD; --muted: #969E93;
+    --k1: #77ADDC; --k1-lo: #77ADDC24;
+    --k2: #DE8CAF; --k2-lo: #DE8CAF24;
+    --k3: #6FBBA4; --k3-lo: #6FBBA424;
+    --k4: #D5A055; --k4-lo: #D5A05524;
+    --k5: #9A98DE; --k5-lo: #9A98DE24;
+    --k6: #D08A72; --k6-lo: #D08A7224;
+    --warn: #C8A44E; --warn-lo: #C8A44E1F;
+  }
+
+  :root[data-theme="light"] {
+    --paper: #E7E9E3; --panel: #F2F3EE; --sunk: #DDE0D8;
+    --rule: #C7CBC1; --rule-lo: #D8DBD2;
+    --ink: #171A16; --muted: #6C7268;
+    --k1: #2E5E8C; --k1-lo: #2E5E8C1F;
+    --k2: #8C3A5E; --k2-lo: #8C3A5E1F;
+    --k3: #2F6B5B; --k3-lo: #2F6B5B1F;
+    --k4: #8A5A1F; --k4-lo: #8A5A1F1F;
+    --k5: #4B4A8C; --k5-lo: #4B4A8C1F;
+    --k6: #7A4030; --k6-lo: #7A40301F;
+    --warn: #8A6A1F; --warn-lo: #8A6A1F1A;
+  }
+
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans);
+         line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 1.5rem 5rem;
+          display: flex; flex-direction: column; gap: 3rem; }
+
+  .eyebrow { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em;
+             text-transform: uppercase; color: var(--muted); }
+
+  .masthead { display: flex; flex-direction: column; gap: 1rem; }
+  .masthead h1 { font-family: var(--mono); font-size: clamp(1.4rem, 4vw, 2.1rem);
+                 font-weight: 700; letter-spacing: -0.02em; line-height: 1.15;
+                 text-wrap: balance; margin: 0; overflow-wrap: anywhere; }
+  .masthead p { margin: 0; max-width: 64ch; color: var(--muted); font-size: 0.95rem; }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+  .facts li { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em;
+              padding: 0.3rem 0.6rem; border: 1px solid var(--rule);
+              background: var(--panel); font-variant-numeric: tabular-nums; }
+
+  h2.sec { font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+           letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+           margin: 0; padding-bottom: 0.6rem; border-bottom: 1px solid var(--rule); }
+
+  .section { display: flex; flex-direction: column; gap: 1rem; }
+
+  code { font-family: var(--mono); font-size: 0.87em; background: var(--sunk);
+         padding: 0.05em 0.35em; border: 1px solid var(--rule); }
+
+  /* ---- tables ---- */
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--rule); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-family: var(--mono);
+          font-size: 0.76rem; font-variant-numeric: tabular-nums; background: var(--panel); }
+  thead th { text-align: right; font-weight: 600; font-size: 0.63rem; letter-spacing: 0.1em;
+             text-transform: uppercase; color: var(--muted); padding: 0.6rem 0.8rem;
+             border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  thead th:first-child, thead th.l { text-align: left; }
+  tbody td { text-align: right; padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--rule-lo); white-space: nowrap; }
+  tbody td:first-child, tbody td.l { text-align: left; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody td.key { color: var(--rowkey); font-weight: 700; box-shadow: inset 3px 0 0 var(--rowkey); }
+  tbody tr.on td { background: var(--accent-lo); }
+  tbody tr.on td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+  .src { color: var(--muted); max-width: 26ch; overflow: hidden; text-overflow: ellipsis; }
+  .barcell { width: 30%; }
+  .minibar { display: block; height: 8px; background: var(--accent); opacity: 0.55; min-width: 1px; }
+
+  /* ---- definition cards ---- */
+
+  .settinggrid { display: grid; gap: 0.5rem;
+                 grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .settingcard { background: var(--panel); border: 1px solid var(--rule); padding: 0.7rem 0.85rem; }
+  .settingcard.wide { margin-top: 0.5rem; }
+  .settingcard-head { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em;
+                      text-transform: uppercase; color: var(--muted);
+                      padding-bottom: 0.45rem; margin-bottom: 0.45rem;
+                      border-bottom: 1px solid var(--rule); }
+  .settingcard dl { margin: 0; display: grid; grid-template-columns: auto 1fr;
+                    gap: 0.2rem 0.9rem; font-family: var(--mono); font-size: 0.72rem;
+                    font-variant-numeric: tabular-nums; }
+  .settingcard dt { color: var(--muted); white-space: nowrap; }
+  .settingcard dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+  .settings-source { font-family: var(--mono); font-size: 0.64rem; color: var(--muted);
+                     margin-top: 0.5rem; }
+  .settings-missing { font-size: 0.9rem; color: var(--muted); max-width: 70ch; margin: 0; }
+
+  /* ---- observations ---- */
+
+  .notes { display: flex; flex-direction: column; gap: 1rem; }
+  .note { border-left: 3px solid var(--rule); background: var(--panel);
+          padding: 0.85rem 1.1rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .note.warn { border-left-color: var(--warn); background: var(--warn-lo); }
+  .note-where { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em;
+                text-transform: uppercase; color: var(--muted); }
+  .note h3 { font-family: var(--mono); font-size: 0.76rem; letter-spacing: 0.06em;
+             text-transform: uppercase; margin: 0; font-weight: 700; }
+  .note.warn h3 { color: var(--warn); }
+  .note p { margin: 0; font-size: 0.9rem; max-width: 70ch; }
+  .note .hits { margin: 0.35rem 0 0; padding: 0; list-style: none;
+                display: flex; flex-direction: column; gap: 0.25rem; }
+  .note .hits li { font-family: var(--mono); font-size: 0.7rem;
+                   font-variant-numeric: tabular-nums; color: var(--ink);
+                   padding-left: 0.85rem; text-indent: -0.85rem; overflow-wrap: anywhere; }
+  .note .hits li::before { content: "\2192 "; color: var(--muted); }
+
+  footer { font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
+           border-top: 1px solid var(--rule); padding-top: 1rem; line-height: 1.7; }
+
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 2rem 1rem 3.5rem; gap: 2.25rem; }
+  }
+
+  /* ---- documentation layer -------------------------------------------
+     The shared file supplies the substrate: paper, hairline rules, spacing,
+     tabular figures. The documents express it as an editorial manual --
+     serif display against sans body, one restrained accent, numbered
+     sections.
+     Fonts are system stacks only: a downloaded folder must render with no
+     network and no bundled assets.
+     ------------------------------------------------------------------- */
+
+  :root {
+    --measure: 54rem;
+    --serif: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --accent: #8C3A2E;
+    --accent-lo: #8C3A2E14;
+    --callout: #EFEDE7;
+    --paper: #FBFAF7; --panel: #F4F2ED; --sunk: #EFEDE7;
+    --rule: #D8D4CC; --rule-lo: #E7E3DB;
+    --ink: #1A1815; --muted: #6E6A62;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #D98A78; --accent-lo: #D98A7820; --callout: #22201D;
+      --paper: #14130F; --panel: #1C1A17; --sunk: #100F0D;
+      --rule: #35322C; --rule-lo: #262420;
+      --ink: #E8E4DC; --muted: #9A948A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --accent: #D98A78; --accent-lo: #D98A7820; --callout: #22201D;
+    --paper: #14130F; --panel: #1C1A17; --sunk: #100F0D;
+    --rule: #35322C; --rule-lo: #262420;
+    --ink: #E8E4DC; --muted: #9A948A;
+  }
+
+  body { background: var(--paper); color: var(--ink); }
+
+  /* Sidebar and text column. The measure stays near 70ch for readability --
+     widening prose to fill a large screen is worse to read, not better -- so
+     the horizontal space goes to persistent navigation instead, which also
+     lifts the contents list out of the vertical flow. */
+  .wrap { display: grid; gap: 0 3rem; align-items: start;
+          grid-template-columns: 16.5rem minmax(0, 1fr);
+          justify-content: center; max-width: 100rem; margin: 0 auto;
+          padding: 2rem 2rem 4rem; }
+  .main { min-width: 0; }
+
+  .side { position: sticky; top: 2.5rem; display: flex; flex-direction: column;
+          gap: 1.5rem; padding-right: 1.5rem;
+          border-right: 1px solid var(--rule);
+          max-height: calc(100vh - 5rem); overflow-y: auto;
+          scrollbar-width: thin; }
+  .brand { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.09em;
+           text-transform: uppercase; color: var(--muted); margin: 0;
+           line-height: 1.5; }
+
+  /* ---- running head and foot ---- */
+
+  footer { font-family: var(--sans); font-size: 0.68rem; color: var(--muted);
+           border-top: 1px solid var(--rule); padding-top: 0.9rem;
+           margin-top: 2.5rem; display: flex; justify-content: space-between;
+           gap: 1rem; line-height: 1.6; }
+
+  /* ---- masthead ---- */
+
+  .masthead { gap: 0; margin-bottom: 2.2rem; }
+  .masthead h1 { font-family: var(--serif); font-weight: 700;
+                 font-size: clamp(2rem, 6vw, 3.1rem); letter-spacing: -0.015em;
+                 line-height: 1.05; margin: 0 0 0.5rem; text-wrap: balance; }
+  .masthead .eyebrow { font-family: var(--sans); font-weight: 700; color: var(--accent);
+                       letter-spacing: 0.1em; font-size: 0.7rem;
+                       border-top: 2px solid var(--ink); padding-top: 0.55rem; }
+  .masthead p { font-family: var(--sans); color: var(--muted); font-size: 0.95rem;
+                max-width: 78ch; margin: 0.9rem 0 0; }
+
+  .nav { display: flex; flex-direction: column; gap: 0.15rem; margin: 0; }
+  .nav a { font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.02em;
+           font-weight: 600; padding: 0.28rem 0; border: 0; background: none;
+           color: var(--muted); text-decoration: none; }
+  .nav a:hover { color: var(--ink); }
+  .nav a[aria-current] { color: var(--accent); box-shadow: none; }
+
+  /* ---- contents ---- */
+
+  .toc { display: flex; flex-direction: column; gap: 0.1rem; margin: 0;
+         padding-top: 1.2rem; border-top: 1px solid var(--rule); }
+  .toc-label { font-family: var(--sans); font-weight: 700; font-size: 0.62rem;
+               letter-spacing: 0.12em; text-transform: uppercase;
+               color: var(--muted); margin: 0 0 0.5rem; }
+  .toc a { display: grid; grid-template-columns: 1rem 1fr; gap: 0.5rem;
+           align-items: baseline; font-family: var(--sans); font-size: 0.8rem;
+           color: var(--muted); text-decoration: none; padding: 0.24rem 0;
+           border: 0; background: none; line-height: 1.35; }
+  .toc a:hover { color: var(--accent); }
+  .toc a .n { font-variant-numeric: tabular-nums; color: var(--accent);
+              font-weight: 700; }
+  .toc a.sub { color: var(--muted); }
+  .toc a.sub:hover { color: var(--accent); }
+
+  /* ---- numbered sections ---- */
+
+  /* Major sections get real air between them. A numbered heading under a
+     heavy rule is a strong signal, and it needs room above it or the page
+     reads as one continuous column. */
+  .section { display: block; margin: 3.4rem 0 0; }
+  h2.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+           font-weight: 700; letter-spacing: -0.01em; text-transform: none;
+           color: var(--ink); margin: 0 0 1.9rem; padding-bottom: 0.5rem;
+           border-bottom: 2px solid var(--ink); display: flex; gap: 0.7rem;
+           align-items: baseline; text-wrap: balance; }
+  h2.sec .n { font-variant-numeric: tabular-nums; color: var(--ink);
+              font-weight: 400; flex: none; }
+  h2.sec .n::after { content: " /"; color: var(--muted); }
+
+  /* ---- prose ---- */
+
+  .doc { font-family: var(--sans); font-size: 1.02rem; }
+  .doc h3 { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+            letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+            margin: 2.6rem 0 1rem; border: 0; padding: 0; }
+  .doc h3:first-child { margin-top: 0; }
+  .doc h4 { font-family: var(--sans); font-size: 0.98rem; font-weight: 700;
+            color: var(--ink); letter-spacing: 0; text-transform: none;
+            margin: 1.8rem 0 0.6rem; }
+
+  .doc p { margin: 0.75rem 0 0; max-width: var(--measure); }
+  .doc > :first-child { margin-top: 0; }
+  .doc h3 + p, .doc h4 + p, .doc h3 + ul, .doc h3 + ol,
+  .doc h3 + .tablewrap { margin-top: 0; }
+  .doc a { color: var(--accent); text-underline-offset: 0.18em;
+           text-decoration-thickness: 1px; }
+  .doc a:hover { text-decoration-thickness: 2px; }
+
+  .doc ul { margin: 0.75rem 0 0; padding-left: 1.1rem; max-width: var(--measure);
+            display: flex; flex-direction: column; gap: 0.4rem; }
+  .doc ul li::marker { color: var(--accent); }
+
+  /* numbered procedures: accent numeral in its own column */
+  .doc ol { margin: 0.9rem 0 0; padding: 0; max-width: var(--measure); list-style: none;
+            counter-reset: step; display: flex; flex-direction: column; gap: 0.6rem; }
+  .doc ol { padding-left: 2.1rem; }
+  .doc ol li { counter-increment: step; position: relative; }
+  .doc ol li::before { content: counter(step); position: absolute;
+                       left: -2.1rem; width: 1.5rem; text-align: right;
+                       color: var(--accent); font-weight: 700;
+                       font-variant-numeric: tabular-nums; font-size: 0.86rem; }
+
+  .doc pre { font-family: var(--mono); font-size: 0.82rem; line-height: 1.65;
+             background: var(--sunk); border: 1px solid var(--rule);
+             padding: 0.85rem 1rem; margin: 1rem 0 0; overflow-x: auto; }
+  .doc pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  code { background: var(--sunk); border: 1px solid var(--rule-lo);
+         font-size: 0.85em; padding: 0.02em 0.22em; }
+
+  .doc img { display: block; width: 100%; max-width: var(--measure); height: auto;
+             margin: 1.4rem 0 0; }
+
+  .doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2.2rem 0 0; }
+
+  /* Commands are meant to be run, so they are meant to be copied. The button
+     is only drawn once the script has attached, so a page with no scripting
+     shows a plain block rather than a control that does nothing. */
+  .doc .pre-wrap { position: relative; }
+  .doc .pre-wrap .copy { position: absolute; top: 0.45rem; right: 0.45rem;
+                         font-family: var(--sans); font-size: 0.68rem;
+                         letter-spacing: 0.04em; line-height: 1;
+                         padding: 0.35rem 0.5rem; cursor: pointer;
+                         color: var(--muted); background: var(--panel);
+                         border: 1px solid var(--rule); border-radius: 0;
+                         opacity: 0; transition: opacity 0.12s ease; }
+  .doc .pre-wrap:hover .copy,
+  .doc .pre-wrap .copy:focus-visible { opacity: 1; }
+  .doc .pre-wrap .copy:hover { color: var(--ink); border-color: var(--ink); }
+  .doc .pre-wrap .copy[data-done] { color: var(--accent); border-color: var(--accent);
+                                    opacity: 1; }
+  @media print { .doc .pre-wrap .copy { display: none; } }
+
+  /* ---- callout ---- */
+
+  .doc .note { margin: 1.3rem 0 0; max-width: var(--measure); background: var(--callout);
+               border: 0; border-left: 4px solid var(--muted);
+               padding: 0.9rem 1.1rem; }
+  .doc .note.warn { border-left-color: var(--accent); background: var(--accent-lo); }
+  .doc .note p { margin: 0; max-width: none; font-size: 0.97rem; }
+  .doc .note p + p { margin-top: 0.5rem; }
+
+  /* ---- tables ----
+     Two-column tables are definition lists and get the borderless treatment:
+     bold term, hairline row rules, no header. Wider tables keep a shaded
+     header row so a 5-column CC map stays readable. */
+
+  .doc .tablewrap { margin-top: 1.2rem; border: 0; overflow-x: auto; }
+  .doc table { width: auto; max-width: min(100%, var(--measure)); }
+  .doc table.defs, .doc table.wide { width: 100%; }
+  .doc table { background: none; font-family: var(--sans); font-size: 0.94rem;
+               min-width: 0; }
+  .doc thead th { font-family: var(--sans); font-size: 0.68rem; font-weight: 700;
+                  letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--ink); background: var(--panel);
+                  border-bottom: 1px solid var(--rule); padding: 0.6rem 0.8rem;
+                  text-align: left; }
+  .doc thead th.num { text-align: right; }
+  .doc tbody td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--rule-lo);
+                  text-align: left; white-space: normal; vertical-align: top; }
+  .doc tbody td.num { text-align: right; white-space: nowrap;
+                      font-variant-numeric: tabular-nums; }
+  .doc tbody tr:last-child td { border-bottom: 1px solid var(--rule); }
+
+  /* A boxed code chip reads well in a sentence and badly in a 27-row table,
+     where every cell would carry one. Inside a table it keeps the monospace
+     and loses the box. */
+  .doc table code { background: none; border: 0; padding: 0;
+                    color: var(--ink); font-size: 0.88em; }
+
+  .doc table.defs thead { display: none; }
+  .doc table.defs tbody td:first-child { font-weight: 700; width: 12rem;
+                                         padding-left: 0; }
+  .doc table.defs tbody td:last-child { padding-right: 0; }
+
+  @media (max-width: 74rem) {
+    .wrap { grid-template-columns: minmax(0, 1fr); gap: 2rem;
+            padding: 1.75rem 1.5rem 3rem; }
+    .side { position: static; border-right: 0; padding-right: 0;
+            padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule);
+            flex-direction: row; flex-wrap: wrap; align-items: baseline;
+            gap: 0.5rem 1.5rem; }
+    .side .brand { width: 100%; }
+    .nav { flex-direction: row; flex-wrap: wrap; gap: 1.1rem; }
+    .toc { border-top: 0; padding-top: 0; width: 100%; }
+    .toc a { display: inline-grid; }
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 1.5rem 1rem 3rem; }
+    .doc table.defs tbody td:first-child { width: auto; }
+    .doc table.defs tbody tr { display: grid; }
+    .doc table.defs tbody td { border-bottom: 0; padding: 0.15rem 0; }
+    .doc table.defs tbody tr { border-bottom: 1px solid var(--rule-lo);
+                               padding: 0.5rem 0; }
+  }
+
+  @media print {
+    .side { display: none; }
+    .wrap { display: block; max-width: none; padding: 0; }
+    h2.sec { break-after: avoid; }
+    .doc table, .doc .note, .doc pre { break-inside: avoid; }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="side">
+    <p class="brand">Bitbox Micro<br>community modification</p>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html" aria-current="page">Pad controls</a><a href="DEVICES.html">Devices</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="toc">
+      <p class="toc-label">On this page</p>
+      <a href="#building-your-presets"><span class="n">1</span><span>Building Your Presets</span></a><a class="sub" href="#building-a-preset-for-this"><span class="n"></span><span>Building a Preset for This</span></a><a class="sub" href="#editors-worth-knowing-about"><span class="n"></span><span>Editors Worth Knowing About</span></a><a href="#the-controls"><span class="n">2</span><span>The Controls</span></a><a class="sub" href="#delay-and-reverb"><span class="n"></span><span>Delay and Reverb</span></a><a class="sub" href="#playback"><span class="n"></span><span>Playback</span></a><a class="sub" href="#granular"><span class="n"></span><span>Granular</span></a><a class="sub" href="#envelope"><span class="n"></span><span>Envelope</span></a><a class="sub" href="#lfo"><span class="n"></span><span>LFO</span></a>
+    </nav>
+  </aside>
+  <main class="main">
+    <header class="masthead">
+      <p class="eyebrow">Pad controls</p>
+      <h1>Bitbox Micro Firmware: Pad Controls</h1>
+      <p>Parameters the module already had, now on MIDI.</p>
+    </header>
+  <div class="doc">
+    <p>Parameters the module already had. Each one was reachable only by pressing the encoder and turning it, one at a time, and the patch puts every one of them on a MIDI CC instead. Nothing here is new sound. None of it is new code. It is the same engine, reachable while you play. That is all.</p>
+    <p>These are addressed per pad, on that pad's own MIDI channel. One pad, one channel. Eight pads, eight channels. See <a href="CC-REFERENCE.html">the CC reference</a> for the numbers.</p>
+  </div>
+  <section class="section" id="building-your-presets">
+  <h2 class="sec"><span class="n">1</span>Building Your Presets</h2>
+  <div class="doc">
+    <p>Two things shape what you get out of this patch: how the preset is put together, and how easily you can put it together. This covers both.</p>
+    <h3 id="building-a-preset-for-this">Building a Preset for This</h3>
+    <p>Worth knowing before you start, because it shapes what you get out of this.</p>
+    <p>The controls need no setting up and work on every preset you own from the moment you flash. But <strong>an old preset will only give you back what it was built to do.</strong> Eight Sample pads all listening on one MIDI channel, with the delay turned down and the LFO wired to nothing, will answer barely a third of them, and none of it is the patch's fault.</p>
+    <p>The things that matter, in rough order:</p>
+    <ul>
+      <li><strong>Give every pad its own MIDI channel.</strong> This is the big one. Per-pad controls are addressed by channel, so eight pads on eight channels is eight independent sets of controls. All on one channel and every pad answers at once.</li>
+      <li><strong>Pick pad modes deliberately.</strong> The five granular controls do nothing except on a Granular pad, and Play Through nothing except on a Slicer pad.</li>
+      <li><strong>Decide which FX parameters you will drive and which you will fix.</strong> The six worth mapping, delay time, feedback, cutoff, reverb decay, damping, predelay, want parking at their minimum so a CC has room to travel. Whatever you do not map is whatever you saved it as, so a reverb with no decay and nothing driving it is silence.</li>
+      <li><strong>Point the LFO at something</strong>, the filter is the obvious choice. Three of these controls shape an LFO that does nothing until you do.</li>
+      <li><strong>Leave a modulation slot or two spare</strong> for it. Fill all nine CC lanes on a pad and there is no room left to route anything, and the module does not warn you, the Source box simply stops responding.</li>
+    </ul>
+    <p><a href="CC-REFERENCE.html#which-channel-to-send-on">Which Channel to Send On</a> covers the first point, and <a href="CC-REFERENCE.html#which-pad-types-work">Which Pad Types Work</a> the second. FX parameters, the LFO and modulation slots each get their own section below. The short version: half an hour spent on a preset built for this is worth more than any single control on its own.</p>
+    <h3 id="editors-worth-knowing-about">Editors Worth Knowing About</h3>
+    <p>Building a preset on the module means the encoder, one parameter at a time. Two browser editors do the same job on a computer, with a mouse and a waveform you can see. Neither is mine, neither is 1010music's, and neither needs this patch. They are listed because pointing a CC at a preset is quicker when the preset was quick to build.</p>
+    <ul>
+      <li><a href="https://bartbral.github.io/Bitbox-editor/BITBOXER_index.html" rel="noreferrer noopener">BITBOXER</a>: free, and runs in the browser. Edits pad parameters, effects and whole presets, and reads and writes the XML the module already uses. It handles WAV, SFZ and zip archives too.</li>
+      <li><a href="https://bpm.markijzerman.com/" rel="noreferrer noopener">Preset Manager for Bitbox</a>: ten euros, one payment. Waveform editing with loop and sample markers, effects sends, and audio preview before you commit. It wants a Chromium browser. Bitbox Micro is fully supported; MK2 is experimental.</li>
+    </ul>
+    <p>Check what either one writes before you trust a whole card to it. Keep a backup of a preset you care about.</p>
+  </div>
+  </section>
+  <section class="section" id="the-controls">
+  <h2 class="sec"><span class="n">2</span>The Controls</h2>
+  <div class="doc">
+    <p>Five groups. Take them in any order.</p>
+    <h3 id="delay-and-reverb">Delay and Reverb</h3>
+    <p><strong>Delay send and Reverb send</strong>: per pad, so each of your eight can sit in the effects by a different amount, changed live. This is the pair people reach for first, and it is the fastest way to make a static loop move.</p>
+    <p>Recorded-sample pads are the exception: they have no FX sends in stock firmware at all, so there is nothing for the control to reach. That is the module, not this patch.</p>
+    <p><strong>The delay itself</strong>: shared by the whole preset, and four of its controls are here. These answer on any channel:</p>
+    <p><strong>Beat Sync</strong>: locks the delay time to tempo rather than milliseconds. <strong>Ping-pong</strong> bounces repeats across the stereo field. <strong>Filter on/off</strong> and <strong>Filter width</strong> shape the tone of the repeats: darkening each successive echo is the classic dub move, and width is how aggressively it happens.</p>
+    <p>The delay's time and feedback are not here, because the module already lets you modulate them: they work over MIDI without this patch.</p>
+    <h4 id="delay-time-and-beat-sync">Delay Time and Beat Sync</h4>
+    <p>The delay keeps <strong>two</strong> separate time values and beat-sync decides which one the engine actually reads. So a CC mapped to delay time works beautifully until you switch beat-sync off, at which point it goes completely dead, because your CC is still faithfully driving a parameter nobody is listening to any more.</p>
+    <p>Map both destinations to the same CC and the problem evaporates. This is a preset-level quirk and nothing to do with the patch. It was here first.</p>
+    <p><strong>LFO Rate</strong>: exactly the same shape, for exactly the same reason: one control on screen, two parameters underneath, and BeatSync picking between them. If your LFO Rate knob dies the moment you flip that switch, this is why, and the same fix applies.</p>
+    <h3 id="playback">Playback</h3>
+    <p>These decide what the sample actually does when a pad is triggered, and they are the first thing in the chain.</p>
+    <p><strong>Loop Mode</strong>: picks between None, Forward and Bidirectional. On a controller it is three even bands across the throw. Bidirectional runs the sample forwards then backwards, which is either lovely or seasick depending on the material.</p>
+    <p><strong>Loop Crossfade</strong>: softens the join. A loop that clicks usually just needs a little of this. Long crossfades on short loops start to blur the sound, which is sometimes what you want.</p>
+    <p><strong>Reverse</strong>: plays the sample backwards. It works on Sample, Multi-Sample and Granular pads only: Clip and Slicer pads have no reverse setting in the module at all, so there is nothing for the control to reach.</p>
+    <p><strong>Play Through</strong>: is a Slicer control and only a Slicer control. It decides whether playback carries on past the end of a slice into the next one. On any other pad type it does nothing, because there are no slices to carry on past.</p>
+    <h4 id="stopping-a-pad">Stopping a Pad</h4>
+    <p><strong>Stop this pad</strong>: answers to the two standard MIDI panic messages, All Sound Off and All Notes Off, on that pad's own channel. Either one releases the note.</p>
+    <p>It matters most on long clips. A four-bar loop that you have triggered and now want gone would otherwise play to its end, and this cuts it cleanly from wherever your controller sits. Both messages behave identically here. Use whichever your controller sends more conveniently.</p>
+    <h3 id="granular">Granular</h3>
+    <p>These five only do anything on a pad set to <strong>Granular</strong> mode, and they are the part of this patch the module fights hardest. They are the Granular page controls 1010music marks "Mod Target? No": no three boxes on the screen to indicate that modulation is possible, and MIDI Learn looks straight through them. Until now the encoder was the only way in.</p>
+    <p><strong>Density</strong>: how many grains play at once. <strong>Grain Size</strong>: how long each one lasts. Between them they take you from a recognisable sample to a smeared pad to a sparse cloud of fragments.</p>
+    <p><strong>Window</strong>: the shape each grain fades in and out with. Softer windows sound smoother; harder ones click and click is sometimes the point.</p>
+    <p><strong>Scatter</strong>: randomises grain timing, and <strong>Pan Rnd</strong> randomises their position in the stereo field. Both turn a regular texture into a diffuse one.</p>
+    <p>Scatter is the one that will fool you. It does nothing whatsoever unless Density is below half. The manual says so plainly, and it is the module's behaviour rather than anything this patch introduces. Sweep Scatter with Density up. You will hear nothing and blame the patch. Pull Density down to a quarter first, where the grains are sparse enough to hear individually, and Scatter's effect on their timing is obvious. In CC terms, that threshold is <strong>CC 63 or lower</strong>: CC 64 already lands a shade above half, so one step further up puts Scatter back to doing nothing.</p>
+    <p>Speed is not here, deliberately. The module already marks it "Mod Target? Yes", so it works over MIDI without any of this.</p>
+    <p>These are also the ones most likely to cost you CPU. Density is the one the manual warns about.</p>
+    <h3 id="envelope">Envelope</h3>
+    <p><strong>Sustain</strong>: the control this patch adds, and Decay is why it matters.</p>
+    <p>Decay is how long the sound takes to fall <em>from its initial peak down to the sustain level</em>. So with Sustain at full, Decay has nowhere to travel and does nothing you can hear, which is exactly why a decay knob so often feels dead. Pull Sustain down and it comes alive: at zero, the pad falls from its peak to silence over the decay time, and Decay becomes a <strong>length</strong> control.</p>
+    <h4 id="the-hi-hat-which-is-the-case-that-makes-it-click">The Hi-Hat, Which Is the Case That Makes It Click</h4>
+    <p>Load a hi-hat and you have two very different instruments in one sample, depending entirely on where these two sit:</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr>
+      <th></th>
+      <th>Sustain</th>
+      <th>Decay</th>
+      <th>You get</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Open, splashy</strong></td>
+        <td>high</td>
+        <td>long</td>
+        <td>the hat rings on, washes into the next bar, sits back in the mix</td>
+      </tr>
+      <tr>
+        <td><strong>Tight, crisp</strong></td>
+        <td>low</td>
+        <td>short</td>
+        <td>a short chip that punches and gets out of the way</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>Same sample. Same pad. The difference between a hat that drives a track and one that clutters it is those two controls, and until now Sustain was frozen at whatever the preset happened to be saved with.</p>
+    <p>Now you can move between the two while the pattern is playing. Open the hats through a build, tighten them for the drop, and do it from a knob rather than by loading a different preset. That is the whole argument for putting Sustain on a CC, and once you have heard it on a hat you will start using it on snares, claps and anything else with a tail.</p>
+    <p><strong>Attack, Decay and Release</strong>: always modulation targets, so you could already automate those. Sustain never was, which meant you could drive Decay all you liked while the one control that decides whether Decay does anything stayed fixed. Both are yours now.</p>
+    <h3 id="lfo">LFO</h3>
+    <p>Three controls here, <strong>Wave</strong>, <strong>Beat Sync</strong> and <strong>Retrigger</strong>, and they shape an LFO rather than making a sound themselves. If that LFO is not pointed at anything, all three will seem broken, and this catches people because <strong>the manual never explains how to connect it.</strong></p>
+    <p>The LFO is a modulation <em>source</em>, like velocity or the mod wheel. It does nothing until you give it a destination:</p>
+    <ol>
+      <li>Touch the pad, then <strong>right arrow twice</strong> to Pad Parameters.</li>
+      <li>Scroll to <strong>Filter</strong> on the Main page. The three small boxes on the right edge mark it as something that can be modulated.</li>
+      <li><strong>Right arrow</strong> again for the Modulation Parameters screen.</li>
+      <li>Find a <strong>Source</strong> slot reading <code>None</code> and turn the bottom knob to <strong>LFO</strong>.</li>
+      <li><strong>Turn up the Amount for that slot.</strong> It starts at 0%, so the LFO is connected and inaudible until you do. This is the step everyone misses.</li>
+    </ol>
+    <p>Filter is the best first destination because it is the most obvious to the ear, and it doubles as your test rig for the three LFO controls.</p>
+    <p><strong>Wave</strong>: picks the shape, ten of them, as ten even bands across the throw. <strong>Beat Sync</strong> locks the rate to the tempo instead of running free. <strong>Retrigger</strong> restarts the LFO from the top on every note, which is the difference between a wobble that lines up with your hits and one that drifts against them.</p>
+    <p>If the bottom knob will not change a <code>None</code> slot, the pad is full. Each pad has twelve modulation slots, three of which the firmware claims for itself, and a preset with lots of mapped CCs can easily use the rest. It reads exactly like a dead encoder. Free a slot by removing a mapping you are not using. It will spring back.</p>
+    <p>Worth knowing: the Source list on that screen is longer than the manual suggests. The MIDI chapter lists the MIDI sources, the CV chapter lists EXT 1–8, and no page lists the whole thing. LFO is in there, several clicks further round than you might stop.</p>
+  </div>
+  </section>
+    <footer><span>Unofficial. Not endorsed by or affiliated with 1010music. Supplied as is, under the MIT licence in LICENSE.</span><span>Bitbox Micro Firmware: Pad Controls</span></footer>
+  </main>
+</div>
+<script>
+// Adds a copy control to each code block. Written here rather than fetched:
+// a downloaded folder has no network, and the pages must work from file://.
+// navigator.clipboard is unavailable on file:// in some browsers, so fall
+// back to a selection-based copy rather than failing silently.
+(function () {
+  var blocks = document.querySelectorAll('.doc pre');
+  Array.prototype.forEach.call(blocks, function (pre) {
+    var wrap = document.createElement('div');
+    wrap.className = 'pre-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy this block');
+    wrap.appendChild(btn);
+
+    btn.addEventListener('click', function () {
+      var text = pre.innerText;
+      var done = function () {
+        btn.textContent = 'Copied';
+        btn.setAttribute('data-done', '');
+        setTimeout(function () {
+          btn.textContent = 'Copy';
+          btn.removeAttribute('data-done');
+        }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'Select and copy'; }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

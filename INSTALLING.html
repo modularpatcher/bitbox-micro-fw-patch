@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Bitbox Micro Firmware: Installing</title>
+<style>
+/* Bitbox Micro — shared design system.
+ * Single source of truth for palette, typography and common document
+ * furniture. Consumed by bitbox_micro_presets/slice_map.py (slice maps)
+ * and docs/bitbox-firmware/render_docs.py (published documentation).
+ * Component CSS specific to one consumer stays with that consumer.
+ */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  :root {
+    --paper: #E7E9E3; --panel: #F2F3EE; --sunk: #DDE0D8;
+    --rule: #C7CBC1; --rule-lo: #D8DBD2;
+    --ink: #171A16; --muted: #6C7268;
+    --k1: #2E5E8C; --k1-lo: #2E5E8C1F;
+    --k2: #8C3A5E; --k2-lo: #8C3A5E1F;
+    --k3: #2F6B5B; --k3-lo: #2F6B5B1F;
+    --k4: #8A5A1F; --k4-lo: #8A5A1F1F;
+    --k5: #4B4A8C; --k5-lo: #4B4A8C1F;
+    --k6: #7A4030; --k6-lo: #7A40301F;
+    --warn: #8A6A1F; --warn-lo: #8A6A1F1A;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #141815; --panel: #1D211D; --sunk: #101412;
+      --rule: #343B34; --rule-lo: #262C26;
+      --ink: #E2E6DD; --muted: #969E93;
+      --k1: #77ADDC; --k1-lo: #77ADDC24;
+      --k2: #DE8CAF; --k2-lo: #DE8CAF24;
+      --k3: #6FBBA4; --k3-lo: #6FBBA424;
+      --k4: #D5A055; --k4-lo: #D5A05524;
+      --k5: #9A98DE; --k5-lo: #9A98DE24;
+      --k6: #D08A72; --k6-lo: #D08A7224;
+      --warn: #C8A44E; --warn-lo: #C8A44E1F;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #141815; --panel: #1D211D; --sunk: #101412;
+    --rule: #343B34; --rule-lo: #262C26;
+    --ink: #E2E6DD; --muted: #969E93;
+    --k1: #77ADDC; --k1-lo: #77ADDC24;
+    --k2: #DE8CAF; --k2-lo: #DE8CAF24;
+    --k3: #6FBBA4; --k3-lo: #6FBBA424;
+    --k4: #D5A055; --k4-lo: #D5A05524;
+    --k5: #9A98DE; --k5-lo: #9A98DE24;
+    --k6: #D08A72; --k6-lo: #D08A7224;
+    --warn: #C8A44E; --warn-lo: #C8A44E1F;
+  }
+
+  :root[data-theme="light"] {
+    --paper: #E7E9E3; --panel: #F2F3EE; --sunk: #DDE0D8;
+    --rule: #C7CBC1; --rule-lo: #D8DBD2;
+    --ink: #171A16; --muted: #6C7268;
+    --k1: #2E5E8C; --k1-lo: #2E5E8C1F;
+    --k2: #8C3A5E; --k2-lo: #8C3A5E1F;
+    --k3: #2F6B5B; --k3-lo: #2F6B5B1F;
+    --k4: #8A5A1F; --k4-lo: #8A5A1F1F;
+    --k5: #4B4A8C; --k5-lo: #4B4A8C1F;
+    --k6: #7A4030; --k6-lo: #7A40301F;
+    --warn: #8A6A1F; --warn-lo: #8A6A1F1A;
+  }
+
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans);
+         line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 1.5rem 5rem;
+          display: flex; flex-direction: column; gap: 3rem; }
+
+  .eyebrow { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em;
+             text-transform: uppercase; color: var(--muted); }
+
+  .masthead { display: flex; flex-direction: column; gap: 1rem; }
+  .masthead h1 { font-family: var(--mono); font-size: clamp(1.4rem, 4vw, 2.1rem);
+                 font-weight: 700; letter-spacing: -0.02em; line-height: 1.15;
+                 text-wrap: balance; margin: 0; overflow-wrap: anywhere; }
+  .masthead p { margin: 0; max-width: 64ch; color: var(--muted); font-size: 0.95rem; }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+  .facts li { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em;
+              padding: 0.3rem 0.6rem; border: 1px solid var(--rule);
+              background: var(--panel); font-variant-numeric: tabular-nums; }
+
+  h2.sec { font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+           letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+           margin: 0; padding-bottom: 0.6rem; border-bottom: 1px solid var(--rule); }
+
+  .section { display: flex; flex-direction: column; gap: 1rem; }
+
+  code { font-family: var(--mono); font-size: 0.87em; background: var(--sunk);
+         padding: 0.05em 0.35em; border: 1px solid var(--rule); }
+
+  /* ---- tables ---- */
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--rule); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-family: var(--mono);
+          font-size: 0.76rem; font-variant-numeric: tabular-nums; background: var(--panel); }
+  thead th { text-align: right; font-weight: 600; font-size: 0.63rem; letter-spacing: 0.1em;
+             text-transform: uppercase; color: var(--muted); padding: 0.6rem 0.8rem;
+             border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  thead th:first-child, thead th.l { text-align: left; }
+  tbody td { text-align: right; padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--rule-lo); white-space: nowrap; }
+  tbody td:first-child, tbody td.l { text-align: left; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody td.key { color: var(--rowkey); font-weight: 700; box-shadow: inset 3px 0 0 var(--rowkey); }
+  tbody tr.on td { background: var(--accent-lo); }
+  tbody tr.on td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+  .src { color: var(--muted); max-width: 26ch; overflow: hidden; text-overflow: ellipsis; }
+  .barcell { width: 30%; }
+  .minibar { display: block; height: 8px; background: var(--accent); opacity: 0.55; min-width: 1px; }
+
+  /* ---- definition cards ---- */
+
+  .settinggrid { display: grid; gap: 0.5rem;
+                 grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .settingcard { background: var(--panel); border: 1px solid var(--rule); padding: 0.7rem 0.85rem; }
+  .settingcard.wide { margin-top: 0.5rem; }
+  .settingcard-head { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em;
+                      text-transform: uppercase; color: var(--muted);
+                      padding-bottom: 0.45rem; margin-bottom: 0.45rem;
+                      border-bottom: 1px solid var(--rule); }
+  .settingcard dl { margin: 0; display: grid; grid-template-columns: auto 1fr;
+                    gap: 0.2rem 0.9rem; font-family: var(--mono); font-size: 0.72rem;
+                    font-variant-numeric: tabular-nums; }
+  .settingcard dt { color: var(--muted); white-space: nowrap; }
+  .settingcard dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+  .settings-source { font-family: var(--mono); font-size: 0.64rem; color: var(--muted);
+                     margin-top: 0.5rem; }
+  .settings-missing { font-size: 0.9rem; color: var(--muted); max-width: 70ch; margin: 0; }
+
+  /* ---- observations ---- */
+
+  .notes { display: flex; flex-direction: column; gap: 1rem; }
+  .note { border-left: 3px solid var(--rule); background: var(--panel);
+          padding: 0.85rem 1.1rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .note.warn { border-left-color: var(--warn); background: var(--warn-lo); }
+  .note-where { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em;
+                text-transform: uppercase; color: var(--muted); }
+  .note h3 { font-family: var(--mono); font-size: 0.76rem; letter-spacing: 0.06em;
+             text-transform: uppercase; margin: 0; font-weight: 700; }
+  .note.warn h3 { color: var(--warn); }
+  .note p { margin: 0; font-size: 0.9rem; max-width: 70ch; }
+  .note .hits { margin: 0.35rem 0 0; padding: 0; list-style: none;
+                display: flex; flex-direction: column; gap: 0.25rem; }
+  .note .hits li { font-family: var(--mono); font-size: 0.7rem;
+                   font-variant-numeric: tabular-nums; color: var(--ink);
+                   padding-left: 0.85rem; text-indent: -0.85rem; overflow-wrap: anywhere; }
+  .note .hits li::before { content: "\2192 "; color: var(--muted); }
+
+  footer { font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
+           border-top: 1px solid var(--rule); padding-top: 1rem; line-height: 1.7; }
+
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 2rem 1rem 3.5rem; gap: 2.25rem; }
+  }
+
+  /* ---- documentation layer -------------------------------------------
+     The shared file supplies the substrate: paper, hairline rules, spacing,
+     tabular figures. The documents express it as an editorial manual --
+     serif display against sans body, one restrained accent, numbered
+     sections.
+     Fonts are system stacks only: a downloaded folder must render with no
+     network and no bundled assets.
+     ------------------------------------------------------------------- */
+
+  :root {
+    --measure: 54rem;
+    --serif: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --accent: #8C3A2E;
+    --accent-lo: #8C3A2E14;
+    --callout: #EFEDE7;
+    --paper: #FBFAF7; --panel: #F4F2ED; --sunk: #EFEDE7;
+    --rule: #D8D4CC; --rule-lo: #E7E3DB;
+    --ink: #1A1815; --muted: #6E6A62;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #D98A78; --accent-lo: #D98A7820; --callout: #22201D;
+      --paper: #14130F; --panel: #1C1A17; --sunk: #100F0D;
+      --rule: #35322C; --rule-lo: #262420;
+      --ink: #E8E4DC; --muted: #9A948A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --accent: #D98A78; --accent-lo: #D98A7820; --callout: #22201D;
+    --paper: #14130F; --panel: #1C1A17; --sunk: #100F0D;
+    --rule: #35322C; --rule-lo: #262420;
+    --ink: #E8E4DC; --muted: #9A948A;
+  }
+
+  body { background: var(--paper); color: var(--ink); }
+
+  /* Sidebar and text column. The measure stays near 70ch for readability --
+     widening prose to fill a large screen is worse to read, not better -- so
+     the horizontal space goes to persistent navigation instead, which also
+     lifts the contents list out of the vertical flow. */
+  .wrap { display: grid; gap: 0 3rem; align-items: start;
+          grid-template-columns: 16.5rem minmax(0, 1fr);
+          justify-content: center; max-width: 100rem; margin: 0 auto;
+          padding: 2rem 2rem 4rem; }
+  .main { min-width: 0; }
+
+  .side { position: sticky; top: 2.5rem; display: flex; flex-direction: column;
+          gap: 1.5rem; padding-right: 1.5rem;
+          border-right: 1px solid var(--rule);
+          max-height: calc(100vh - 5rem); overflow-y: auto;
+          scrollbar-width: thin; }
+  .brand { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.09em;
+           text-transform: uppercase; color: var(--muted); margin: 0;
+           line-height: 1.5; }
+
+  /* ---- running head and foot ---- */
+
+  footer { font-family: var(--sans); font-size: 0.68rem; color: var(--muted);
+           border-top: 1px solid var(--rule); padding-top: 0.9rem;
+           margin-top: 2.5rem; display: flex; justify-content: space-between;
+           gap: 1rem; line-height: 1.6; }
+
+  /* ---- masthead ---- */
+
+  .masthead { gap: 0; margin-bottom: 2.2rem; }
+  .masthead h1 { font-family: var(--serif); font-weight: 700;
+                 font-size: clamp(2rem, 6vw, 3.1rem); letter-spacing: -0.015em;
+                 line-height: 1.05; margin: 0 0 0.5rem; text-wrap: balance; }
+  .masthead .eyebrow { font-family: var(--sans); font-weight: 700; color: var(--accent);
+                       letter-spacing: 0.1em; font-size: 0.7rem;
+                       border-top: 2px solid var(--ink); padding-top: 0.55rem; }
+  .masthead p { font-family: var(--sans); color: var(--muted); font-size: 0.95rem;
+                max-width: 78ch; margin: 0.9rem 0 0; }
+
+  .nav { display: flex; flex-direction: column; gap: 0.15rem; margin: 0; }
+  .nav a { font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.02em;
+           font-weight: 600; padding: 0.28rem 0; border: 0; background: none;
+           color: var(--muted); text-decoration: none; }
+  .nav a:hover { color: var(--ink); }
+  .nav a[aria-current] { color: var(--accent); box-shadow: none; }
+
+  /* ---- contents ---- */
+
+  .toc { display: flex; flex-direction: column; gap: 0.1rem; margin: 0;
+         padding-top: 1.2rem; border-top: 1px solid var(--rule); }
+  .toc-label { font-family: var(--sans); font-weight: 700; font-size: 0.62rem;
+               letter-spacing: 0.12em; text-transform: uppercase;
+               color: var(--muted); margin: 0 0 0.5rem; }
+  .toc a { display: grid; grid-template-columns: 1rem 1fr; gap: 0.5rem;
+           align-items: baseline; font-family: var(--sans); font-size: 0.8rem;
+           color: var(--muted); text-decoration: none; padding: 0.24rem 0;
+           border: 0; background: none; line-height: 1.35; }
+  .toc a:hover { color: var(--accent); }
+  .toc a .n { font-variant-numeric: tabular-nums; color: var(--accent);
+              font-weight: 700; }
+  .toc a.sub { color: var(--muted); }
+  .toc a.sub:hover { color: var(--accent); }
+
+  /* ---- numbered sections ---- */
+
+  /* Major sections get real air between them. A numbered heading under a
+     heavy rule is a strong signal, and it needs room above it or the page
+     reads as one continuous column. */
+  .section { display: block; margin: 3.4rem 0 0; }
+  h2.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+           font-weight: 700; letter-spacing: -0.01em; text-transform: none;
+           color: var(--ink); margin: 0 0 1.9rem; padding-bottom: 0.5rem;
+           border-bottom: 2px solid var(--ink); display: flex; gap: 0.7rem;
+           align-items: baseline; text-wrap: balance; }
+  h2.sec .n { font-variant-numeric: tabular-nums; color: var(--ink);
+              font-weight: 400; flex: none; }
+  h2.sec .n::after { content: " /"; color: var(--muted); }
+
+  /* ---- prose ---- */
+
+  .doc { font-family: var(--sans); font-size: 1.02rem; }
+  .doc h3 { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+            letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+            margin: 2.6rem 0 1rem; border: 0; padding: 0; }
+  .doc h3:first-child { margin-top: 0; }
+  .doc h4 { font-family: var(--sans); font-size: 0.98rem; font-weight: 700;
+            color: var(--ink); letter-spacing: 0; text-transform: none;
+            margin: 1.8rem 0 0.6rem; }
+
+  .doc p { margin: 0.75rem 0 0; max-width: var(--measure); }
+  .doc > :first-child { margin-top: 0; }
+  .doc h3 + p, .doc h4 + p, .doc h3 + ul, .doc h3 + ol,
+  .doc h3 + .tablewrap { margin-top: 0; }
+  .doc a { color: var(--accent); text-underline-offset: 0.18em;
+           text-decoration-thickness: 1px; }
+  .doc a:hover { text-decoration-thickness: 2px; }
+
+  .doc ul { margin: 0.75rem 0 0; padding-left: 1.1rem; max-width: var(--measure);
+            display: flex; flex-direction: column; gap: 0.4rem; }
+  .doc ul li::marker { color: var(--accent); }
+
+  /* numbered procedures: accent numeral in its own column */
+  .doc ol { margin: 0.9rem 0 0; padding: 0; max-width: var(--measure); list-style: none;
+            counter-reset: step; display: flex; flex-direction: column; gap: 0.6rem; }
+  .doc ol { padding-left: 2.1rem; }
+  .doc ol li { counter-increment: step; position: relative; }
+  .doc ol li::before { content: counter(step); position: absolute;
+                       left: -2.1rem; width: 1.5rem; text-align: right;
+                       color: var(--accent); font-weight: 700;
+                       font-variant-numeric: tabular-nums; font-size: 0.86rem; }
+
+  .doc pre { font-family: var(--mono); font-size: 0.82rem; line-height: 1.65;
+             background: var(--sunk); border: 1px solid var(--rule);
+             padding: 0.85rem 1rem; margin: 1rem 0 0; overflow-x: auto; }
+  .doc pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  code { background: var(--sunk); border: 1px solid var(--rule-lo);
+         font-size: 0.85em; padding: 0.02em 0.22em; }
+
+  .doc img { display: block; width: 100%; max-width: var(--measure); height: auto;
+             margin: 1.4rem 0 0; }
+
+  .doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2.2rem 0 0; }
+
+  /* Commands are meant to be run, so they are meant to be copied. The button
+     is only drawn once the script has attached, so a page with no scripting
+     shows a plain block rather than a control that does nothing. */
+  .doc .pre-wrap { position: relative; }
+  .doc .pre-wrap .copy { position: absolute; top: 0.45rem; right: 0.45rem;
+                         font-family: var(--sans); font-size: 0.68rem;
+                         letter-spacing: 0.04em; line-height: 1;
+                         padding: 0.35rem 0.5rem; cursor: pointer;
+                         color: var(--muted); background: var(--panel);
+                         border: 1px solid var(--rule); border-radius: 0;
+                         opacity: 0; transition: opacity 0.12s ease; }
+  .doc .pre-wrap:hover .copy,
+  .doc .pre-wrap .copy:focus-visible { opacity: 1; }
+  .doc .pre-wrap .copy:hover { color: var(--ink); border-color: var(--ink); }
+  .doc .pre-wrap .copy[data-done] { color: var(--accent); border-color: var(--accent);
+                                    opacity: 1; }
+  @media print { .doc .pre-wrap .copy { display: none; } }
+
+  /* ---- callout ---- */
+
+  .doc .note { margin: 1.3rem 0 0; max-width: var(--measure); background: var(--callout);
+               border: 0; border-left: 4px solid var(--muted);
+               padding: 0.9rem 1.1rem; }
+  .doc .note.warn { border-left-color: var(--accent); background: var(--accent-lo); }
+  .doc .note p { margin: 0; max-width: none; font-size: 0.97rem; }
+  .doc .note p + p { margin-top: 0.5rem; }
+
+  /* ---- tables ----
+     Two-column tables are definition lists and get the borderless treatment:
+     bold term, hairline row rules, no header. Wider tables keep a shaded
+     header row so a 5-column CC map stays readable. */
+
+  .doc .tablewrap { margin-top: 1.2rem; border: 0; overflow-x: auto; }
+  .doc table { width: auto; max-width: min(100%, var(--measure)); }
+  .doc table.defs, .doc table.wide { width: 100%; }
+  .doc table { background: none; font-family: var(--sans); font-size: 0.94rem;
+               min-width: 0; }
+  .doc thead th { font-family: var(--sans); font-size: 0.68rem; font-weight: 700;
+                  letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--ink); background: var(--panel);
+                  border-bottom: 1px solid var(--rule); padding: 0.6rem 0.8rem;
+                  text-align: left; }
+  .doc thead th.num { text-align: right; }
+  .doc tbody td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--rule-lo);
+                  text-align: left; white-space: normal; vertical-align: top; }
+  .doc tbody td.num { text-align: right; white-space: nowrap;
+                      font-variant-numeric: tabular-nums; }
+  .doc tbody tr:last-child td { border-bottom: 1px solid var(--rule); }
+
+  /* A boxed code chip reads well in a sentence and badly in a 27-row table,
+     where every cell would carry one. Inside a table it keeps the monospace
+     and loses the box. */
+  .doc table code { background: none; border: 0; padding: 0;
+                    color: var(--ink); font-size: 0.88em; }
+
+  .doc table.defs thead { display: none; }
+  .doc table.defs tbody td:first-child { font-weight: 700; width: 12rem;
+                                         padding-left: 0; }
+  .doc table.defs tbody td:last-child { padding-right: 0; }
+
+  @media (max-width: 74rem) {
+    .wrap { grid-template-columns: minmax(0, 1fr); gap: 2rem;
+            padding: 1.75rem 1.5rem 3rem; }
+    .side { position: static; border-right: 0; padding-right: 0;
+            padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule);
+            flex-direction: row; flex-wrap: wrap; align-items: baseline;
+            gap: 0.5rem 1.5rem; }
+    .side .brand { width: 100%; }
+    .nav { flex-direction: row; flex-wrap: wrap; gap: 1.1rem; }
+    .toc { border-top: 0; padding-top: 0; width: 100%; }
+    .toc a { display: inline-grid; }
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 1.5rem 1rem 3rem; }
+    .doc table.defs tbody td:first-child { width: auto; }
+    .doc table.defs tbody tr { display: grid; }
+    .doc table.defs tbody td { border-bottom: 0; padding: 0.15rem 0; }
+    .doc table.defs tbody tr { border-bottom: 1px solid var(--rule-lo);
+                               padding: 0.5rem 0; }
+  }
+
+  @media print {
+    .side { display: none; }
+    .wrap { display: block; max-width: none; padding: 0; }
+    h2.sec { break-after: avoid; }
+    .doc table, .doc .note, .doc pre { break-inside: avoid; }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="side">
+    <p class="brand">Bitbox Micro<br>community modification</p>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html" aria-current="page">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="DEVICES.html">Devices</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="toc">
+      <p class="toc-label">On this page</p>
+      <a href="#prerequisites"><span class="n">1</span><span>Prerequisites</span></a><a class="sub" href="#presets-that-use-it"><span class="n"></span><span>Presets That Use It</span></a><a href="#preparing"><span class="n">2</span><span>Preparing</span></a><a class="sub" href="#getting-python"><span class="n"></span><span>Getting Python</span></a><a href="#building"><span class="n">3</span><span>Building</span></a><a href="#flashing"><span class="n">4</span><span>Flashing</span></a><a href="#checking-it-worked"><span class="n">5</span><span>Checking It Worked</span></a><a href="#if-something-goes-wrong"><span class="n">6</span><span>If Something Goes Wrong</span></a><a class="sub" href="#windows-cannot-find-python"><span class="n"></span><span>Windows Cannot Find Python</span></a><a class="sub" href="#if-it-stops-with-an-error"><span class="n"></span><span>If It Stops with an Error</span></a><a class="sub" href="#going-back-to-stock"><span class="n"></span><span>Going Back to Stock</span></a><a href="#can-this-brick-my-module"><span class="n">7</span><span>Can This Brick My Module?</span></a><a href="#when-new-firmware-lands"><span class="n">8</span><span>When New Firmware Lands</span></a>
+    </nav>
+  </aside>
+  <main class="main">
+    <header class="masthead">
+      <p class="eyebrow">Do this once</p>
+      <h1>Bitbox Micro Firmware: Installing</h1>
+      <p>From downloading the stock firmware to a patched module.</p>
+    </header>
+  <div class="doc">
+    <p>The one-time path from a stock 2.3.4 download to a module running the patch: what you need, how to patch it, how to install it, and what to do if it goes wrong. See <a href="index.html">the overview</a> for what the patch does, and <a href="CC-REFERENCE.html">the CC reference</a> for every number once you are set up.</p>
+  </div>
+  <section class="section" id="prerequisites">
+  <h2 class="sec"><span class="n">1</span>Prerequisites</h2>
+  <div class="doc">
+    <p>Five things, none of them exotic.</p>
+    <ul>
+      <li>A <strong>Bitbox Micro</strong> running firmware <strong>2.3.4</strong>.</li>
+      <li><a href="patch_micro.py" download><code>patch_micro.py</code></a>, the patcher itself.</li>
+      <li>Your own copy of the stock 2.3.4 image, from <a href="https://1010music.com/downloads" rel="noreferrer noopener">https://1010music.com/downloads</a> → bitbox micro → <strong><code>MICRO234.zip</code></strong>. The script will not run without it, and none of it ships here.</li>
+      <li><strong>Python 3.</strong> Any version from the last several years works, with no compiler, no build step, nothing to configure. See <a href="#getting-python">Getting Python</a>.</li>
+      <li>A microSD card the module can read. Any working card is fine for flashing: the image is small and gets read once. If you are buying one anyway, <strong>V30 is the rating worth having</strong>. It promises 30 MB/s sustained where Class 10 promises 10, which matters for streaming samples while you play rather than for this.</li>
+    </ul>
+    <p>Two things worth doing first:</p>
+    <ol>
+      <li><strong>Keep the stock <code>MICRO.BIN</code></strong>, and keep 1010music's <code>MICRO234.zip</code> too. It is how you go back, and the script wants it again every re-patch.</li>
+      <li><strong>Back up your SD card.</strong> The patch never touches your presets or samples. Back it up anyway.</li>
+    </ol>
+    <h3 id="presets-that-use-it">Presets That Use It</h3>
+    <p>The controls need no setup and work on every preset the moment you flash. But an old preset only gives back what it was built to do. See <a href="PAD-CONTROLS.html#building-a-preset-for-this">Building a Preset for This</a> for what that takes.</p>
+  </div>
+  </section>
+  <section class="section" id="preparing">
+  <h2 class="sec"><span class="n">2</span>Preparing</h2>
+  <div class="doc">
+    <p>The firmware is 1010music's, and you download it from them yourself, under whatever terms they put on it. Nothing here redistributes it. Unzip it. You get <code>MICRO.BIN</code>. The version lives in the zip's name and nowhere in the file's, worth knowing before your folder fills with unlabelled copies.</p>
+    <p>If you already have a patched build installed, patch your stock <code>MICRO.BIN</code> again with the new script, not the patched image you flashed last time. The script checks. It refuses a file that has already been through it. That is the safety net working, not a fault. If you no longer have the stock file, download <code>MICRO234.zip</code> from 1010music again.</p>
+    <p>The patcher refuses more than it accepts. A wrong firmware version, a file already patched, a patch site not holding the exact instruction it expects, or an output path that would overwrite your stock copy: each one stops it before a single byte is written.</p>
+    <h3 id="getting-python">Getting Python</h3>
+    <div class="note warn"><p><strong>Windows</strong>: you will need to install it. Download it from <a href="https://www.python.org/downloads/" rel="noreferrer noopener">https://www.python.org/downloads/</a> and run the installer. On the very first screen, tick "Add python.exe to PATH" before you click Install. Older installers word it "Add Python to PATH," the same box. That one tickbox is the difference between this working and not, and it is easy to click straight past. Missing it breaks nothing; see <em>If Windows Cannot Find Python</em> below.</p></div>
+    <div class="note"><p><strong>macOS</strong>: usually there already. The first time you type <code>python3</code>, macOS may offer to install its command line tools. Say yes and let it finish. It is a big download. Give it a few minutes. It has not hung.</p></div>
+    <div class="note"><p><strong>Linux</strong>: already there. If a minimal install left it out, your package manager has it under the name <code>python3</code>.</p></div>
+    <p>You run the script from a terminal, in the folder that contains <code>patch_micro.py</code> and <code>MICRO.BIN</code>.</p>
+    <p>Getting the terminal into that folder:</p>
+    <ul>
+      <li>Windows: open the folder in File Explorer, click into the address bar at the top, type <code>cmd</code> over what is there, and press Enter. PowerShell works the same way.</li>
+      <li>macOS: open Terminal, type <code>cd </code> (with the space), then drag the folder from Finder onto the Terminal window and press Enter. It fills in the path for you.</li>
+      <li>Linux: most file managers have "Open Terminal Here" on the right-click menu. The macOS drag trick works in most terminals too.</li>
+    </ul>
+  </div>
+  </section>
+  <section class="section" id="building">
+  <h2 class="sec"><span class="n">3</span>Building</h2>
+  <div class="doc">
+    <p>Enter the commands one line at a time, pressing Enter after each.</p>
+    <p>Do not double-click <code>patch_micro.py</code>. It has to be run from a terminal; double-clicking it will either open a text editor or flash a black window shut before you can read it.</p>
+    <p>On Windows:</p>
+    <pre><code>mkdir patched
+python patch_micro.py MICRO.BIN patched/MICRO.BIN</code></pre>
+    <p>The forward slash is right on Windows too. Python reads it, not the shell. No backslash needed.</p>
+    <p>On macOS and Linux, the same thing, but the command is <code>python3</code>:</p>
+    <pre><code>mkdir patched
+python3 patch_micro.py MICRO.BIN patched/MICRO.BIN</code></pre>
+    <p>On all three, if you have patched before, <code>mkdir patched</code> will say the folder already exists. That is fine: it is the folder you wanted. Carry on.</p>
+    <p>If it says it cannot open <code>patch_micro.py</code>, a long line ending in <code>[Errno 2] No such file or directory</code>, the terminal is not in the folder those two files are in. Nothing is missing and nothing is broken. The long path in that message is where the terminal looked. Go back to <em>Getting the terminal into that folder</em> above and try again.</p>
+    <p>The patched image must also be called <code>MICRO.BIN</code>, exact name, upper case, for the module to find it. That is why it goes in its own folder: writing the output over your input would destroy the only stock copy you have, and that copy is your way back if anything goes wrong. It refuses if you try.</p>
+    <p>That file is yours alone: do not pass it on. See <a href="index.html#a-patcher-not-firmware">A Patcher, Not Firmware</a> for why.</p>
+    <p>You should see something like:</p>
+    <pre><code>  Checking your firmware...
+     ok   Genuine bitbox micro 2.3.4, nothing done to it yet
+     ok   The code is where the patch expects to find it
+
+  Embellishing your bitbox micro with community requests...
+     ok   Compressor on/off, ch 1      CC 40
+     ok   Compressor threshold, ch 1   CC 41
+     ok   Compressor ratio, ch 1       CC 42
+     ok   Compressor attack, ch 1      CC 43
+     ok   Compressor release, ch 1     CC 44
+     ok   Compressor makeup, ch 1      CC 45
+     ok   EQ mode select, ch 1         CC 50
+     ok   EQ control A, ch 1           CC 51
+     ok   EQ control B, ch 1           CC 52
+     ok   EQ control C, ch 1           CC 53
+     ok   EQ button A, ch 1            CC 54
+     ok   EQ button B, ch 1            CC 55
+     ok   EQ button C, ch 1            CC 56
+     ok   EQ master bypass, ch 1       CC 57
+     ok   EQ filter slope, ch 1        CC 59
+     ok   Granular density, per pad    CC 79
+     ok   Granular grain size, per pad CC 80
+     ok   Granular window, per pad     CC 81
+     ok   Granular scatter, per pad    CC 82
+     ok   Granular pan random, per pad CC 83
+     ok   Delay send, per pad          CC 84
+     ok   Reverb send, per pad         CC 85
+     ok   Reverse, per pad             CC 86
+     ok   Envelope sustain, per pad    CC 87
+     ok   Loop mode, per pad           CC 88
+     ok   Loop crossfade, per pad      CC 89
+     ok   Play through, slicer pads    CC 90
+     ok   LFO wave, per pad            CC 91
+     ok   LFO beat-sync, per pad       CC 92
+     ok   LFO retrigger, per pad       CC 93
+     ok   Delay beat-sync, global      CC 108
+     ok   Delay ping-pong, global      CC 109
+     ok   Delay filter, global         CC 110
+     ok   Delay filter width, global   CC 111
+     ok   Stop this pad                CC 120 / 123
+     ok   Splash screen, so nobody blames 1010music for my work
+
+  Done. MICRO.BIN is ready -- 676,164 bytes.
+
+     Fingerprint  46affcde81318a4c9c4cdaa0467a6958156079d4a683bdf56c48aa573c5d70a2</code></pre>
+    <p>It then tells you how to get the file onto the module. That is written out below.</p>
+    <p>Check the fingerprint matches the one above. If it does, you have built exactly the same firmware as everybody else running this patch, down to the byte.</p>
+    <p>Add <code>-v</code> if you want to watch it work: addresses, opcodes and byte counts for every change it makes.</p>
+  </div>
+  </section>
+  <section class="section" id="flashing">
+  <h2 class="sec"><span class="n">4</span>Flashing</h2>
+  <div class="doc">
+    <ol>
+      <li>Copy <code>patched/MICRO.BIN</code> to the <strong>root</strong> of the microSD card, not inside a folder. Leave your stock copy where it is: it is how you go back.</li>
+      <li>Power the module off and insert the card.</li>
+      <li>Hold the <strong>white right-arrow</strong> button while powering on.</li>
+      <li>Release when the display shows <em>Erasing</em> / <em>Programming</em>. It takes about 15 seconds.</li>
+    </ol>
+    <p>Do not interrupt the power while it is writing.</p>
+  </div>
+  </section>
+  <section class="section" id="checking-it-worked">
+  <h2 class="sec"><span class="n">5</span>Checking It Worked</h2>
+  <div class="doc">
+    <p>The splash on the next boot should read:</p>
+    <pre><code>bitbox micro
+community fw
+2.3.7-mod</code></pre>
+    <p>If it still says <code>by 1010music</code> and <code>2.3.4</code>, the module booted the old firmware and nothing was flashed. Check the file is named <code>MICRO.BIN</code> and sits in the card root. Then try again.</p>
+    <p>Check this every flash. It is the only reliable confirmation of which image is actually running, and it takes one second, against the twenty minutes you would otherwise waste proving a CC does not work on firmware that was never installed.</p>
+    <p>Then test the CCs by listening, not by watching the screen. For all but two of them the display never moves, on this firmware or the stock one, so your ears are the only way to tell. This catches everybody exactly once. The two that do show, Reverse and Loop Mode, are the fastest way to prove your controller is getting through. See <a href="CC-REFERENCE.html">the CC reference</a> for the full control list once you start checking them off.</p>
+  </div>
+  </section>
+  <section class="section" id="if-something-goes-wrong">
+  <h2 class="sec"><span class="n">6</span>If Something Goes Wrong</h2>
+  <div class="doc">
+    <h3 id="windows-cannot-find-python">Windows Cannot Find Python</h3>
+    <p>Two things can happen here. Neither means you broke anything.</p>
+    <h4 id="the-microsoft-store-opens-instead-of-running-anything">The Microsoft Store Opens Instead of Running Anything</h4>
+    <p>Python is not installed yet, and Windows is offering to sort that out. Take the Store's copy, or install from python.org as above; either works.</p>
+    <h4 id="it-says-python-is-not-recognized">It Says 'python' Is Not Recognized</h4>
+    <p>Python is installed, but Windows does not know where to find it: the "Add python.exe to PATH" tickbox was missed during the install. Before you reinstall anything, try <code>py</code> instead of <code>python</code>:</p>
+    <pre><code>py patch_micro.py MICRO.BIN patched/MICRO.BIN</code></pre>
+    <p><code>py</code> is a small launcher that comes with Python and gets added to PATH whether or not you ticked that box, so it usually works when <code>python</code> does not.</p>
+    <p>If <code>py</code> does not work either, install Python again from <a href="https://www.python.org/downloads/" rel="noreferrer noopener">https://www.python.org/downloads/</a> and tick "Add python.exe to PATH" this time. Nothing is wrong with the script or your download.</p>
+    <h3 id="if-it-stops-with-an-error">If It Stops with an Error</h3>
+    <p>Good. That is the safety check earning its keep. It tells you what it found and what it expected, and it will not have written a thing.</p>
+    <ul>
+      <li><em>"That is not the stock 2.3.4 firmware"</em>: the input is a different version, already patched, or a truncated download. If you are upgrading from an earlier version of this patch, this is almost certainly why: you have pointed the script at the patched image you flashed last time, not at stock. Patch your original <code>MICRO.BIN</code> again, the one straight out of <code>MICRO234.zip</code>. There is no upgrade-in-place path, and there never will be. Every safety check here is written against stock bytes, which is why it caught this. Download <code>MICRO234.zip</code> from 1010music again if you no longer have it.</li>
+      <li><em>"The code at … is not what it should be"</em>: the file passes the checksum, but the machine code underneath is wrong, which should be impossible. Something strange is happening. Forcing it will not make it less strange.</li>
+    </ul>
+    <p>The script checks every site before it writes anything, so there is no such thing as a half-patched file. It is all or nothing. It prefers nothing.</p>
+    <h3 id="going-back-to-stock">Going Back to Stock</h3>
+    <p>The bootloader stays untouched throughout. It lives in a separate region of flash that this patch never writes to. It is what performs the update, so a bad firmware image cannot stop you flashing a different one.</p>
+    <p>To go back to stock, rename your original 1010music download to <code>MICRO.BIN</code>, put it in the card root, and follow the same install steps. The module overwrites the patched image with it and forgets any of this happened. This is also the answer if you simply preferred it before.</p>
+  </div>
+  </section>
+  <section class="section" id="can-this-brick-my-module">
+  <h2 class="sec"><span class="n">7</span>Can This Brick My Module?</h2>
+  <div class="doc">
+    <p>No. Not because the script is careful, though it is, but because of how the module itself is put together.</p>
+    <p>The part that actually flashes firmware is the bootloader, a separate program in its own region of flash. It is not in the file you are patching. This patch never writes near it.</p>
+    <p>You can prove that from the firmware image itself. The words <code>Erasing</code>, <code>Programming</code>, <code>Verifying</code> and <code>Bootloader</code>, the ones on screen during an update, appear nowhere in the firmware file. They belong to the bootloader, which has its own display code and its own SD card handling, and never calls into the firmware. The firmware cannot even write to flash: the unlock sequence needed to do that is not in the image.</p>
+    <p>The update is also triggered by holding a physical button at power-on, before any firmware runs. Recovery does not depend on the firmware working, which is exactly what you want from a recovery path. A completely broken image still cannot stop you flashing a good one.</p>
+    <p>Worst case: the module boots oddly, or not at all. You hold the white right-arrow, flash the stock image back, and you are where you started about two minutes later.</p>
+    <p>Two things make this narrower than it sounds. The change to the original image is tiny and everything else is appended, so nothing is deleted, moved or overwritten. The one genuine risk, losing power mid-write, takes about 15 seconds and is no worse than an official 1010music update. Even then the bootloader survives, so you just try again. Do not flash from a laptop about to sleep, or a supply you do not trust.</p>
+    <p>See <a href="#if-something-goes-wrong">If Something Goes Wrong</a> above for the exact steps back to stock.</p>
+  </div>
+  </section>
+  <section class="section" id="when-new-firmware-lands">
+  <h2 class="sec"><span class="n">8</span>When New Firmware Lands</h2>
+  <div class="doc">
+    <p>The patcher will refuse it, and it is being stubborn on your behalf. The addresses it writes to are specific to 2.3.4; on a different build they point somewhere else entirely, and somewhere else is not a good place to write. Do not try to work around the version check; someone has to redo the reverse engineering first.</p>
+  </div>
+  </section>
+    <footer><span>Unofficial. Not endorsed by or affiliated with 1010music. Supplied as is, under the MIT licence in LICENSE.</span><span>Bitbox Micro Firmware: Installing</span></footer>
+  </main>
+</div>
+<script>
+// Adds a copy control to each code block. Written here rather than fetched:
+// a downloaded folder has no network, and the pages must work from file://.
+// navigator.clipboard is unavailable on file:// in some browsers, so fall
+// back to a selection-based copy rather than failing silently.
+(function () {
+  var blocks = document.querySelectorAll('.doc pre');
+  Array.prototype.forEach.call(blocks, function (pre) {
+    var wrap = document.createElement('div');
+    wrap.className = 'pre-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy this block');
+    wrap.appendChild(btn);
+
+    btn.addEventListener('click', function () {
+      var text = pre.innerText;
+      var done = function () {
+        btn.textContent = 'Copied';
+        btn.setAttribute('data-done', '');
+        setTimeout(function () {
+          btn.textContent = 'Copy';
+          btn.removeAttribute('data-done');
+        }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'Select and copy'; }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

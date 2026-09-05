@@ -6,6 +6,16 @@ included here in any form, and no permission over it is granted or implied — n
 to the stock image you supply, and not to the patched image the script produces
 from it.
 
+Running this project's modified firmware can affect your warranty. Assume that
+it does, and check 1010music's own warranty terms yourself rather than trusting
+this file on the subject.
+
+Flash the stock firmware back before sending a unit in for service. If a fault
+could plausibly be connected to running modified firmware, say so when asked.
+Restoring stock to tidy up an unrelated issue is reasonable; using it to hide a
+relevant detail is not, and it is how goodwill for projects like this gets
+destroyed for everyone.
+
 ----------------------------------------------------------------------
 
 MIT License
