@@ -118,7 +118,9 @@ each colour is. Save it as `theme.tml` at the top of the card, and set Theme to
 CUSTOM. In CUSTOM, the CPU bar uses your theme's green, yellow and red.
 
 After changing the file, set Theme to another theme and back to CUSTOM to
-reload it. This works even if you swapped the card while the module was on.
+reload it. This works even if you swapped the card while the module was on:
+your colours appear a moment later. If the bar at the top of TOOLS keeps the
+old colours, set Theme away and back once more.
 
 If the card has no `theme.tml`, choosing CUSTOM creates one from the current
 theme. Missing or invalid colours fall back to Stock's.

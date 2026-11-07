@@ -280,6 +280,33 @@
               font-weight: 400; flex: none; }
   h2.sec .n::after { content: " /"; color: var(--muted); }
 
+  /* A fold: one numbered heading that opens the sections inside it. */
+  details.fold { display: block; margin: 3.4rem 0 0; }
+  summary.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+                font-weight: 700; letter-spacing: -0.01em; color: var(--ink);
+                padding-bottom: 0.5rem; border-bottom: 2px solid var(--ink);
+                display: flex; gap: 0.7rem; align-items: baseline; cursor: pointer;
+                list-style: none; }
+  summary.sec::-webkit-details-marker { display: none; }
+  summary.sec .n { font-variant-numeric: tabular-nums; font-weight: 400; flex: none; }
+  summary.sec .n::after { content: " /"; color: var(--muted); }
+  summary.sec::after { content: "Show"; margin-left: auto; font-family: var(--sans);
+                       font-size: 0.8rem; font-weight: 600; color: var(--accent); }
+  details.fold[open] > summary.sec::after { content: "Hide"; }
+  summary.sec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  details.fold > .section:first-of-type { margin-top: 2.2rem; }
+  /* A smaller fold inside a section, styled like the section's ### headings. */
+  details.subfold { margin: 1.6rem 0 0; border: 1px solid var(--rule); border-radius: 6px;
+                    padding: 0.7rem 1rem; }
+  summary.subsec { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+                   letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+                   cursor: pointer; list-style: none; display: flex; }
+  summary.subsec::-webkit-details-marker { display: none; }
+  summary.subsec::after { content: "Show"; margin-left: auto; letter-spacing: 0;
+                          text-transform: none; font-weight: 600; font-size: 0.8rem; }
+  details.subfold[open] > summary.subsec::after { content: "Hide"; }
+  summary.subsec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
   /* ---- prose ---- */
 
   .doc { font-family: var(--sans); font-size: 1.02rem; }
@@ -325,6 +352,8 @@
              margin: 1.4rem 0 0; }
   /* Screenshots of the module are pixel art: natural size, never blurred. */
   .doc img[src$=".png"] { width: auto; max-width: 100%; image-rendering: pixelated; }
+  /* The web patcher's picture is a page, not pixel art: 800 px shown at 400, smooth. */
+  .doc img[src$="web-patcher.png"] { width: 400px; image-rendering: auto; }
 
   .doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2.2rem 0 0; }
 

@@ -1,10 +1,10 @@
-This licence covers patch_micro.py and the documentation in this folder, and
-nothing else.
+This licence covers patch_micro.py, patcher.html and the documentation in this
+folder, and nothing else.
 
 It does NOT cover the bitbox micro firmware. That is 1010music's work, it is not
 included here in any form, and no permission over it is granted or implied — not
-to the stock image you supply, and not to the patched image the script produces
-from it.
+to the stock image you supply, and not to the patched image the script or the
+page produces from it.
 
 Running this project's modified firmware can affect your warranty. Assume that
 it does, and check 1010music's own warranty terms yourself rather than trusting

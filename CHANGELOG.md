@@ -5,6 +5,34 @@ something you would notice: what the module does differently once it is
 flashed, what the patcher does differently to your files, or what changed in
 the guide you are reading. None of them covers how any of it is built.
 
+## 2.3.11-mod — November 2026
+
+- Functionality from 2.3.10-mod is unchanged. A new
+  [web patcher](patcher.html) just makes installing easier: drop in
+  1010music's `MICRO234.zip` and download the patched `MICRO.BIN`, with nothing
+  to install. Earlier versions, back to 2.3.5-mod, are under Advanced.
+- Otherwise, a maintenance release that makes the module far more tolerant of
+  microSD cards that don't meet the SD specification. Recommended for everyone
+  on 2.3.10-mod.
+- In testing, some cards went to sleep after 20 to 30 seconds of inactivity,
+  then took up to 8 seconds to respond to a read request. The SD Association's
+  specification requires SDHC and SDXC cards to respond within 100 ms. Stock
+  2.3.4 waits only 5 seconds, after which the module can restart repeatedly
+  until it's power cycled.
+- Any read after the card has been idle, such as loading a preset, can trigger
+  it, on stock and on 2.3.10-mod. In 2.3.10-mod, switching to the Custom theme
+  also reads the card.
+- 2.3.11-mod keeps such cards awake, waits long enough for a slow answer, and
+  recovers a stuck read instead of restarting. If a card still stops
+  responding, you see "Please insert microSD card": take the card out and put
+  it back.
+- Enhanced stability when hot swapping Custom themes: put the card back with
+  the module running, then set Theme to another theme and back to Custom.
+- In testing, a SanDisk Extreme PRO microSDXC, 64 GB (SDSQXCU-064G-GN6MA),
+  responded in 2 ms even after 90 seconds of inactivity. An 8 GB SDHC Class 10
+  card made in 2025 took 8.3 seconds after a minute of inactivity, causing
+  restart loops on stock 2.3.4. On 2.3.11-mod it ran without a single failure.
+
 ## 2.3.10-mod — October 2026
 
 - Loops that really follow your tempo, 24 Live Flip modes to re-cut a loop live, and

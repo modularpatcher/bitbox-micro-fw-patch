@@ -1,36 +1,42 @@
 # Bitbox Micro Firmware: Installing
 
-This page takes you from a stock 2.3.4 download to a module running the patch.
-See [the overview](README.md) for what the patch does.
+From 1010music's 2.3.4 download to a module running the patch. See
+[the overview](README.md) for what the patch does.
+
+## Before You Start
+
+You need a **Bitbox Micro** on firmware **2.3.4** and a microSD card. Keep
+1010music's `MICRO234.zip`: it is how you go back to stock. Back up your card
+first. The patch never touches your presets or samples, but back it up anyway.
+
+## The Quick Way
+
+[The web patcher](patcher.html) does the whole build in your browser. Download
+`MICRO234.zip` from 1010music, drop it on the page, and it gives you the new
+`MICRO.BIN`. Nothing is uploaded and there is nothing to install. Then follow
+[Flashing](#flashing) to put it on your module.
+
+![The web patcher: three numbered steps above a box reading Drop MICRO234.zip
+here, with Advanced folded away at the bottom.](web-patcher.png)
+
+If you have been asked to try an earlier version, it is under **Advanced** on
+the same page. Prefer Python? It builds exactly the same file. See
+[Using Python instead](#prerequisites).
+
+<details>
+<summary>Using Python instead</summary>
 
 ## Prerequisites
 
-You need five things, none of them exotic.
+On top of [Before You Start](#before-you-start), the Python route needs three
+things, none of them exotic.
 
-- A **Bitbox Micro** running firmware **2.3.4**.
 - [`patch_micro.py`](patch_micro.py), the patcher itself.
 - Your own copy of the stock 2.3.4 image, from
   <https://1010music.com/downloads> → bitbox micro → **`MICRO234.zip`**. The
   script will not run without it, and none of it ships here.
 - **Python 3**, any version from the last several years. There is nothing to
   compile or configure. See [Getting Python](#getting-python).
-- A microSD card the module can read. Any working card will flash. If you are
-  buying one anyway, **V30** is the rating worth having for streaming samples
-  while you play.
-
-Do two things first:
-
-1. **Keep the stock `MICRO.BIN`**, and keep 1010music's `MICRO234.zip` too.
-   It is how you go back, and the script needs it again every time you re-patch.
-2. **Back up your SD card.** The patch never touches your presets or
-   samples. Back it up anyway.
-
-### Presets That Use It
-
-There is nothing to set up on the module. The controls work on every preset,
-and you set your controller to send their CCs. An old preset can only give back
-what it was built to do, though. See
-[Building a Preset for This](PAD-CONTROLS.md#building-a-preset-for-this).
 
 ## Preparing
 
@@ -167,14 +173,15 @@ You should see something like this:
      ok   Clip modes, per pad          CC 112-116
      ok   Live Flip modes, per pad     CC 117
      ok   Hold buttons, per pad        CC 78, 102, 104, 105, 107, 118, 119
+     ok   SD card waits, bounded       a stuck card no longer restarts it
      ok   ProgChange: OFF/ON/NEW ONLY  TOOLS > Settings
      ok   Clk Loss: INTERNAL/HOLD      TOOLS > Settings
      ok   Flip UI, screen and touch    TOOLS > Settings
      ok   Splash screen, so nobody blames 1010music for my work
 
-  Done. MICRO.BIN is ready -- 812,000 bytes.
+  Done. MICRO.BIN is ready -- 813,824 bytes.
 
-     Fingerprint  62f15b366fdac8181ca070b5ddf53476955c91ca80e184d526782cf8d49ac7b7
+     Fingerprint  f5fa62b3fe5e18a2a941e200a054230fef9fd32834d342b379d8702ca0ec109b
 ```
 
 Check that the fingerprint matches the one above. If it does, your firmware is
@@ -182,16 +189,23 @@ byte-for-byte the same as everyone else's running this patch.
 
 Add `-v` to see every change it makes.
 
+</details>
+
 ## Flashing
 
-1. Copy `patched/MICRO.BIN` to the **root** of the microSD card, not inside a
-   folder. Leave your stock copy where it is. It is how you go back.
+1. Copy `MICRO.BIN` to the **root** of the microSD card, not inside a folder.
+   If you saved it straight to the card, it is already there. Otherwise it is
+   in the `Bitbox Micro` zip or folder you downloaded, or at
+   `patched/MICRO.BIN` if you used the script.
 2. Power the module off and insert the card.
 3. Hold the **white right-arrow** button while powering on.
 4. Release when the display shows *Erasing* / *Programming*. It takes about
    15 seconds.
 
 Do not interrupt the power while it is writing.
+
+Any working card will flash. For streaming samples while you play, **V30** is
+the rating worth having. Tested with a SanDisk Extreme PRO (SDSQXCU-064G-GN6MA).
 
 ## Checking It Worked
 
@@ -200,11 +214,8 @@ The splash on the next boot should read:
 ```text
 bitbox micro
 community fw
-2.3.10-mod
+2.3.11-mod
 ```
-
-If it still says `by 1010music` and `2.3.4`, nothing was flashed. Check that
-the file is named `MICRO.BIN` and sits in the card root. Then try again.
 
 Check the splash after every flash. It takes a second, and it saves you chasing
 a CC on firmware that was never installed.
@@ -214,7 +225,21 @@ name what it changed. That proves the patch is running and your controller is
 getting through. The [CC reference](CC-REFERENCE.md) has the full list, and
 [Settings](SETTINGS.md) covers the new rows on the Settings screen.
 
+### Presets That Use It
+
+There is nothing to set up on the module. The controls work on every preset,
+and you set your controller to send their CCs. An old preset can only give back
+what it was built to do, though. See
+[Building a Preset for This](PAD-CONTROLS.md#building-a-preset-for-this).
+
 ## If Something Goes Wrong
+
+If the splash still says `by 1010music` and `2.3.4`, nothing was flashed.
+Check that the file is named exactly `MICRO.BIN` and sits in the card root,
+not in a folder. Then flash again.
+
+<details>
+<summary>If you used the Python script</summary>
 
 ### Windows Cannot Find Python
 
@@ -257,6 +282,8 @@ expected, and it has written nothing.
 
 The script checks everything before it writes anything, so there is no such
 thing as a half-patched file.
+
+</details>
 
 ### Going Back to Stock
 

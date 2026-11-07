@@ -280,6 +280,33 @@
               font-weight: 400; flex: none; }
   h2.sec .n::after { content: " /"; color: var(--muted); }
 
+  /* A fold: one numbered heading that opens the sections inside it. */
+  details.fold { display: block; margin: 3.4rem 0 0; }
+  summary.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+                font-weight: 700; letter-spacing: -0.01em; color: var(--ink);
+                padding-bottom: 0.5rem; border-bottom: 2px solid var(--ink);
+                display: flex; gap: 0.7rem; align-items: baseline; cursor: pointer;
+                list-style: none; }
+  summary.sec::-webkit-details-marker { display: none; }
+  summary.sec .n { font-variant-numeric: tabular-nums; font-weight: 400; flex: none; }
+  summary.sec .n::after { content: " /"; color: var(--muted); }
+  summary.sec::after { content: "Show"; margin-left: auto; font-family: var(--sans);
+                       font-size: 0.8rem; font-weight: 600; color: var(--accent); }
+  details.fold[open] > summary.sec::after { content: "Hide"; }
+  summary.sec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  details.fold > .section:first-of-type { margin-top: 2.2rem; }
+  /* A smaller fold inside a section, styled like the section's ### headings. */
+  details.subfold { margin: 1.6rem 0 0; border: 1px solid var(--rule); border-radius: 6px;
+                    padding: 0.7rem 1rem; }
+  summary.subsec { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+                   letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+                   cursor: pointer; list-style: none; display: flex; }
+  summary.subsec::-webkit-details-marker { display: none; }
+  summary.subsec::after { content: "Show"; margin-left: auto; letter-spacing: 0;
+                          text-transform: none; font-weight: 600; font-size: 0.8rem; }
+  details.subfold[open] > summary.subsec::after { content: "Hide"; }
+  summary.subsec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
   /* ---- prose ---- */
 
   .doc { font-family: var(--sans); font-size: 1.02rem; }
@@ -325,6 +352,8 @@
              margin: 1.4rem 0 0; }
   /* Screenshots of the module are pixel art: natural size, never blurred. */
   .doc img[src$=".png"] { width: auto; max-width: 100%; image-rendering: pixelated; }
+  /* The web patcher's picture is a page, not pixel art: 800 px shown at 400, smooth. */
+  .doc img[src$="web-patcher.png"] { width: 400px; image-rendering: auto; }
 
   .doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2.2rem 0 0; }
 
@@ -445,7 +474,7 @@
       <li>A pop-up showing what every CC just changed, and screen themes.</li>
     </ul>
     <p>Everything works live.</p>
-    <p>It is unofficial. Nobody at 1010music wrote or endorsed it, so do not ask them for support. The splash reads <code>community fw</code>, so a patched unit is never mistaken for theirs. Assume it affects your warranty. It <a href="INSTALLING.html#can-this-brick-my-module">cannot brick the module</a>, though.</p>
+    <p>It is unofficial. Nobody at 1010music wrote or endorsed it, so do not ask them for support. The splash reads <code>community fw</code>, so a patched unit is never mistaken for theirs. Assume it affects your warranty. Use at your own risk. It <a href="INSTALLING.html#can-this-brick-my-module">cannot brick the module</a>, though.</p>
   </div>
   <section class="section" id="a-patcher-not-firmware">
   <h2 class="sec"><span class="n">1</span>A Patcher, Not Firmware</h2>
@@ -457,7 +486,7 @@
   <section class="section" id="quick-start">
   <h2 class="sec"><span class="n">2</span>Quick Start</h2>
   <div class="doc">
-    <p>You need a Bitbox Micro on firmware 2.3.4, Python 3 and a microSD card. Get <a href="patch_micro.py" download><code>patch_micro.py</code></a>, and <code>MICRO234.zip</code> from 1010music. Run the script on the zip and copy the result to your card. The splash should then read <code>community fw</code>. <a href="INSTALLING.html">Installing</a> has every step.</p>
+    <p>You need a Bitbox Micro on firmware 2.3.4 and a microSD card. Download <code>MICRO234.zip</code> from 1010music, drop it on <a href="patcher.html">the web patcher</a>, and copy the <code>MICRO.BIN</code> it gives you to your card. The splash should then read <code>community fw</code>. <a href="INSTALLING.html">Installing</a> has every step, and the Python route.</p>
   </div>
   </section>
   <section class="section" id="read-next">
@@ -495,7 +524,7 @@
   <section class="section" id="if-youre-from-1010music">
   <h2 class="sec"><span class="n">6</span>If You're from 1010music</h2>
   <div class="doc">
-    <p>Thank you for the Bitbox Micro. It is a wonderful little module, and worth the time spent inside it. No firmware of yours is included, in any form. Everybody downloads it from your site, under your terms, and the script refuses anything else. What ships is one Python file, a guide, and an MIT licence covering only those. The splash reads <code>community fw</code>, and anyone with a problem is told to flash your firmware back before contacting you.</p>
+    <p>Thank you for the Bitbox Micro. It is a wonderful little module, and worth the time spent inside it. No firmware of yours is included, in any form. Everybody downloads it from your site, under your terms, and the script and the page refuse anything else. What ships is one Python file, a web page that does the same job in a browser, a guide, and an MIT licence covering only those. The splash reads <code>community fw</code>, and anyone with a problem is told to flash your firmware back before contacting you.</p>
   </div>
   </section>
   <section class="section" id="getting-help">

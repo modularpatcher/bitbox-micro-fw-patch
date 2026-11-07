@@ -280,6 +280,33 @@
               font-weight: 400; flex: none; }
   h2.sec .n::after { content: " /"; color: var(--muted); }
 
+  /* A fold: one numbered heading that opens the sections inside it. */
+  details.fold { display: block; margin: 3.4rem 0 0; }
+  summary.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+                font-weight: 700; letter-spacing: -0.01em; color: var(--ink);
+                padding-bottom: 0.5rem; border-bottom: 2px solid var(--ink);
+                display: flex; gap: 0.7rem; align-items: baseline; cursor: pointer;
+                list-style: none; }
+  summary.sec::-webkit-details-marker { display: none; }
+  summary.sec .n { font-variant-numeric: tabular-nums; font-weight: 400; flex: none; }
+  summary.sec .n::after { content: " /"; color: var(--muted); }
+  summary.sec::after { content: "Show"; margin-left: auto; font-family: var(--sans);
+                       font-size: 0.8rem; font-weight: 600; color: var(--accent); }
+  details.fold[open] > summary.sec::after { content: "Hide"; }
+  summary.sec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  details.fold > .section:first-of-type { margin-top: 2.2rem; }
+  /* A smaller fold inside a section, styled like the section's ### headings. */
+  details.subfold { margin: 1.6rem 0 0; border: 1px solid var(--rule); border-radius: 6px;
+                    padding: 0.7rem 1rem; }
+  summary.subsec { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+                   letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+                   cursor: pointer; list-style: none; display: flex; }
+  summary.subsec::-webkit-details-marker { display: none; }
+  summary.subsec::after { content: "Show"; margin-left: auto; letter-spacing: 0;
+                          text-transform: none; font-weight: 600; font-size: 0.8rem; }
+  details.subfold[open] > summary.subsec::after { content: "Hide"; }
+  summary.subsec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
   /* ---- prose ---- */
 
   .doc { font-family: var(--sans); font-size: 1.02rem; }
@@ -325,6 +352,8 @@
              margin: 1.4rem 0 0; }
   /* Screenshots of the module are pixel art: natural size, never blurred. */
   .doc img[src$=".png"] { width: auto; max-width: 100%; image-rendering: pixelated; }
+  /* The web patcher's picture is a page, not pixel art: 800 px shown at 400, smooth. */
+  .doc img[src$="web-patcher.png"] { width: 400px; image-rendering: auto; }
 
   .doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2.2rem 0 0; }
 
@@ -426,7 +455,7 @@
     <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html" aria-current="page">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
-      <a href="#2310-mod--october-2026"><span class="n">1</span><span>2.3.10-mod — October 2026</span></a><a href="#239-mod--october-2026"><span class="n">2</span><span>2.3.9-mod — October 2026</span></a><a href="#238-mod--october-2026"><span class="n">3</span><span>2.3.8-mod — October 2026</span></a><a href="#237-mod--september-2026"><span class="n">4</span><span>2.3.7-mod — September 2026</span></a><a href="#236-mod--september-2026"><span class="n">5</span><span>2.3.6-mod — September 2026</span></a><a href="#235-mod--august-2026"><span class="n">6</span><span>2.3.5-mod — August 2026</span></a>
+      <a href="#2311-mod--november-2026"><span class="n">1</span><span>2.3.11-mod — November 2026</span></a><a href="#2310-mod--october-2026"><span class="n">2</span><span>2.3.10-mod — October 2026</span></a><a href="#239-mod--october-2026"><span class="n">3</span><span>2.3.9-mod — October 2026</span></a><a href="#238-mod--october-2026"><span class="n">4</span><span>2.3.8-mod — October 2026</span></a><a href="#237-mod--september-2026"><span class="n">5</span><span>2.3.7-mod — September 2026</span></a><a href="#236-mod--september-2026"><span class="n">6</span><span>2.3.6-mod — September 2026</span></a><a href="#235-mod--august-2026"><span class="n">7</span><span>2.3.5-mod — August 2026</span></a>
     </nav>
   </aside>
   <main class="main">
@@ -438,8 +467,22 @@
   <div class="doc">
     <p>Changes to the Bitbox Micro firmware patch, newest first. Each entry describes something you would notice: what the module does differently once it is flashed, what the patcher does differently to your files, or what changed in the guide you are reading. None of them covers how any of it is built.</p>
   </div>
+  <section class="section" id="2311-mod--november-2026">
+  <h2 class="sec"><span class="n">1</span>2.3.11-mod — November 2026</h2>
+  <div class="doc">
+    <ul>
+      <li>Functionality from 2.3.10-mod is unchanged. A new <a href="patcher.html">web patcher</a> just makes installing easier: drop in 1010music's <code>MICRO234.zip</code> and download the patched <code>MICRO.BIN</code>, with nothing to install. Earlier versions, back to 2.3.5-mod, are under Advanced.</li>
+      <li>Otherwise, a maintenance release that makes the module far more tolerant of microSD cards that don't meet the SD specification. Recommended for everyone on 2.3.10-mod.</li>
+      <li>In testing, some cards went to sleep after 20 to 30 seconds of inactivity, then took up to 8 seconds to respond to a read request. The SD Association's specification requires SDHC and SDXC cards to respond within 100 ms. Stock 2.3.4 waits only 5 seconds, after which the module can restart repeatedly until it's power cycled.</li>
+      <li>Any read after the card has been idle, such as loading a preset, can trigger it, on stock and on 2.3.10-mod. In 2.3.10-mod, switching to the Custom theme also reads the card.</li>
+      <li>2.3.11-mod keeps such cards awake, waits long enough for a slow answer, and recovers a stuck read instead of restarting. If a card still stops responding, you see "Please insert microSD card": take the card out and put it back.</li>
+      <li>Enhanced stability when hot swapping Custom themes: put the card back with the module running, then set Theme to another theme and back to Custom.</li>
+      <li>In testing, a SanDisk Extreme PRO microSDXC, 64 GB (SDSQXCU-064G-GN6MA), responded in 2 ms even after 90 seconds of inactivity. An 8 GB SDHC Class 10 card made in 2025 took 8.3 seconds after a minute of inactivity, causing restart loops on stock 2.3.4. On 2.3.11-mod it ran without a single failure.</li>
+    </ul>
+  </div>
+  </section>
   <section class="section" id="2310-mod--october-2026">
-  <h2 class="sec"><span class="n">1</span>2.3.10-mod — October 2026</h2>
+  <h2 class="sec"><span class="n">2</span>2.3.10-mod — October 2026</h2>
   <div class="doc">
     <ul>
       <li>Loops that really follow your tempo, 24 Live Flip modes to re-cut a loop live, and turntablist skills.</li>
@@ -464,7 +507,7 @@
   </div>
   </section>
   <section class="section" id="239-mod--october-2026">
-  <h2 class="sec"><span class="n">2</span>2.3.9-mod — October 2026</h2>
+  <h2 class="sec"><span class="n">3</span>2.3.9-mod — October 2026</h2>
   <div class="doc">
     <ul>
       <li>Sixteen Airwindows effects on the master bus, and a pop-up that shows what every CC in the patch just did.</li>
@@ -488,7 +531,7 @@
   </div>
   </section>
   <section class="section" id="238-mod--october-2026">
-  <h2 class="sec"><span class="n">3</span>2.3.8-mod — October 2026</h2>
+  <h2 class="sec"><span class="n">4</span>2.3.8-mod — October 2026</h2>
   <div class="doc">
     <ul>
       <li>Three new rows on the module's own Settings screen, the first additions that are not on a CC.</li>
@@ -501,7 +544,7 @@
   </div>
   </section>
   <section class="section" id="237-mod--september-2026">
-  <h2 class="sec"><span class="n">4</span>2.3.7-mod — September 2026</h2>
+  <h2 class="sec"><span class="n">5</span>2.3.7-mod — September 2026</h2>
   <div class="doc">
     <ul>
       <li>A master EQ and filter, which the module has never had. Ten algorithms: a DJ filter, a dual cut, a band pass, a three-band mixer EQ, tone and filter together, a tilt, a notch, a peak, a phaser, and a formant filter.</li>
@@ -515,7 +558,7 @@
   </div>
   </section>
   <section class="section" id="236-mod--september-2026">
-  <h2 class="sec"><span class="n">5</span>2.3.6-mod — September 2026</h2>
+  <h2 class="sec"><span class="n">6</span>2.3.6-mod — September 2026</h2>
   <div class="doc">
     <ul>
       <li>The module's master bus compressor is now reachable over MIDI. All five parameters that were previously fixed and invisible are on the table: Threshold, Ratio, Attack, Release and Makeup gain.</li>
@@ -526,7 +569,7 @@
   </div>
   </section>
   <section class="section" id="235-mod--august-2026">
-  <h2 class="sec"><span class="n">6</span>2.3.5-mod — August 2026</h2>
+  <h2 class="sec"><span class="n">7</span>2.3.5-mod — August 2026</h2>
   <div class="doc">
     <ul>
       <li>Per-pad Delay send and Reverb send, so each pad can sit in its own place in the mix rather than sharing one blend across the whole preset.</li>

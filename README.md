@@ -11,12 +11,12 @@ them on MIDI and adds what the module never had:
 - Per-pad sends, envelope, LFO, loop and granular controls.
 - A pop-up showing what every CC just changed, and screen themes.
 
-Help documentation: https://modularpatcher.github.io/bitbox-micro-fw-patch/index.html
+Everything works live.
 
 It is unofficial. Nobody at 1010music wrote or endorsed it, so do not ask them
 for support. The splash reads `community fw`, so a patched unit is never
-mistaken for theirs. Assume it affects your warranty. It
-[cannot brick the module](INSTALLING.md#can-this-brick-my-module), though.
+mistaken for theirs. Assume it affects your warranty. Use at your own risk.
+It [cannot brick the module](INSTALLING.md#can-this-brick-my-module), though.
 
 ## A Patcher, Not Firmware
 
@@ -29,10 +29,10 @@ instead, and let them build their own.
 
 ## Quick Start
 
-You need a Bitbox Micro on firmware 2.3.4, Python 3 and a microSD card. Get
-[`patch_micro.py`](patch_micro.py), and `MICRO234.zip` from 1010music. Run the
-script on the zip and copy the result to your card. The splash should then read
-`community fw`. [Installing](INSTALLING.md) has every step.
+You need a Bitbox Micro on firmware 2.3.4 and a microSD card. Download
+`MICRO234.zip` from 1010music, drop it on [the web patcher](patcher.html), and
+copy the `MICRO.BIN` it gives you to your card. The splash should then read
+`community fw`. [Installing](INSTALLING.md) has every step, and the Python route.
 
 ## Read Next
 
@@ -74,10 +74,11 @@ on hardware. Judge the patch by what it does for you.
 
 Thank you for the Bitbox Micro. It is a wonderful little module, and worth the
 time spent inside it. No firmware of yours is included, in any form. Everybody
-downloads it from your site, under your terms, and the script refuses anything
-else. What ships is one Python file, a guide, and an MIT licence covering only
-those. The splash reads `community fw`, and anyone with a problem is told to
-flash your firmware back before contacting you.
+downloads it from your site, under your terms, and the script and the page
+refuse anything else. What ships is one Python file, a web page that does the
+same job in a browser, a guide, and an MIT licence covering only those. The
+splash reads `community fw`, and anyone with a problem is told to flash your
+firmware back before contacting you.
 
 ## Getting Help
 

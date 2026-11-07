@@ -280,6 +280,33 @@
               font-weight: 400; flex: none; }
   h2.sec .n::after { content: " /"; color: var(--muted); }
 
+  /* A fold: one numbered heading that opens the sections inside it. */
+  details.fold { display: block; margin: 3.4rem 0 0; }
+  summary.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+                font-weight: 700; letter-spacing: -0.01em; color: var(--ink);
+                padding-bottom: 0.5rem; border-bottom: 2px solid var(--ink);
+                display: flex; gap: 0.7rem; align-items: baseline; cursor: pointer;
+                list-style: none; }
+  summary.sec::-webkit-details-marker { display: none; }
+  summary.sec .n { font-variant-numeric: tabular-nums; font-weight: 400; flex: none; }
+  summary.sec .n::after { content: " /"; color: var(--muted); }
+  summary.sec::after { content: "Show"; margin-left: auto; font-family: var(--sans);
+                       font-size: 0.8rem; font-weight: 600; color: var(--accent); }
+  details.fold[open] > summary.sec::after { content: "Hide"; }
+  summary.sec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  details.fold > .section:first-of-type { margin-top: 2.2rem; }
+  /* A smaller fold inside a section, styled like the section's ### headings. */
+  details.subfold { margin: 1.6rem 0 0; border: 1px solid var(--rule); border-radius: 6px;
+                    padding: 0.7rem 1rem; }
+  summary.subsec { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+                   letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+                   cursor: pointer; list-style: none; display: flex; }
+  summary.subsec::-webkit-details-marker { display: none; }
+  summary.subsec::after { content: "Show"; margin-left: auto; letter-spacing: 0;
+                          text-transform: none; font-weight: 600; font-size: 0.8rem; }
+  details.subfold[open] > summary.subsec::after { content: "Hide"; }
+  summary.subsec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
   /* ---- prose ---- */
 
   .doc { font-family: var(--sans); font-size: 1.02rem; }
@@ -325,6 +352,8 @@
              margin: 1.4rem 0 0; }
   /* Screenshots of the module are pixel art: natural size, never blurred. */
   .doc img[src$=".png"] { width: auto; max-width: 100%; image-rendering: pixelated; }
+  /* The web patcher's picture is a page, not pixel art: 800 px shown at 400, smooth. */
+  .doc img[src$="web-patcher.png"] { width: 400px; image-rendering: auto; }
 
   .doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2.2rem 0 0; }
 
@@ -426,7 +455,7 @@
     <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html" aria-current="page">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
-      <a href="#prerequisites"><span class="n">1</span><span>Prerequisites</span></a><a class="sub" href="#presets-that-use-it"><span class="n"></span><span>Presets That Use It</span></a><a href="#preparing"><span class="n">2</span><span>Preparing</span></a><a class="sub" href="#getting-python"><span class="n"></span><span>Getting Python</span></a><a href="#building"><span class="n">3</span><span>Building</span></a><a href="#flashing"><span class="n">4</span><span>Flashing</span></a><a href="#checking-it-worked"><span class="n">5</span><span>Checking It Worked</span></a><a href="#if-something-goes-wrong"><span class="n">6</span><span>If Something Goes Wrong</span></a><a class="sub" href="#windows-cannot-find-python"><span class="n"></span><span>Windows Cannot Find Python</span></a><a class="sub" href="#if-it-stops-with-an-error"><span class="n"></span><span>If It Stops with an Error</span></a><a class="sub" href="#going-back-to-stock"><span class="n"></span><span>Going Back to Stock</span></a><a href="#can-this-brick-my-module"><span class="n">7</span><span>Can This Brick My Module?</span></a><a href="#when-new-firmware-lands"><span class="n">8</span><span>When New Firmware Lands</span></a>
+      <a href="#before-you-start"><span class="n">1</span><span>Before You Start</span></a><a href="#the-quick-way"><span class="n">2</span><span>The Quick Way</span></a><a href="#using-python-instead"><span class="n">3</span><span>Using Python instead</span></a><a href="#flashing"><span class="n">4</span><span>Flashing</span></a><a href="#checking-it-worked"><span class="n">5</span><span>Checking It Worked</span></a><a class="sub" href="#presets-that-use-it"><span class="n"></span><span>Presets That Use It</span></a><a href="#if-something-goes-wrong"><span class="n">6</span><span>If Something Goes Wrong</span></a><a class="sub" href="#if-you-used-the-python-script"><span class="n"></span><span>If you used the Python script</span></a><a class="sub" href="#going-back-to-stock"><span class="n"></span><span>Going Back to Stock</span></a><a href="#can-this-brick-my-module"><span class="n">7</span><span>Can This Brick My Module?</span></a><a href="#when-new-firmware-lands"><span class="n">8</span><span>When New Firmware Lands</span></a>
     </nav>
   </aside>
   <main class="main">
@@ -436,30 +465,37 @@
       <p>From downloading the stock firmware to a patched module.</p>
     </header>
   <div class="doc">
-    <p>This page takes you from a stock 2.3.4 download to a module running the patch. See <a href="index.html">the overview</a> for what the patch does.</p>
+    <p>From 1010music's 2.3.4 download to a module running the patch. See <a href="index.html">the overview</a> for what the patch does.</p>
   </div>
-  <section class="section" id="prerequisites">
-  <h2 class="sec"><span class="n">1</span>Prerequisites</h2>
+  <section class="section" id="before-you-start">
+  <h2 class="sec"><span class="n">1</span>Before You Start</h2>
   <div class="doc">
-    <p>You need five things, none of them exotic.</p>
+    <p>You need a <strong>Bitbox Micro</strong> on firmware <strong>2.3.4</strong> and a microSD card. Keep 1010music's <code>MICRO234.zip</code>: it is how you go back to stock. Back up your card first. The patch never touches your presets or samples, but back it up anyway.</p>
+  </div>
+  </section>
+  <section class="section" id="the-quick-way">
+  <h2 class="sec"><span class="n">2</span>The Quick Way</h2>
+  <div class="doc">
+    <p><a href="patcher.html">The web patcher</a> does the whole build in your browser. Download <code>MICRO234.zip</code> from 1010music, drop it on the page, and it gives you the new <code>MICRO.BIN</code>. Nothing is uploaded and there is nothing to install. Then follow <a href="#flashing">Flashing</a> to put it on your module.</p>
+    <p><img src="web-patcher.png" alt="The web patcher: three numbered steps above a box reading Drop MICRO234.zip here, with Advanced folded away at the bottom."></p>
+    <p>If you have been asked to try an earlier version, it is under <strong>Advanced</strong> on the same page. Prefer Python? It builds exactly the same file. See <a href="#prerequisites">Using Python instead</a>.</p>
+  </div>
+  </section>
+  <details class="fold" id="using-python-instead">
+  <summary class="sec"><span class="n">3</span><span class="t">Using Python instead</span></summary>
+  <section class="section" id="prerequisites">
+  <h2 class="sec">Prerequisites</h2>
+  <div class="doc">
+    <p>On top of <a href="#before-you-start">Before You Start</a>, the Python route needs three things, none of them exotic.</p>
     <ul>
-      <li>A <strong>Bitbox Micro</strong> running firmware <strong>2.3.4</strong>.</li>
       <li><a href="patch_micro.py" download><code>patch_micro.py</code></a>, the patcher itself.</li>
       <li>Your own copy of the stock 2.3.4 image, from <a href="https://1010music.com/downloads" rel="noreferrer noopener">https://1010music.com/downloads</a> → bitbox micro → <strong><code>MICRO234.zip</code></strong>. The script will not run without it, and none of it ships here.</li>
       <li><strong>Python 3</strong>, any version from the last several years. There is nothing to compile or configure. See <a href="#getting-python">Getting Python</a>.</li>
-      <li>A microSD card the module can read. Any working card will flash. If you are buying one anyway, <strong>V30</strong> is the rating worth having for streaming samples while you play.</li>
     </ul>
-    <p>Do two things first:</p>
-    <ol>
-      <li><strong>Keep the stock <code>MICRO.BIN</code></strong>, and keep 1010music's <code>MICRO234.zip</code> too. It is how you go back, and the script needs it again every time you re-patch.</li>
-      <li><strong>Back up your SD card.</strong> The patch never touches your presets or samples. Back it up anyway.</li>
-    </ol>
-    <h3 id="presets-that-use-it">Presets That Use It</h3>
-    <p>There is nothing to set up on the module. The controls work on every preset, and you set your controller to send their CCs. An old preset can only give back what it was built to do, though. See <a href="PAD-CONTROLS.html#building-a-preset-for-this">Building a Preset for This</a>.</p>
   </div>
   </section>
   <section class="section" id="preparing">
-  <h2 class="sec"><span class="n">2</span>Preparing</h2>
+  <h2 class="sec">Preparing</h2>
   <div class="doc">
     <p>Download the firmware from 1010music yourself, under their terms, and unzip it. You get <code>MICRO.BIN</code>. The version is in the zip's name, not the file's, so label your copies.</p>
     <p>If you already run an earlier version of this patch, patch your stock <code>MICRO.BIN</code> again, not the image you flashed last time. The script refuses a file that has already been through it. If you no longer have the stock file, download <code>MICRO234.zip</code> again.</p>
@@ -478,7 +514,7 @@
   </div>
   </section>
   <section class="section" id="building">
-  <h2 class="sec"><span class="n">3</span>Building</h2>
+  <h2 class="sec">Building</h2>
   <div class="doc">
     <p>Enter the commands one line at a time, pressing Enter after each. Do not double-click <code>patch_micro.py</code>. That only opens it in a text editor, or flashes a window open and shut.</p>
     <p>On Windows:</p>
@@ -543,28 +579,31 @@ python3 patch_micro.py MICRO.BIN patched/MICRO.BIN</code></pre>
      ok   Clip modes, per pad          CC 112-116
      ok   Live Flip modes, per pad     CC 117
      ok   Hold buttons, per pad        CC 78, 102, 104, 105, 107, 118, 119
+     ok   SD card waits, bounded       a stuck card no longer restarts it
      ok   ProgChange: OFF/ON/NEW ONLY  TOOLS &gt; Settings
      ok   Clk Loss: INTERNAL/HOLD      TOOLS &gt; Settings
      ok   Flip UI, screen and touch    TOOLS &gt; Settings
      ok   Splash screen, so nobody blames 1010music for my work
 
-  Done. MICRO.BIN is ready -- 812,000 bytes.
+  Done. MICRO.BIN is ready -- 813,824 bytes.
 
-     Fingerprint  62f15b366fdac8181ca070b5ddf53476955c91ca80e184d526782cf8d49ac7b7</code></pre>
+     Fingerprint  f5fa62b3fe5e18a2a941e200a054230fef9fd32834d342b379d8702ca0ec109b</code></pre>
     <p>Check that the fingerprint matches the one above. If it does, your firmware is byte-for-byte the same as everyone else's running this patch.</p>
     <p>Add <code>-v</code> to see every change it makes.</p>
   </div>
   </section>
+  </details>
   <section class="section" id="flashing">
   <h2 class="sec"><span class="n">4</span>Flashing</h2>
   <div class="doc">
     <ol>
-      <li>Copy <code>patched/MICRO.BIN</code> to the <strong>root</strong> of the microSD card, not inside a folder. Leave your stock copy where it is. It is how you go back.</li>
+      <li>Copy <code>MICRO.BIN</code> to the <strong>root</strong> of the microSD card, not inside a folder. If you saved it straight to the card, it is already there. Otherwise it is in the <code>Bitbox Micro</code> zip or folder you downloaded, or at <code>patched/MICRO.BIN</code> if you used the script.</li>
       <li>Power the module off and insert the card.</li>
       <li>Hold the <strong>white right-arrow</strong> button while powering on.</li>
       <li>Release when the display shows <em>Erasing</em> / <em>Programming</em>. It takes about 15 seconds.</li>
     </ol>
     <p>Do not interrupt the power while it is writing.</p>
+    <p>Any working card will flash. For streaming samples while you play, <strong>V30</strong> is the rating worth having. Tested with a SanDisk Extreme PRO (SDSQXCU-064G-GN6MA).</p>
   </div>
   </section>
   <section class="section" id="checking-it-worked">
@@ -573,15 +612,19 @@ python3 patch_micro.py MICRO.BIN patched/MICRO.BIN</code></pre>
     <p>The splash on the next boot should read:</p>
     <pre><code>bitbox micro
 community fw
-2.3.10-mod</code></pre>
-    <p>If it still says <code>by 1010music</code> and <code>2.3.4</code>, nothing was flashed. Check that the file is named <code>MICRO.BIN</code> and sits in the card root. Then try again.</p>
+2.3.11-mod</code></pre>
     <p>Check the splash after every flash. It takes a second, and it saves you chasing a CC on firmware that was never installed.</p>
     <p>Then send one of the patch's CCs. A pop-up in the middle of the screen should name what it changed. That proves the patch is running and your controller is getting through. The <a href="CC-REFERENCE.html">CC reference</a> has the full list, and <a href="SETTINGS.html">Settings</a> covers the new rows on the Settings screen.</p>
+    <h3 id="presets-that-use-it">Presets That Use It</h3>
+    <p>There is nothing to set up on the module. The controls work on every preset, and you set your controller to send their CCs. An old preset can only give back what it was built to do, though. See <a href="PAD-CONTROLS.html#building-a-preset-for-this">Building a Preset for This</a>.</p>
   </div>
   </section>
   <section class="section" id="if-something-goes-wrong">
   <h2 class="sec"><span class="n">6</span>If Something Goes Wrong</h2>
   <div class="doc">
+    <p>If the splash still says <code>by 1010music</code> and <code>2.3.4</code>, nothing was flashed. Check that the file is named exactly <code>MICRO.BIN</code> and sits in the card root, not in a folder. Then flash again.</p>
+    <details class="subfold" id="if-you-used-the-python-script">
+    <summary class="subsec">If you used the Python script</summary>
     <h3 id="windows-cannot-find-python">Windows Cannot Find Python</h3>
     <p>Two things can happen here. Neither means you broke anything.</p>
     <h4 id="the-microsoft-store-opens-instead-of-running-anything">The Microsoft Store Opens Instead of Running Anything</h4>
@@ -598,6 +641,7 @@ community fw
       <li><em>"The code at … is not what it should be"</em>: the file passes the checksum, but the code underneath is wrong, which should be impossible. Do not force it.</li>
     </ul>
     <p>The script checks everything before it writes anything, so there is no such thing as a half-patched file.</p>
+  </details>
     <h3 id="going-back-to-stock">Going Back to Stock</h3>
     <p>Rename your original 1010music download to <code>MICRO.BIN</code>, put it in the card root, and follow the same flashing steps. The module overwrites the patched image with it and forgets any of this happened.</p>
   </div>
@@ -667,6 +711,28 @@ community fw
       }
     });
   });
+})();
+</script>
+<script>
+// Opens a fold when a link, the sidebar or the address points inside it, so
+// "#getting-python" lands on the section rather than on a closed heading.
+(function () {
+  function reveal(hash) {
+    if (!hash || hash.length < 2) return;
+    var el = document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (!el) return;
+    var fold = el.tagName === 'DETAILS' ? el : el.closest && el.closest('details');
+    if (fold && !fold.open) {
+      fold.open = true;
+      el.scrollIntoView();
+    }
+  }
+  window.addEventListener('hashchange', function () { reveal(location.hash); });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (a) reveal(a.getAttribute('href'));
+  });
+  reveal(location.hash);
 })();
 </script>
 </body>
