@@ -18,6 +18,8 @@ for support. The splash reads `community fw`, so a patched unit is never
 mistaken for theirs. Assume it affects your warranty. Use at your own risk.
 It [cannot brick the module](INSTALLING.md#can-this-brick-my-module), though.
 
+Help documentation: https://modularpatcher.github.io/bitbox-micro-fw-patch/index.html
+
 ## A Patcher, Not Firmware
 
 You download a script, not firmware. It edits your own copy of stock 2.3.4, on
