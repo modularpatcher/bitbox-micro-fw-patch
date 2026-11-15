@@ -32,8 +32,10 @@ the guide you are reading. None of them covers how any of it is built.
 - Duck the mix by gate or MIDI note using the new sidechain on the Stock,
   VariMu and Thunder compressors.
 - Mute or solo pads from your controller.
-- Carry mutes, solos and the delay's Beat Sync, Ping-pong and filter settings
-  into the next preset using Keep CCs.
+- Maintain mutes, solos and the delay's Beat Sync, Ping-pong and filter
+  settings across preset changes using Keep CCs.
+- Build your controller mappings from the new printable
+  [reference card](reference-card.html): every CC and setting on two pages.
 - Read and rebuild the patch's C sources, now included in the `character`
   folder. `--reassemble` checks every release against them.
 

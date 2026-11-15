@@ -5,6 +5,8 @@ to check when one seems dead. [Pad controls](PAD-CONTROLS.md) says what each one
 does, [Clip modes](CLIP-MODES.md) covers the Clip pad's tempo, Live Flip modes and
 hold buttons, and [devices](DEVICES.md) covers the three that act on the whole
 mix. [Gates and CV](GATES-AND-CV.md) covers what gates and CV can do to a pad.
+To build your controller mappings, print the
+[reference card](reference-card.html): every CC and setting on two pages.
 
 ## Which CC, Which Channel
 
