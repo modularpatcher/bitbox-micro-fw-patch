@@ -452,7 +452,7 @@
 <div class="wrap">
   <aside class="side">
     <p class="brand">Bitbox Micro<br>community modification</p>
-    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html" aria-current="page">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html" aria-current="page">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
       <a href="#which-cc-which-channel"><span class="n">1</span><span>Which CC, Which Channel</span></a><a class="sub" href="#which-pad-types-work"><span class="n"></span><span>Which Pad Types Work</span></a><a class="sub" href="#midi-cc-map"><span class="n"></span><span>MIDI CC Map</span></a><a class="sub" href="#which-channel-to-send-on"><span class="n"></span><span>Which Channel to Send On</span></a><a href="#setting-up-your-controller"><span class="n">2</span><span>Setting Up Your Controller</span></a><a class="sub" href="#recommended-controller"><span class="n"></span><span>Recommended Controller</span></a><a class="sub" href="#encoder-types"><span class="n"></span><span>Encoder Types</span></a><a class="sub" href="#getting-the-full-range"><span class="n"></span><span>Getting the Full Range</span></a><a class="sub" href="#use-14-bit-cc"><span class="n"></span><span>Use 14-Bit CC</span></a><a href="#when-a-control-seems-dead"><span class="n">3</span><span>When a Control Seems Dead</span></a><a class="sub" href="#is-there-a-pop-up"><span class="n"></span><span>Is There a Pop-Up?</span></a><a class="sub" href="#does-the-encoder-do-it"><span class="n"></span><span>Does the Encoder Do It?</span></a>
@@ -465,7 +465,7 @@
       <p>Which CC, which channel, which pad types answer it.</p>
     </header>
   <div class="doc">
-    <p>This page lists every CC, its channel and the pad types that answer it, and what to check when one seems dead. <a href="PAD-CONTROLS.html">Pad controls</a> says what each one does, <a href="CLIP-MODES.html">Clip modes</a> covers the Clip pad's tempo, Live Flip modes and hold buttons, and <a href="DEVICES.html">devices</a> covers the three that act on the whole mix.</p>
+    <p>This page lists every CC, its channel and the pad types that answer it, and what to check when one seems dead. <a href="PAD-CONTROLS.html">Pad controls</a> says what each one does, <a href="CLIP-MODES.html">Clip modes</a> covers the Clip pad's tempo, Live Flip modes and hold buttons, and <a href="DEVICES.html">devices</a> covers the three that act on the whole mix. <a href="GATES-AND-CV.html">Gates and CV</a> covers what gates and CV can do to a pad.</p>
   </div>
   <section class="section" id="which-cc-which-channel">
   <h2 class="sec"><span class="n">1</span>Which CC, Which Channel</h2>
@@ -555,6 +555,16 @@
         <td>❌</td>
       </tr>
       <tr>
+        <td>Mute, Solo</td>
+        <td>94, 95</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>❌</td>
+      </tr>
+      <tr>
         <td>Clip modes, Live Flip modes, hold buttons</td>
         <td>78, 102, 104, 105, 107, 112–119</td>
         <td>—</td>
@@ -573,7 +583,7 @@
       <li><strong>Reverse</strong>: Clip and Slicer pads have no reverse setting.</li>
       <li><strong>Play Through</strong>: Slicer pads only, since only they have slices.</li>
       <li><strong>Loop Mode and Loop Crossfade</strong>: Clip and Slicer pads loop their own way, with no equivalent setting.</li>
-      <li><strong>Recorded-sample pads</strong>: these have no FX sends in stock firmware. The delay and reverb knobs on the FX screen do nothing on them either.</li>
+      <li><strong>Recorded-sample pads</strong>: these have no FX sends in stock firmware. The delay and reverb knobs on the FX screen do nothing on them either, and Mute and Solo don't reach them.</li>
     </ul>
     <p>Sustain and the LFO controls work on Clip and Slicer pads too.</p>
     <p>The three devices are not in the table. They act on every pad routed to Out 1/2, whatever its type.</p>
@@ -678,6 +688,13 @@
         <td><strong>1 only</strong></td>
         <td>any value above <code>0</code></td>
         <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>49</strong></td>
+        <td>Compressor sidechain, SC In</td>
+        <td><strong>1 only</strong></td>
+        <td>ten bands: Self / Gate 1–8 / MIDI 16</td>
+        <td>stepped, 10</td>
       </tr>
       <tr>
         <td class="num"><strong>50</strong></td>
@@ -855,6 +872,20 @@
         <td>button</td>
       </tr>
       <tr>
+        <td class="num"><strong>94</strong></td>
+        <td>Mute</td>
+        <td>pad channel</td>
+        <td><code>≥64</code> muted, <code>&lt;64</code> plays</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>95</strong></td>
+        <td>Solo</td>
+        <td>pad channel</td>
+        <td><code>≥64</code> soloed, <code>&lt;64</code> released</td>
+        <td>button</td>
+      </tr>
+      <tr>
         <td class="num"><strong>102</strong></td>
         <td>Brake</td>
         <td>pad channel</td>
@@ -912,7 +943,7 @@
       </tr>
       <tr>
         <td class="num"><strong>112</strong></td>
-        <td>Clip method: Stock, Vinyl, Jungle, Key Lock</td>
+        <td>Clip mode: Stock, Vinyl, Jungle, Key Lock</td>
         <td>pad channel</td>
         <td>any value above <code>0</code> steps to the next</td>
         <td>button</td>
@@ -983,14 +1014,14 @@
     </tbody>
   </table>
   </div>
-    <p>There is nothing to set up on the module. Each control has a fixed CC that works on every preset, with no MIDI Learn and no modulation slot. Set your controller to send these CCs on the channel shown and you are playing. Every one but the pad stop opens a <a href="SETTINGS.html#the-pop-up">pop-up</a>.</p>
+    <p>There is nothing to set up on the module. Each control has a fixed CC that works on every preset, with no MIDI Learn and no modulation slot. Set your controller to send these CCs on the channel shown and you are playing. Every one but the pad stop, Mute and Solo opens a <a href="SETTINGS.html#the-pop-up">pop-up</a>. Mute and Solo show on the Mixer screen instead.</p>
     <h3 id="which-channel-to-send-on">Which Channel to Send On</h3>
     <ul>
-      <li><strong>CC 79 to 93, and 120/123</strong>: per pad. Send them on the channel the pad listens on, the one you trigger it with. Eight pads on eight channels answer independently.</li>
+      <li><strong>CC 79 to 95, and 120/123</strong>: per pad. Send them on the channel the pad listens on, the one you trigger it with. Eight pads on eight channels answer independently.</li>
       <li><strong>CC 78, 102, 104, 105, 107 and 112 to 119</strong>: the <a href="CLIP-MODES.html">Clip modes</a>, per Clip pad, on its channel in the same way.</li>
       <li><strong>CC 108 to 111</strong>: the delay, which the whole preset shares. Send them on any channel.</li>
       <li><strong>CC 14 to 29</strong>: the <a href="CHARACTER.html">Character chain</a>, channel 1 only.</li>
-      <li><strong>CC 40 to 48</strong>: the <a href="COMPRESSOR.html">compressor</a>, channel 1 only. All four types share CC 41–45. Each uses them differently.</li>
+      <li><strong>CC 40 to 49</strong>: the <a href="COMPRESSOR.html">compressor</a>, channel 1 only. All four types share CC 41–45. Each uses them differently.</li>
       <li><strong>CC 50 to 57, and 59</strong>: the <a href="EQ-FILTER.html">EQ and filter</a>, channel 1 only.</li>
     </ul>
     <p>If a device ignores everything, put your controller on MIDI channel 1.</p>
@@ -1084,7 +1115,8 @@
     <h3 id="is-there-a-pop-up">Is There a Pop-Up?</h3>
     <p>A pad pop-up appears only when a pad on that channel took the CC. If none appears, check the channel. Then check the pad type. For the three devices, no pop-up means nothing arrived on channel 1.</p>
     <p>A pop-up with no sound means the CC arrived and the cause is elsewhere, such as an LFO pointed at nothing, or Scatter with Density up.</p>
-    <p>No pop-up opens for the value already showing, or with the OSD row on OFF or CPU.</p>
+    <p>No pop-up opens for the value already showing, or with OSD set to OFF or CPU.</p>
+    <p>On a Clip pad with CV Action set to Flip In, CC 117 leaves the Live Flip mode alone. Its pop-up shows the input instead, such as <code>CV 3: Rotate</code>.</p>
     <h3 id="does-the-encoder-do-it">Does the Encoder Do It?</h3>
     <p>Turn the parameter by hand. If the encoder changes it, your MIDI is fine. The fault is elsewhere. If it does not, the module cannot do it, and no MIDI will change that. The stop pair, CC 120 and 123, is the one control with no encoder.</p>
   </div>

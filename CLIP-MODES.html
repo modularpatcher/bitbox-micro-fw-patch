@@ -452,10 +452,10 @@
 <div class="wrap">
   <aside class="side">
     <p class="brand">Bitbox Micro<br>community modification</p>
-    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html" aria-current="page">Clip modes</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html" aria-current="page">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
-      <a href="#choosing-a-method"><span class="n">1</span><span>Choosing a Method</span></a><a href="#manual-tempo"><span class="n">2</span><span>Manual Tempo</span></a><a href="#pitch"><span class="n">3</span><span>Pitch</span></a><a href="#live-flip-modes"><span class="n">4</span><span>Live Flip Modes</span></a><a href="#hold-buttons"><span class="n">5</span><span>Hold Buttons</span></a><a href="#pop-ups"><span class="n">6</span><span>Pop-Ups</span></a><a href="#things-to-know"><span class="n">7</span><span>Things to Know</span></a><a class="sub" href="#beat-count"><span class="n"></span><span>Beat Count</span></a><a class="sub" href="#after-power-on"><span class="n"></span><span>After Power-On</span></a><a class="sub" href="#preset-loads"><span class="n"></span><span>Preset Loads</span></a><a class="sub" href="#long-holds"><span class="n"></span><span>Long Holds</span></a>
+      <a href="#choosing-a-clip-mode"><span class="n">1</span><span>Choosing a Clip Mode</span></a><a href="#manual-tempo"><span class="n">2</span><span>Manual Tempo</span></a><a href="#pitch"><span class="n">3</span><span>Pitch</span></a><a href="#live-flip-modes"><span class="n">4</span><span>Live Flip Modes</span></a><a href="#hold-buttons"><span class="n">5</span><span>Hold Buttons</span></a><a href="#pop-ups"><span class="n">6</span><span>Pop-Ups</span></a><a href="#things-to-know"><span class="n">7</span><span>Things to Know</span></a><a class="sub" href="#beat-count"><span class="n"></span><span>Beat Count</span></a><a class="sub" href="#after-power-on"><span class="n"></span><span>After Power-On</span></a><a class="sub" href="#preset-loads"><span class="n"></span><span>Preset Loads</span></a><a class="sub" href="#long-holds"><span class="n"></span><span>Long Holds</span></a>
     </nav>
   </aside>
   <main class="main">
@@ -467,16 +467,16 @@
   <div class="doc">
     <p>Turn your Clip pads into a jungle sampler. Drop in a break at any tempo and it locks to your clock, stretched the way early-'90s samplers did it, or sped up like a record. Pitch it, sequence melodies into it, and re-cut it live with 24 Live Flip modes. Then reach for the hold buttons. Rewind it, power down the decks, brake it or scratch it, and let go to land back on the beat.</p>
     <p>Stock Clip Sync keeps a loop in time by jumping back into place when it drifts. Clip modes stretch it instead, so a 170 BPM break plays smoothly at 134 and follows the tempo as it changes.</p>
-    <p>Every control is a CC on the pad's own MIDI channel. They need a Clip pad.</p>
+    <p>Play every control by CC on a Clip pad's own MIDI channel. You can also set the Clip mode on the module, trigger Hold FX by gate and sequence the Live Flip mode by CV, as <a href="GATES-AND-CV.html">Gates and CV</a> describes.</p>
   </div>
-  <section class="section" id="choosing-a-method">
-  <h2 class="sec"><span class="n">1</span>Choosing a Method</h2>
+  <section class="section" id="choosing-a-clip-mode">
+  <h2 class="sec"><span class="n">1</span>Choosing a Clip Mode</h2>
   <div class="doc">
-    <p>Each press of CC 112 steps the pad to the next method.</p>
+    <p>Each press of CC 112 steps the pad to the next Clip mode. Set it on the module with Clip Tempo, just below Sync, and it saves with the preset. CC 112 changes that setting too.</p>
   <div class="tablewrap">
   <table>
     <thead><tr>
-      <th>Method</th>
+      <th>Clip mode</th>
       <th>Sound</th>
       <th>Pitch</th>
     </tr></thead>
@@ -526,7 +526,7 @@
   <section class="section" id="live-flip-modes">
   <h2 class="sec"><span class="n">4</span>Live Flip Modes</h2>
   <div class="doc">
-    <p>CC 117 selects a Live Flip mode, which re-cuts the loop as it plays, in time. Its range is split into 25 steps, starting with Off. The modes need Vinyl, Jungle or Key Lock.</p>
+    <p>CC 117 selects a Live Flip mode, which re-cuts the loop as it plays, in time. Its range is split into 25 steps, starting with Off. The modes need Vinyl, Jungle or Key Lock. A sequencer's pitch CV can pick them by note, with <a href="GATES-AND-CV.html#cv-action">Flip In</a>.</p>
     <p>The chop modes find the hits and syllables in the audio, so they work on vocals and chords as well as drums. The harmony modes, 20 to 24, cut the loop into short grains and pitch every other grain. CC 115 sets their length.</p>
   <div class="tablewrap">
   <table>
@@ -669,7 +669,7 @@
   <section class="section" id="hold-buttons">
   <h2 class="sec"><span class="n">5</span>Hold Buttons</h2>
   <div class="doc">
-    <p>A hold button acts while held and stops when released. Send <code>64</code> or more to hold and less than <code>64</code> to release. When you let go, the loop returns to where it would have been. Hold buttons need Vinyl, Jungle or Key Lock.</p>
+    <p>A hold button acts while held and stops when released. Send <code>64</code> or more to hold and less than <code>64</code> to release. When you let go, the loop returns to where it would have been. Hold buttons need Vinyl, Jungle or Key Lock. A gate can trigger them too, with <a href="GATES-AND-CV.html#gate-action-and-hold-fx">Gate Action</a>.</p>
   <div class="tablewrap">
   <table>
     <thead><tr>
@@ -725,17 +725,18 @@
   </table>
   </div>
     <p>Rolls last four beats. Each press of Pitch Roll reverses its direction, rising first. Pitch Roll is also a Live Flip mode.</p>
+    <p>These are the Hold FX that <a href="GATES-AND-CV.html#gate-action-and-hold-fx">Gate Action</a> triggers. Baby Scratch is called Scratch there.</p>
     <p>Pull Up, Power Down, Brake and Baby Scratch play one at a time. Pressing another takes over. As the record slows, the sound fades, and a stopped record is silent.</p>
   </div>
   </section>
   <section class="section" id="pop-ups">
   <h2 class="sec"><span class="n">6</span>Pop-Ups</h2>
   <div class="doc">
-    <p>CC 112 and 113 show the method above the tempo the pad follows.</p>
+    <p>CC 112 and 113 show the Clip mode above the tempo the pad follows.</p>
   <div class="tablewrap">
   <table>
     <thead><tr>
-      <th>Method</th>
+      <th>Clip mode</th>
       <th>Top line</th>
       <th>Bottom line</th>
     </tr></thead>
@@ -763,7 +764,7 @@
     </tbody>
   </table>
   </div>
-    <p>In Manual, the top line adds <code>MANUAL</code> and the bottom line starts <code>Manual</code>. Any other pad type shows <code>Clip pads only</code>.</p>
+    <p>In Manual, the top line adds <code>MANUAL</code> and the bottom line starts <code>Manual</code>. Any other pad type shows <code>Clip pads only</code>. While a CV input sets the Live Flip mode, CC 117 shows the input and the mode playing, such as <code>CV 3: Rotate</code>.</p>
   </div>
   </section>
   <section class="section" id="things-to-know">
@@ -774,7 +775,7 @@
     <h3 id="after-power-on">After Power-On</h3>
     <p>An external clock takes over only after it sends a Start. Until then, pads follow Preset BPM. So restart your sequencer once.</p>
     <h3 id="preset-loads">Preset Loads</h3>
-    <p>A preset load returns every pad to Stock with its Live Flip mode off, as it does with your other CCs. <a href="SETTINGS.html#keep-ccs">Keep CCs</a> carries them over. Power-on always starts in Stock.</p>
+    <p>Each pad loads with the Clip mode saved in its Clip Tempo setting. Older presets load Stock. The Live Flip mode and Manual start off, as your other CCs do. <a href="SETTINGS.html#keep-ccs">Keep CCs</a> carries what your controller changed.</p>
     <h3 id="long-holds">Long Holds</h3>
     <p>The module keeps about two bars of each loop in memory. A Baby Scratch held longer than that fades out.</p>
   </div>

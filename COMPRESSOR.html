@@ -452,10 +452,10 @@
 <div class="wrap">
   <aside class="side">
     <p class="brand">Bitbox Micro<br>community modification</p>
-    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html" aria-current="page">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html" aria-current="page">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
-      <a href="#where-it-sits"><span class="n">1</span><span>Where It Sits</span></a><a href="#how-a-compressor-works"><span class="n">2</span><span>How a Compressor Works</span></a><a href="#what-each-control-does"><span class="n">3</span><span>What Each Control Does</span></a><a href="#how-it-arrives"><span class="n">4</span><span>How It Arrives</span></a><a href="#glue-on-a-button"><span class="n">5</span><span>Glue on a Button</span></a><a href="#four-compressors"><span class="n">6</span><span>Four Compressors</span></a><a href="#auto-makeup"><span class="n">7</span><span>Auto Makeup</span></a><a href="#setting-it-by-ear"><span class="n">8</span><span>Setting It by Ear</span></a><a href="#two-things-that-confuse"><span class="n">9</span><span>Two Things That Confuse</span></a><a href="#what-it-will-not-do"><span class="n">10</span><span>What It Will Not Do</span></a><a href="#what-power-on-keeps"><span class="n">11</span><span>What Power-On Keeps</span></a>
+      <a href="#where-it-sits"><span class="n">1</span><span>Where It Sits</span></a><a href="#how-a-compressor-works"><span class="n">2</span><span>How a Compressor Works</span></a><a href="#what-each-control-does"><span class="n">3</span><span>What Each Control Does</span></a><a href="#how-it-arrives"><span class="n">4</span><span>How It Arrives</span></a><a href="#glue-on-a-button"><span class="n">5</span><span>Glue on a Button</span></a><a href="#four-compressors"><span class="n">6</span><span>Four Compressors</span></a><a href="#auto-makeup"><span class="n">7</span><span>Auto Makeup</span></a><a href="#sidechain"><span class="n">8</span><span>Sidechain</span></a><a href="#setting-it-by-ear"><span class="n">9</span><span>Setting It by Ear</span></a><a href="#two-things-that-confuse"><span class="n">10</span><span>Two Things That Confuse</span></a><a href="#what-it-will-not-do"><span class="n">11</span><span>What It Will Not Do</span></a><a href="#what-power-on-keeps"><span class="n">12</span><span>What Power-On Keeps</span></a>
     </nav>
   </aside>
   <main class="main">
@@ -465,7 +465,7 @@
       <p>The bus compressor, and three Airwindows compressors beside it.</p>
     </header>
   <div class="doc">
-    <p>Your Bitbox has always had a bus compressor across Out 1 and 2, but the module only lets you switch it on and off. Threshold, ratio, attack, release and makeup gain were fixed. This patch puts all five on MIDI, adds auto makeup, and starts you on a classic glue setting. It also adds three Airwindows compressors to choose from.</p>
+    <p>Your Bitbox has always had a bus compressor across Out 1 and 2, but the module only lets you switch it on and off. Threshold, ratio, attack, release and makeup gain were fixed. This patch puts all five on MIDI, adds auto makeup, and starts you on a classic glue setting. It also adds three Airwindows compressors to choose from. Duck the mix from a gate or a MIDI note with its sidechain.</p>
   </div>
   <section class="section" id="where-it-sits">
   <h2 class="sec"><span class="n">1</span>Where It Sits</h2>
@@ -695,8 +695,38 @@
     <p>While it is on, CC 45 is ignored, including the makeup a glue button sends. The pop-up says <code>Makeup  Auto</code> if you move it. Switch auto off and the makeup stays where auto left it until you move CC 45.</p>
   </div>
   </section>
+  <section class="section" id="sidechain">
+  <h2 class="sec"><span class="n">8</span>Sidechain</h2>
+  <div class="doc">
+    <p>Use the sidechain to duck the whole mix from a gate or a MIDI note, for the classic pumping sound. Choose what the compressor listens to with SC In, on CC 49 on channel 1. Its range is split into ten steps.</p>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>SC In</th>
+      <th>The mix ducks</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Self</td>
+        <td>as usual: the compressor listens to the mix itself</td>
+      </tr>
+      <tr>
+        <td>Gate 1 to 8</td>
+        <td>while that input is high</td>
+      </tr>
+      <tr>
+        <td>MIDI 16</td>
+        <td>while a note is held on MIDI channel 16, deeper for a harder note</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>Try it with a kick. Send the kick's gate to input 8, set the kick pad's <a href="GATES-AND-CV.html#gate-in">Gate In</a> to 8, and set SC In to Gate 8. Every kick now plays and pumps the mix. Route the kick pad to Out 3/4 so it skips the compressor and stays loud.</p>
+    <p>The compressor's own settings shape the duck. On Stock, Ratio sets how deep it goes and Release how quickly the mix swells back. Stock, VariMu and Thunder take the sidechain. Logical4 does not, and its pop-up says <code>SC In  N/A</code>.</p>
+  </div>
+  </section>
   <section class="section" id="setting-it-by-ear">
-  <h2 class="sec"><span class="n">8</span>Setting It by Ear</h2>
+  <h2 class="sec"><span class="n">9</span>Setting It by Ear</h2>
   <div class="doc">
     <p>There is no gain reduction meter. Your ears are the meter.</p>
     <p>To find the threshold, bring it down slowly while something busy plays. At first nothing happens. Then the loud parts start to lean back a little. Leave it just past that point. If it sounds squashed or breathless, you have gone too far.</p>
@@ -710,23 +740,23 @@
   </div>
   </section>
   <section class="section" id="two-things-that-confuse">
-  <h2 class="sec"><span class="n">9</span>Two Things That Confuse</h2>
+  <h2 class="sec"><span class="n">10</span>Two Things That Confuse</h2>
   <div class="doc">
     <p>Nothing happens while the compressor is off. It remembers the five settings and applies them all when you switch it on.</p>
     <p>Makeup gain runs from −36 dB to +36 dB and starts at 0 dB, in the middle. The bottom, −36 dB, is silence. If your encoder is parked at the bottom when you first touch it, the sound vanishes. Nothing is broken. Turn it up to halfway.</p>
   </div>
   </section>
   <section class="section" id="what-it-will-not-do">
-  <h2 class="sec"><span class="n">10</span>What It Will Not Do</h2>
+  <h2 class="sec"><span class="n">11</span>What It Will Not Do</h2>
   <div class="doc">
-    <p>There is no sidechain. The module has no key input, so you cannot duck the mix from a kick on another channel. Bus compression with a fast attack and a loud kick already pumps convincingly, though the kick is compressed too. If you sequence CCs, you can also draw a threshold envelope in time with the kick.</p>
+    <p>The <a href="#sidechain">sidechain</a> takes a gate or a MIDI note, not audio. The module has no spare audio input to listen to, so a kick on another channel cannot key it directly. Send the kick's gate or MIDI note instead.</p>
     <p>Stock has no wet/dry mix, though Logical4 and VariMu do, on CC 44. For Stock, use the outputs instead. Put the same sample on two pads with the same MIDI channel and Pad Note, route one to Out 1/2 and the other to Out 3/4, and mix them outside the box. Squash the first hard and blend it underneath. That is parallel compression, at the cost of a pad and an output pair.</p>
   </div>
   </section>
   <section class="section" id="what-power-on-keeps">
-  <h2 class="sec"><span class="n">11</span>What Power-On Keeps</h2>
+  <h2 class="sec"><span class="n">12</span>What Power-On Keeps</h2>
   <div class="doc">
-    <p>Settings survive a preset change. Through power-off, the module also keeps the type, the Airwindows types' settings and auto makeup. Stock returns to the glue settings above. See <a href="DEVICES.html#what-they-have-in-common">what they have in common</a>.</p>
+    <p>Settings survive a preset change. Through power-off, the module also keeps the type, the Airwindows types' settings, auto makeup and SC In. Stock returns to the glue settings above. See <a href="DEVICES.html#what-they-have-in-common">what they have in common</a>.</p>
   </div>
   </section>
     <footer><span>Unofficial. Not endorsed by or affiliated with 1010music. Supplied as is, under the MIT licence in LICENSE.</span><span>Bitbox Micro Firmware: The Compressor</span></footer>

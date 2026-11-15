@@ -5,10 +5,14 @@ them on MIDI and adds what the module never had:
 
 - A jungle toolkit for Clip pads: loops that stretch to your tempo with an
   early-'90s sampler's grain, 24 Live Flip modes to re-cut them live, and turntable
-  moves on hold buttons.
+  Hold FX.
+- More from gates and CV: reassign gate inputs so one gate plays several pads,
+  trigger Hold FX and record loops by gate, and sequence Live Flip modes and
+  Hold FX by CV.
 - Airwindows effects across the whole mix: four slots, sixteen effects.
-- A master EQ and filter, and four compressors, three of them Airwindows.
-- Per-pad sends, envelope, LFO, loop and granular controls.
+- A master EQ and filter, and four compressors, three of them Airwindows, with
+  a sidechain.
+- Per-pad sends, envelope, LFO, loop and granular controls, with mute and solo.
 - A pop-up showing what every CC just changed, and screen themes.
 
 Everything works live.
@@ -17,8 +21,6 @@ It is unofficial. Nobody at 1010music wrote or endorsed it, so do not ask them
 for support. The splash reads `community fw`, so a patched unit is never
 mistaken for theirs. Assume it affects your warranty. Use at your own risk.
 It [cannot brick the module](INSTALLING.md#can-this-brick-my-module), though.
-
-Help documentation: https://modularpatcher.github.io/bitbox-micro-fw-patch/index.html
 
 ## A Patcher, Not Firmware
 
@@ -41,9 +43,13 @@ copy the `MICRO.BIN` it gives you to your card. The splash should then read
 - [Installing](INSTALLING.md): from stock image to patched module, step by step.
 - [CC reference](CC-REFERENCE.md): every number, its channel, and what to check
   when one seems dead.
+- [Reference card](reference-card.html): every CC and setting on two printable
+  pages, for building your controller mappings.
 - [Pad controls](PAD-CONTROLS.md): what each pad parameter does.
 - [Clip modes](CLIP-MODES.md): loops that follow your tempo, Live Flip modes and
   hold buttons.
+- [Gates and CV](GATES-AND-CV.md): reassign gate inputs, trigger Hold FX and set
+  Live Flip modes by gate and CV, and record by gate.
 - [Devices](DEVICES.md): the three that act on the whole mix, and where they sit.
 - [The Character chain](CHARACTER.md): sixteen Airwindows effects in four slots.
 - [The EQ and filter](EQ-FILTER.md): ten algorithms on one encoder.

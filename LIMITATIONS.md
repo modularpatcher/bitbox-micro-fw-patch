@@ -5,7 +5,7 @@ Read it before you flash.
 
 ## What It Will Not Do
 
-No CC changes these three things. None of them is caused by the patch.
+Three things catch people out. None of them is caused by the patch.
 
 ### The Module's Pages Don't Follow CCs
 
@@ -20,10 +20,12 @@ Loading a preset brings its pads back as saved, so anything you changed on the
 pads by CC is gone. Turn on [Keep CCs](SETTINGS.md#keep-ccs) to carry your changes over, or
 resend them from your controller.
 
-### Can CV Control These?
+### Can CV Control Them?
 
-No. CV cannot reach these controls, and the patch does not change that. Use a
-CV-to-MIDI converter. To the module, its output is ordinary Control Change.
+Partly. Use CV Action to sequence a Clip pad's Live Flip mode or choose its Hold
+FX from a CV input, as [Gates and CV](GATES-AND-CV.md) describes. Every other
+control needs a CV-to-MIDI converter, whose output the module reads as ordinary
+Control Change.
 
 ## Strict Build by Design
 
@@ -53,8 +55,8 @@ or simplify the preset.
   or controller.
 - **Recorded-sample pads get no sends.** They have none in stock firmware. See
   [which pad types work](CC-REFERENCE.md#which-pad-types-work).
-- **The Character chain is not saved**, in a preset or anywhere else. Set it up
-  again after power-on.
+- **The Character chain is not saved in a preset.** It survives preset changes
+  and power-off instead.
 - **Pad values are set, not smoothed.** Fast sweeps can sound stepped, and
   14-bit is no cure, because
   [the patch's CCs stay 7-bit](CC-REFERENCE.md#use-14-bit-cc).
@@ -65,9 +67,9 @@ or simplify the preset.
 ## How It Works, Briefly
 
 The patch adds its code to the end of the firmware image and points a few
-existing instructions at it. Nothing in the original is removed or moved. The
-one piece of data it rewrites is the list of rows on the Settings screen, which
-gains five.
+existing instructions at it. Nothing in the original is removed or moved. Most
+of the data it rewrites is in the lists of settings on the Settings page and on
+each pad's Main Parameters page.
 
 A patch CC does exactly what turning the encoder does. Any CC the patch does
 not use behaves as before. The three devices are different: the patch holds

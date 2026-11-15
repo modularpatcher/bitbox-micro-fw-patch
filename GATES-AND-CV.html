@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Bitbox Micro Firmware: Gates and CV</title>
+<style>
+/* Bitbox Micro — shared design system.
+ * Single source of truth for palette, typography and common document
+ * furniture. Consumed by bitbox_micro_presets/slice_map.py (slice maps)
+ * and docs/bitbox-firmware/render_docs.py (published documentation).
+ * Component CSS specific to one consumer stays with that consumer.
+ */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  :root {
+    --paper: #E7E9E3; --panel: #F2F3EE; --sunk: #DDE0D8;
+    --rule: #C7CBC1; --rule-lo: #D8DBD2;
+    --ink: #171A16; --muted: #6C7268;
+    --k1: #2E5E8C; --k1-lo: #2E5E8C1F;
+    --k2: #8C3A5E; --k2-lo: #8C3A5E1F;
+    --k3: #2F6B5B; --k3-lo: #2F6B5B1F;
+    --k4: #8A5A1F; --k4-lo: #8A5A1F1F;
+    --k5: #4B4A8C; --k5-lo: #4B4A8C1F;
+    --k6: #7A4030; --k6-lo: #7A40301F;
+    --warn: #8A6A1F; --warn-lo: #8A6A1F1A;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #141815; --panel: #1D211D; --sunk: #101412;
+      --rule: #343B34; --rule-lo: #262C26;
+      --ink: #E2E6DD; --muted: #969E93;
+      --k1: #77ADDC; --k1-lo: #77ADDC24;
+      --k2: #DE8CAF; --k2-lo: #DE8CAF24;
+      --k3: #6FBBA4; --k3-lo: #6FBBA424;
+      --k4: #D5A055; --k4-lo: #D5A05524;
+      --k5: #9A98DE; --k5-lo: #9A98DE24;
+      --k6: #D08A72; --k6-lo: #D08A7224;
+      --warn: #C8A44E; --warn-lo: #C8A44E1F;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #141815; --panel: #1D211D; --sunk: #101412;
+    --rule: #343B34; --rule-lo: #262C26;
+    --ink: #E2E6DD; --muted: #969E93;
+    --k1: #77ADDC; --k1-lo: #77ADDC24;
+    --k2: #DE8CAF; --k2-lo: #DE8CAF24;
+    --k3: #6FBBA4; --k3-lo: #6FBBA424;
+    --k4: #D5A055; --k4-lo: #D5A05524;
+    --k5: #9A98DE; --k5-lo: #9A98DE24;
+    --k6: #D08A72; --k6-lo: #D08A7224;
+    --warn: #C8A44E; --warn-lo: #C8A44E1F;
+  }
+
+  :root[data-theme="light"] {
+    --paper: #E7E9E3; --panel: #F2F3EE; --sunk: #DDE0D8;
+    --rule: #C7CBC1; --rule-lo: #D8DBD2;
+    --ink: #171A16; --muted: #6C7268;
+    --k1: #2E5E8C; --k1-lo: #2E5E8C1F;
+    --k2: #8C3A5E; --k2-lo: #8C3A5E1F;
+    --k3: #2F6B5B; --k3-lo: #2F6B5B1F;
+    --k4: #8A5A1F; --k4-lo: #8A5A1F1F;
+    --k5: #4B4A8C; --k5-lo: #4B4A8C1F;
+    --k6: #7A4030; --k6-lo: #7A40301F;
+    --warn: #8A6A1F; --warn-lo: #8A6A1F1A;
+  }
+
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans);
+         line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 1.5rem 5rem;
+          display: flex; flex-direction: column; gap: 3rem; }
+
+  .eyebrow { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em;
+             text-transform: uppercase; color: var(--muted); }
+
+  .masthead { display: flex; flex-direction: column; gap: 1rem; }
+  .masthead h1 { font-family: var(--mono); font-size: clamp(1.4rem, 4vw, 2.1rem);
+                 font-weight: 700; letter-spacing: -0.02em; line-height: 1.15;
+                 text-wrap: balance; margin: 0; overflow-wrap: anywhere; }
+  .masthead p { margin: 0; max-width: 64ch; color: var(--muted); font-size: 0.95rem; }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+  .facts li { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em;
+              padding: 0.3rem 0.6rem; border: 1px solid var(--rule);
+              background: var(--panel); font-variant-numeric: tabular-nums; }
+
+  h2.sec { font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+           letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+           margin: 0; padding-bottom: 0.6rem; border-bottom: 1px solid var(--rule); }
+
+  .section { display: flex; flex-direction: column; gap: 1rem; }
+
+  code { font-family: var(--mono); font-size: 0.87em; background: var(--sunk);
+         padding: 0.05em 0.35em; border: 1px solid var(--rule); }
+
+  /* ---- tables ---- */
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--rule); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-family: var(--mono);
+          font-size: 0.76rem; font-variant-numeric: tabular-nums; background: var(--panel); }
+  thead th { text-align: right; font-weight: 600; font-size: 0.63rem; letter-spacing: 0.1em;
+             text-transform: uppercase; color: var(--muted); padding: 0.6rem 0.8rem;
+             border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  thead th:first-child, thead th.l { text-align: left; }
+  tbody td { text-align: right; padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--rule-lo); white-space: nowrap; }
+  tbody td:first-child, tbody td.l { text-align: left; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody td.key { color: var(--rowkey); font-weight: 700; box-shadow: inset 3px 0 0 var(--rowkey); }
+  tbody tr.on td { background: var(--accent-lo); }
+  tbody tr.on td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+  .src { color: var(--muted); max-width: 26ch; overflow: hidden; text-overflow: ellipsis; }
+  .barcell { width: 30%; }
+  .minibar { display: block; height: 8px; background: var(--accent); opacity: 0.55; min-width: 1px; }
+
+  /* ---- definition cards ---- */
+
+  .settinggrid { display: grid; gap: 0.5rem;
+                 grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .settingcard { background: var(--panel); border: 1px solid var(--rule); padding: 0.7rem 0.85rem; }
+  .settingcard.wide { margin-top: 0.5rem; }
+  .settingcard-head { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em;
+                      text-transform: uppercase; color: var(--muted);
+                      padding-bottom: 0.45rem; margin-bottom: 0.45rem;
+                      border-bottom: 1px solid var(--rule); }
+  .settingcard dl { margin: 0; display: grid; grid-template-columns: auto 1fr;
+                    gap: 0.2rem 0.9rem; font-family: var(--mono); font-size: 0.72rem;
+                    font-variant-numeric: tabular-nums; }
+  .settingcard dt { color: var(--muted); white-space: nowrap; }
+  .settingcard dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+  .settings-source { font-family: var(--mono); font-size: 0.64rem; color: var(--muted);
+                     margin-top: 0.5rem; }
+  .settings-missing { font-size: 0.9rem; color: var(--muted); max-width: 70ch; margin: 0; }
+
+  /* ---- observations ---- */
+
+  .notes { display: flex; flex-direction: column; gap: 1rem; }
+  .note { border-left: 3px solid var(--rule); background: var(--panel);
+          padding: 0.85rem 1.1rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .note.warn { border-left-color: var(--warn); background: var(--warn-lo); }
+  .note-where { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em;
+                text-transform: uppercase; color: var(--muted); }
+  .note h3 { font-family: var(--mono); font-size: 0.76rem; letter-spacing: 0.06em;
+             text-transform: uppercase; margin: 0; font-weight: 700; }
+  .note.warn h3 { color: var(--warn); }
+  .note p { margin: 0; font-size: 0.9rem; max-width: 70ch; }
+  .note .hits { margin: 0.35rem 0 0; padding: 0; list-style: none;
+                display: flex; flex-direction: column; gap: 0.25rem; }
+  .note .hits li { font-family: var(--mono); font-size: 0.7rem;
+                   font-variant-numeric: tabular-nums; color: var(--ink);
+                   padding-left: 0.85rem; text-indent: -0.85rem; overflow-wrap: anywhere; }
+  .note .hits li::before { content: "\2192 "; color: var(--muted); }
+
+  footer { font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
+           border-top: 1px solid var(--rule); padding-top: 1rem; line-height: 1.7; }
+
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 2rem 1rem 3.5rem; gap: 2.25rem; }
+  }
+
+  /* ---- documentation layer -------------------------------------------
+     The shared file supplies the substrate: paper, hairline rules, spacing,
+     tabular figures. The documents express it as an editorial manual --
+     serif display against sans body, one restrained accent, numbered
+     sections.
+     Fonts are system stacks only: a downloaded folder must render with no
+     network and no bundled assets.
+     ------------------------------------------------------------------- */
+
+  :root {
+    --measure: 54rem;
+    --serif: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --accent: #8C3A2E;
+    --accent-lo: #8C3A2E14;
+    --callout: #EFEDE7;
+    --paper: #FBFAF7; --panel: #F4F2ED; --sunk: #EFEDE7;
+    --rule: #D8D4CC; --rule-lo: #E7E3DB;
+    --ink: #1A1815; --muted: #6E6A62;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #D98A78; --accent-lo: #D98A7820; --callout: #22201D;
+      --paper: #14130F; --panel: #1C1A17; --sunk: #100F0D;
+      --rule: #35322C; --rule-lo: #262420;
+      --ink: #E8E4DC; --muted: #9A948A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --accent: #D98A78; --accent-lo: #D98A7820; --callout: #22201D;
+    --paper: #14130F; --panel: #1C1A17; --sunk: #100F0D;
+    --rule: #35322C; --rule-lo: #262420;
+    --ink: #E8E4DC; --muted: #9A948A;
+  }
+
+  body { background: var(--paper); color: var(--ink); }
+
+  /* Sidebar and text column. The measure stays near 70ch for readability --
+     widening prose to fill a large screen is worse to read, not better -- so
+     the horizontal space goes to persistent navigation instead, which also
+     lifts the contents list out of the vertical flow. */
+  .wrap { display: grid; gap: 0 3rem; align-items: start;
+          grid-template-columns: 16.5rem minmax(0, 1fr);
+          justify-content: center; max-width: 100rem; margin: 0 auto;
+          padding: 2rem 2rem 4rem; }
+  .main { min-width: 0; }
+
+  .side { position: sticky; top: 2.5rem; display: flex; flex-direction: column;
+          gap: 1.5rem; padding-right: 1.5rem;
+          border-right: 1px solid var(--rule);
+          max-height: calc(100vh - 5rem); overflow-y: auto;
+          scrollbar-width: thin; }
+  .brand { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.09em;
+           text-transform: uppercase; color: var(--muted); margin: 0;
+           line-height: 1.5; }
+
+  /* ---- running head and foot ---- */
+
+  footer { font-family: var(--sans); font-size: 0.68rem; color: var(--muted);
+           border-top: 1px solid var(--rule); padding-top: 0.9rem;
+           margin-top: 2.5rem; display: flex; justify-content: space-between;
+           gap: 1rem; line-height: 1.6; }
+
+  /* ---- masthead ---- */
+
+  .masthead { gap: 0; margin-bottom: 2.2rem; }
+  .masthead h1 { font-family: var(--serif); font-weight: 700;
+                 font-size: clamp(2rem, 6vw, 3.1rem); letter-spacing: -0.015em;
+                 line-height: 1.05; margin: 0 0 0.5rem; text-wrap: balance; }
+  .masthead .eyebrow { font-family: var(--sans); font-weight: 700; color: var(--accent);
+                       letter-spacing: 0.1em; font-size: 0.7rem;
+                       border-top: 2px solid var(--ink); padding-top: 0.55rem; }
+  .masthead p { font-family: var(--sans); color: var(--muted); font-size: 0.95rem;
+                max-width: 78ch; margin: 0.9rem 0 0; }
+
+  .nav { display: flex; flex-direction: column; gap: 0.15rem; margin: 0; }
+  .nav a { font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.02em;
+           font-weight: 600; padding: 0.28rem 0; border: 0; background: none;
+           color: var(--muted); text-decoration: none; }
+  .nav a:hover { color: var(--ink); }
+  .nav a[aria-current] { color: var(--accent); box-shadow: none; }
+
+  /* ---- contents ---- */
+
+  .toc { display: flex; flex-direction: column; gap: 0.1rem; margin: 0;
+         padding-top: 1.2rem; border-top: 1px solid var(--rule); }
+  .toc-label { font-family: var(--sans); font-weight: 700; font-size: 0.62rem;
+               letter-spacing: 0.12em; text-transform: uppercase;
+               color: var(--muted); margin: 0 0 0.5rem; }
+  .toc a { display: grid; grid-template-columns: 1rem 1fr; gap: 0.5rem;
+           align-items: baseline; font-family: var(--sans); font-size: 0.8rem;
+           color: var(--muted); text-decoration: none; padding: 0.24rem 0;
+           border: 0; background: none; line-height: 1.35; }
+  .toc a:hover { color: var(--accent); }
+  .toc a .n { font-variant-numeric: tabular-nums; color: var(--accent);
+              font-weight: 700; }
+  .toc a.sub { color: var(--muted); }
+  .toc a.sub:hover { color: var(--accent); }
+
+  /* ---- numbered sections ---- */
+
+  /* Major sections get real air between them. A numbered heading under a
+     heavy rule is a strong signal, and it needs room above it or the page
+     reads as one continuous column. */
+  .section { display: block; margin: 3.4rem 0 0; }
+  h2.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+           font-weight: 700; letter-spacing: -0.01em; text-transform: none;
+           color: var(--ink); margin: 0 0 1.9rem; padding-bottom: 0.5rem;
+           border-bottom: 2px solid var(--ink); display: flex; gap: 0.7rem;
+           align-items: baseline; text-wrap: balance; }
+  h2.sec .n { font-variant-numeric: tabular-nums; color: var(--ink);
+              font-weight: 400; flex: none; }
+  h2.sec .n::after { content: " /"; color: var(--muted); }
+
+  /* A fold: one numbered heading that opens the sections inside it. */
+  details.fold { display: block; margin: 3.4rem 0 0; }
+  summary.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+                font-weight: 700; letter-spacing: -0.01em; color: var(--ink);
+                padding-bottom: 0.5rem; border-bottom: 2px solid var(--ink);
+                display: flex; gap: 0.7rem; align-items: baseline; cursor: pointer;
+                list-style: none; }
+  summary.sec::-webkit-details-marker { display: none; }
+  summary.sec .n { font-variant-numeric: tabular-nums; font-weight: 400; flex: none; }
+  summary.sec .n::after { content: " /"; color: var(--muted); }
+  summary.sec::after { content: "Show"; margin-left: auto; font-family: var(--sans);
+                       font-size: 0.8rem; font-weight: 600; color: var(--accent); }
+  details.fold[open] > summary.sec::after { content: "Hide"; }
+  summary.sec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  details.fold > .section:first-of-type { margin-top: 2.2rem; }
+  /* A smaller fold inside a section, styled like the section's ### headings. */
+  details.subfold { margin: 1.6rem 0 0; border: 1px solid var(--rule); border-radius: 6px;
+                    padding: 0.7rem 1rem; }
+  summary.subsec { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+                   letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+                   cursor: pointer; list-style: none; display: flex; }
+  summary.subsec::-webkit-details-marker { display: none; }
+  summary.subsec::after { content: "Show"; margin-left: auto; letter-spacing: 0;
+                          text-transform: none; font-weight: 600; font-size: 0.8rem; }
+  details.subfold[open] > summary.subsec::after { content: "Hide"; }
+  summary.subsec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ---- prose ---- */
+
+  .doc { font-family: var(--sans); font-size: 1.02rem; }
+  .doc h3 { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+            letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+            margin: 2.6rem 0 1rem; border: 0; padding: 0; }
+  .doc h3:first-child { margin-top: 0; }
+  .doc h4 { font-family: var(--sans); font-size: 0.98rem; font-weight: 700;
+            color: var(--ink); letter-spacing: 0; text-transform: none;
+            margin: 1.8rem 0 0.6rem; }
+
+  .doc p { margin: 0.75rem 0 0; max-width: var(--measure); }
+  .doc > :first-child { margin-top: 0; }
+  .doc h3 + p, .doc h4 + p, .doc h3 + ul, .doc h3 + ol,
+  .doc h3 + .tablewrap { margin-top: 0; }
+  .doc a { color: var(--accent); text-underline-offset: 0.18em;
+           text-decoration-thickness: 1px; }
+  .doc a:hover { text-decoration-thickness: 2px; }
+
+  .doc ul { margin: 0.75rem 0 0; padding-left: 1.1rem; max-width: var(--measure);
+            display: flex; flex-direction: column; gap: 0.4rem; }
+  .doc ul li::marker { color: var(--accent); }
+  .doc li > ul { margin-top: 0.4rem; list-style-type: circle; }
+
+  /* numbered procedures: accent numeral in its own column */
+  .doc ol { margin: 0.9rem 0 0; padding: 0; max-width: var(--measure); list-style: none;
+            counter-reset: step; display: flex; flex-direction: column; gap: 0.6rem; }
+  .doc ol { padding-left: 2.1rem; }
+  .doc ol li { counter-increment: step; position: relative; }
+  .doc ol li::before { content: counter(step); position: absolute;
+                       left: -2.1rem; width: 1.5rem; text-align: right;
+                       color: var(--accent); font-weight: 700;
+                       font-variant-numeric: tabular-nums; font-size: 0.86rem; }
+
+  .doc pre { font-family: var(--mono); font-size: 0.82rem; line-height: 1.65;
+             background: var(--sunk); border: 1px solid var(--rule);
+             padding: 0.85rem 1rem; margin: 1rem 0 0; overflow-x: auto; }
+  .doc pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  code { background: var(--sunk); border: 1px solid var(--rule-lo);
+         font-size: 0.85em; padding: 0.02em 0.22em; }
+
+  .doc img { display: block; width: 100%; max-width: var(--measure); height: auto;
+             margin: 1.4rem 0 0; }
+  /* Screenshots of the module are pixel art: natural size, never blurred. */
+  .doc img[src$=".png"] { width: auto; max-width: 100%; image-rendering: pixelated; }
+  /* The web patcher's picture is a page, not pixel art: 800 px shown at 400, smooth. */
+  .doc img[src$="web-patcher.png"] { width: 400px; image-rendering: auto; }
+
+  .doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2.2rem 0 0; }
+
+  /* Commands are meant to be run, so they are meant to be copied. The button
+     is only drawn once the script has attached, so a page with no scripting
+     shows a plain block rather than a control that does nothing. */
+  .doc .pre-wrap { position: relative; }
+  .doc .pre-wrap .copy { position: absolute; top: 0.45rem; right: 0.45rem;
+                         font-family: var(--sans); font-size: 0.68rem;
+                         letter-spacing: 0.04em; line-height: 1;
+                         padding: 0.35rem 0.5rem; cursor: pointer;
+                         color: var(--muted); background: var(--panel);
+                         border: 1px solid var(--rule); border-radius: 0;
+                         opacity: 0; transition: opacity 0.12s ease; }
+  .doc .pre-wrap:hover .copy,
+  .doc .pre-wrap .copy:focus-visible { opacity: 1; }
+  .doc .pre-wrap .copy:hover { color: var(--ink); border-color: var(--ink); }
+  .doc .pre-wrap .copy[data-done] { color: var(--accent); border-color: var(--accent);
+                                    opacity: 1; }
+  @media print { .doc .pre-wrap .copy { display: none; } }
+
+  /* ---- callout ---- */
+
+  .doc .note { margin: 1.3rem 0 0; max-width: var(--measure); background: var(--callout);
+               border: 0; border-left: 4px solid var(--muted);
+               padding: 0.9rem 1.1rem; }
+  .doc .note.warn { border-left-color: var(--accent); background: var(--accent-lo); }
+  .doc .note p { margin: 0; max-width: none; font-size: 0.97rem; }
+  .doc .note p + p { margin-top: 0.5rem; }
+
+  /* ---- tables ----
+     Two-column tables are definition lists and get the borderless treatment:
+     bold term, hairline row rules, no header. Wider tables keep a shaded
+     header row so a 5-column CC map stays readable. */
+
+  .doc .tablewrap { margin-top: 1.2rem; border: 0; overflow-x: auto; }
+  .doc table { width: auto; max-width: min(100%, var(--measure)); }
+  .doc table.defs, .doc table.wide { width: 100%; }
+  .doc table { background: none; font-family: var(--sans); font-size: 0.94rem;
+               min-width: 0; }
+  .doc thead th { font-family: var(--sans); font-size: 0.68rem; font-weight: 700;
+                  letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--ink); background: var(--panel);
+                  border-bottom: 1px solid var(--rule); padding: 0.6rem 0.8rem;
+                  text-align: left; }
+  .doc thead th.num { text-align: right; }
+  .doc tbody td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--rule-lo);
+                  text-align: left; white-space: normal; vertical-align: top; }
+  .doc tbody td.num { text-align: right; white-space: nowrap;
+                      font-variant-numeric: tabular-nums; }
+  .doc tbody tr:last-child td { border-bottom: 1px solid var(--rule); }
+
+  /* A boxed code chip reads well in a sentence and badly in a 27-row table,
+     where every cell would carry one. Inside a table it keeps the monospace
+     and loses the box. */
+  .doc table code { background: none; border: 0; padding: 0;
+                    color: var(--ink); font-size: 0.88em; }
+
+  .doc table.defs thead { display: none; }
+  .doc table.defs tbody td:first-child { font-weight: 700; width: 12rem;
+                                         padding-left: 0; }
+  .doc table.defs tbody td:last-child { padding-right: 0; }
+
+  @media (max-width: 74rem) {
+    .wrap { grid-template-columns: minmax(0, 1fr); gap: 2rem;
+            padding: 1.75rem 1.5rem 3rem; }
+    .side { position: static; border-right: 0; padding-right: 0;
+            padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule);
+            flex-direction: row; flex-wrap: wrap; align-items: baseline;
+            gap: 0.5rem 1.5rem; }
+    .side .brand { width: 100%; }
+    .nav { flex-direction: row; flex-wrap: wrap; gap: 1.1rem; }
+    .toc { border-top: 0; padding-top: 0; width: 100%; }
+    .toc a { display: inline-grid; }
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 1.5rem 1rem 3rem; }
+    .doc table.defs tbody td:first-child { width: auto; }
+    .doc table.defs tbody tr { display: grid; }
+    .doc table.defs tbody td { border-bottom: 0; padding: 0.15rem 0; }
+    .doc table.defs tbody tr { border-bottom: 1px solid var(--rule-lo);
+                               padding: 0.5rem 0; }
+  }
+
+  @media print {
+    .side { display: none; }
+    .wrap { display: block; max-width: none; padding: 0; }
+    h2.sec { break-after: avoid; }
+    .doc table, .doc .note, .doc pre { break-inside: avoid; }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="side">
+    <p class="brand">Bitbox Micro<br>community modification</p>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html" aria-current="page">Gates and CV</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="toc">
+      <p class="toc-label">On this page</p>
+      <a href="#before-you-start"><span class="n">1</span><span>Before You Start</span></a><a href="#on-clip-pads"><span class="n">2</span><span>On Clip Pads</span></a><a class="sub" href="#cv-action"><span class="n"></span><span>CV Action</span></a><a class="sub" href="#gate-action-and-hold-fx"><span class="n"></span><span>Gate Action and Hold FX</span></a><a href="#playing-pads-from-gates"><span class="n">3</span><span>Playing Pads from Gates</span></a><a class="sub" href="#gate-in"><span class="n"></span><span>Gate In</span></a><a class="sub" href="#round-robin"><span class="n"></span><span>Round Robin</span></a><a href="#recording-from-a-gate"><span class="n">4</span><span>Recording from a Gate</span></a><a class="sub" href="#rec-in"><span class="n"></span><span>Rec In</span></a><a class="sub" href="#gate-rec"><span class="n"></span><span>Gate Rec</span></a><a href="#with-midi"><span class="n">5</span><span>With MIDI</span></a><a href="#things-to-know"><span class="n">6</span><span>Things to Know</span></a><a class="sub" href="#empty-inputs"><span class="n"></span><span>Empty Inputs</span></a><a class="sub" href="#inputs-1-and-2"><span class="n"></span><span>Inputs 1 and 2</span></a><a class="sub" href="#one-input-several-jobs"><span class="n"></span><span>One Input, Several Jobs</span></a><a class="sub" href="#other-pad-types"><span class="n"></span><span>Other Pad Types</span></a>
+    </nav>
+  </aside>
+  <main class="main">
+    <header class="masthead">
+      <p class="eyebrow">Gates and CV</p>
+      <h1>Bitbox Micro Firmware: Gates and CV</h1>
+      <p>Live Flip modes and Hold FX by CV and gate, reassigned gate inputs, and recording by gate.</p>
+    </header>
+  <div class="doc">
+    <p>Sequence or modulate a Clip pad's Live Flip mode by CV, and trigger its Hold FX by gate. Reassign gate inputs so one gate fires several pads, and let pads that share an input or a MIDI channel take turns. Record and re-record loops by gate, into one pad or whichever pad you select.</p>
+    <p>The pad settings on this page save with the preset. Gate Rec is a module setting, and it is kept through a power-off.</p>
+  </div>
+  <section class="section" id="before-you-start">
+  <h2 class="sec"><span class="n">1</span>Before You Start</h2>
+  <div class="doc">
+    <p>Set each input's job on the module's Input screen: push TOOLS twice, select the input, and choose Gate for triggers or CV for control voltages. Inputs 1 and 2 can also be set to Audio for recording. The Input screen saves with the preset.</p>
+    <p>To reach the new settings, touch the pad, press the right arrow twice to reach its Pad Parameters, and scroll down past Excl Group. Gate In, Round Robin and Rec In appear on every pad. Clip pads add CV Action, Gate Action and Hold FX, because Live Flip modes and Hold FX exist only there. Those three also need the pad's <a href="CLIP-MODES.html">Clip mode</a> set to Vinyl, Jungle or Key Lock.</p>
+  </div>
+  </section>
+  <section class="section" id="on-clip-pads">
+  <h2 class="sec"><span class="n">2</span>On Clip Pads</h2>
+  <div class="doc">
+    <h3 id="cv-action">CV Action</h3>
+    <p>Use CV Action to sequence or modulate the pad's Live Flip mode, or to choose the Hold FX that its gates trigger, from a CV input. The voltage is read one semitone per step from 0 V, so the notes of a sequencer track make the choice. With CV Action set to Off, the pad's settings and CCs work as usual.</p>
+    <p>Flip In 1 to 8 sets the Live Flip mode from that input. C at 0 V is Off, C# is Rotate, and each semitone up selects the next mode in the <a href="CLIP-MODES.html#live-flip-modes">list</a>, up to Half-Time at 2 V. It works whether the pad is played from MIDI or from a gate. While Flip In is set, CC 117 leaves the Live Flip mode alone, and its pop-up shows the input and the mode playing, for example <code>CV 3: Rotate</code>.</p>
+    <p>Hold FX In 1 to 8 chooses the Hold FX that each gate triggers, in place of the pad's Hold FX setting. It needs <a href="#gate-action-and-hold-fx">Gate Action</a> set to Hold FX.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr>
+      <th>Note</th>
+      <th class="num">Volts</th>
+      <th>Hold FX In chooses</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>C</td>
+        <td class="num">0</td>
+        <td>Off</td>
+      </tr>
+      <tr>
+        <td>C#</td>
+        <td class="num">0.08</td>
+        <td>Roll</td>
+      </tr>
+      <tr>
+        <td>D</td>
+        <td class="num">0.17</td>
+        <td>Pitch Roll</td>
+      </tr>
+      <tr>
+        <td>D#</td>
+        <td class="num">0.25</td>
+        <td>Freeze</td>
+      </tr>
+      <tr>
+        <td>E</td>
+        <td class="num">0.33</td>
+        <td>Pull Up</td>
+      </tr>
+      <tr>
+        <td>F</td>
+        <td class="num">0.42</td>
+        <td>Power Down</td>
+      </tr>
+      <tr>
+        <td>F#</td>
+        <td class="num">0.5</td>
+        <td>Brake</td>
+      </tr>
+      <tr>
+        <td>G and above</td>
+        <td class="num">0.58</td>
+        <td>Scratch</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>For example, send the gates of one sequencer track to input 8 and the pitch CV of another to input 3. The note on each step then chooses the Hold FX that its gate triggers.</p>
+    <p>A pop-up shows the first choice after you change CV Action. After that it stays quiet, so a running sequence does not keep covering the screen.</p>
+    <h3 id="gate-action-and-hold-fx">Gate Action and Hold FX</h3>
+    <p>Use Gate Action to trigger Hold FX by gate. On Play, the gate plays the pad, as in stock firmware. On Hold FX, the gate triggers the Hold FX chosen below for as long as it is high, and stops it when it falls. The gate no longer starts the pad, so play the pad from MIDI or from another input. These are the same effects as the <a href="CLIP-MODES.html#hold-buttons">hold buttons</a> you can play by MIDI CC.</p>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>Hold FX</th>
+      <th>While the gate is high</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Off</td>
+        <td>nothing happens</td>
+      </tr>
+      <tr>
+        <td>Roll, Pitch Roll, Freeze</td>
+        <td>the loop repeats or freezes from where the gate arrived</td>
+      </tr>
+      <tr>
+        <td>Pull Up, Power Down, Brake, Scratch</td>
+        <td>the loop is pulled back, slowed, stopped or scratched like a record</td>
+      </tr>
+      <tr>
+        <td>Random</td>
+        <td>a different Hold FX on every gate</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>To sequence a random Hold FX on the last beat of every bar, set Hold FX to Random and put a gate on that step. Off stops the gate doing anything without changing Gate Action, which is useful while you build a pattern.</p>
+  </div>
+  </section>
+  <section class="section" id="playing-pads-from-gates">
+  <h2 class="sec"><span class="n">3</span>Playing Pads from Gates</h2>
+  <div class="doc">
+    <h3 id="gate-in">Gate In</h3>
+    <p>Use Gate In to reassign the pad's gate input.</p>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>Gate In</th>
+      <th>The pad plays from</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Own</td>
+        <td>the input in the pad's own position, as in stock firmware</td>
+      </tr>
+      <tr>
+        <td>1 to 8</td>
+        <td>that input</td>
+      </tr>
+      <tr>
+        <td>None</td>
+        <td>no input, only MIDI and the screen</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>Several pads can share an input, so one gate can play a kick and a layered sub together. A pad set to another input no longer plays from its own.</p>
+    <h3 id="round-robin">Round Robin</h3>
+    <p>Use Round Robin to alternate between pads that share an input or a MIDI channel, or to pick one at random on each hit.</p>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>Round Robin</th>
+      <th>What happens</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Off</td>
+        <td>the pad plays on every gate or note</td>
+      </tr>
+      <tr>
+        <td>On</td>
+        <td>the pads take turns, in screen order</td>
+      </tr>
+      <tr>
+        <td>Random</td>
+        <td>a random pad plays, never the same one twice in a row</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>For a snare roll that doesn't sound like a machine gun, load three different snares on three pads, set each to Gate In 4 and Round Robin On, and send the roll to input 4. On a MIDI channel, each note-off stops the pad that its note-on played, so held notes ring out as you would expect.</p>
+  </div>
+  </section>
+  <section class="section" id="recording-from-a-gate">
+  <h2 class="sec"><span class="n">4</span>Recording from a Gate</h2>
+  <div class="doc">
+    <h3 id="rec-in">Rec In</h3>
+    <p>Use Rec In to record into a pad by gate. It is a per-pad setting, on the pad's Main Parameters page. Set input 1, or inputs 1 and 2, to Audio first.</p>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>Rec In</th>
+      <th>What a gate does</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Off</td>
+        <td>nothing</td>
+      </tr>
+      <tr>
+        <td>Record 1 to 8</td>
+        <td>starts recording if the pad is empty, and the next gate stops it</td>
+      </tr>
+      <tr>
+        <td>Replace 1 to 8</td>
+        <td>clears the pad and records again, every time</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>Rec Quant, Length and RecToPlay work as they do when you record from the screen. Replace keeps the old WAV on the card, so nothing is lost.</p>
+    <p>Pads that share an input take turns in screen order. With three empty pads on Record 5, each pair of gates fills the next pad, so you can record takes across several pads like a looper. One input can record one pad and play another at the same time.</p>
+    <h3 id="gate-rec">Gate Rec</h3>
+    <p>Use Gate Rec to record into whichever pad you select, by gate. It is on the Settings page, not on a pad. Press TOOLS once and it sits below MIDI Rec, with the same choices as Rec In. It works as MIDI Rec does for a note, so select a pad and then send the gate. It takes priority over Rec In on the same input, and it is kept through a power-off.</p>
+    <p>A pad is always selected after power-on. With Gate Rec on REPLACE, a sequence that is already running re-records that pad straight away.</p>
+  </div>
+  </section>
+  <section class="section" id="with-midi">
+  <h2 class="sec"><span class="n">5</span>With MIDI</h2>
+  <div class="doc">
+    <p>Gates, CV and MIDI work together on the same pad. This is what happens when they meet.</p>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>You do this</th>
+      <th>What happens</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Play a pad from MIDI and from a gate</td>
+        <td>both play it, and the gate plays at full velocity</td>
+      </tr>
+      <tr>
+        <td>Play a Clip pad from MIDI with Gate Action on Hold FX</td>
+        <td>MIDI plays the pad, and the gate triggers the Hold FX</td>
+      </tr>
+      <tr>
+        <td>Play a Clip pad from MIDI with CV Action on Flip In</td>
+        <td>MIDI plays the pad, and the CV sets its Live Flip mode</td>
+      </tr>
+      <tr>
+        <td>Send CC 117 while Flip In is set</td>
+        <td>the CV keeps the Live Flip mode until you set CV Action to Off</td>
+      </tr>
+      <tr>
+        <td>Use Round Robin on pads played by both</td>
+        <td>MIDI and gates keep separate turns, so neither upsets the other</td>
+      </tr>
+      <tr>
+        <td>Mute or solo a pad from your controller</td>
+        <td>it stays silent or alone, whether MIDI or a gate plays it</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>Round Robin takes turns on the pad's MIDI channel. Notes that reach a pad through MIDI Pads play it as usual, without turns.</p>
+    <p>Hold FX In only chooses the Hold FX for gates. From MIDI, use the <a href="CLIP-MODES.html#hold-buttons">hold buttons</a> on CC instead.</p>
+  </div>
+  </section>
+  <section class="section" id="things-to-know">
+  <h2 class="sec"><span class="n">6</span>Things to Know</h2>
+  <div class="doc">
+    <h3 id="empty-inputs">Empty Inputs</h3>
+    <p>An input with nothing plugged in reads 0 V, so Flip In on it switches the Live Flip mode off.</p>
+    <h3 id="inputs-1-and-2">Inputs 1 and 2</h3>
+    <p>When inputs 1 and 2 carry audio, don't choose them for Flip In or Hold FX In. The audio reads as a fast-changing voltage.</p>
+    <h3 id="one-input-several-jobs">One Input, Several Jobs</h3>
+    <p>One input can record, play pads and duck the mix through the <a href="COMPRESSOR.html#sidechain">compressor's sidechain</a> at the same time. It records first, then plays.</p>
+    <h3 id="other-pad-types">Other Pad Types</h3>
+    <p>A gate always plays a pad that is not a Clip pad, whatever Gate Action it had as a Clip pad. Set it back to Clip and its settings return.</p>
+  </div>
+  </section>
+    <footer><span>Unofficial. Not endorsed by or affiliated with 1010music. Supplied as is, under the MIT licence in LICENSE.</span><span>Bitbox Micro Firmware: Gates and CV</span></footer>
+  </main>
+</div>
+<script>
+// Adds a copy control to each code block. Written here rather than fetched:
+// a downloaded folder has no network, and the pages must work from file://.
+// navigator.clipboard is unavailable on file:// in some browsers, so fall
+// back to a selection-based copy rather than failing silently.
+(function () {
+  var blocks = document.querySelectorAll('.doc pre');
+  Array.prototype.forEach.call(blocks, function (pre) {
+    var wrap = document.createElement('div');
+    wrap.className = 'pre-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy this block');
+    wrap.appendChild(btn);
+
+    btn.addEventListener('click', function () {
+      var text = pre.innerText;
+      var done = function () {
+        btn.textContent = 'Copied';
+        btn.setAttribute('data-done', '');
+        setTimeout(function () {
+          btn.textContent = 'Copy';
+          btn.removeAttribute('data-done');
+        }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'Select and copy'; }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

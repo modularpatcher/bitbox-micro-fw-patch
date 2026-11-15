@@ -452,10 +452,10 @@
 <div class="wrap">
   <aside class="side">
     <p class="brand">Bitbox Micro<br>community modification</p>
-    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html" aria-current="page">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html" aria-current="page">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
-      <a href="#building-your-presets"><span class="n">1</span><span>Building Your Presets</span></a><a class="sub" href="#building-a-preset-for-this"><span class="n"></span><span>Building a Preset for This</span></a><a class="sub" href="#editors-worth-knowing-about"><span class="n"></span><span>Editors Worth Knowing About</span></a><a href="#the-controls"><span class="n">2</span><span>The Controls</span></a><a class="sub" href="#delay-and-reverb"><span class="n"></span><span>Delay and Reverb</span></a><a class="sub" href="#playback"><span class="n"></span><span>Playback</span></a><a class="sub" href="#granular"><span class="n"></span><span>Granular</span></a><a class="sub" href="#envelope"><span class="n"></span><span>Envelope</span></a><a class="sub" href="#lfo"><span class="n"></span><span>LFO</span></a>
+      <a href="#building-your-presets"><span class="n">1</span><span>Building Your Presets</span></a><a class="sub" href="#building-a-preset-for-this"><span class="n"></span><span>Building a Preset for This</span></a><a class="sub" href="#editors-worth-knowing-about"><span class="n"></span><span>Editors Worth Knowing About</span></a><a href="#the-controls"><span class="n">2</span><span>The Controls</span></a><a class="sub" href="#delay-and-reverb"><span class="n"></span><span>Delay and Reverb</span></a><a class="sub" href="#playback"><span class="n"></span><span>Playback</span></a><a class="sub" href="#granular"><span class="n"></span><span>Granular</span></a><a class="sub" href="#envelope"><span class="n"></span><span>Envelope</span></a><a class="sub" href="#lfo"><span class="n"></span><span>LFO</span></a><a class="sub" href="#mute-and-solo"><span class="n"></span><span>Mute and Solo</span></a>
     </nav>
   </aside>
   <main class="main">
@@ -494,7 +494,7 @@
   <section class="section" id="the-controls">
   <h2 class="sec"><span class="n">2</span>The Controls</h2>
   <div class="doc">
-    <p>The controls fall into five groups. Take them in any order.</p>
+    <p>The controls fall into six groups. Take them in any order.</p>
     <h3 id="delay-and-reverb">Delay and Reverb</h3>
     <p><strong>Delay send and Reverb send</strong>: each pad has its own, so it sits in the effects by its own amount. They are the fastest way to make a static loop move. Recorded-sample pads have no FX sends in stock firmware, so there is nothing to reach.</p>
     <p>Four controls set up the delay itself, which the whole preset shares. They answer on any channel.</p>
@@ -565,6 +565,9 @@
     <p><strong>Wave</strong>: ten shapes, as ten even bands across the throw. <strong>Beat Sync</strong> locks the rate to the tempo. <strong>Retrigger</strong> restarts the LFO on every note, so a wobble lines up with your hits instead of drifting against them.</p>
     <p>LFO is further round the Source list than you might expect. Keep turning.</p>
     <p>If the bottom knob will not change a <code>None</code> slot, the pad is full. Each pad has twelve modulation slots and the firmware keeps three, so a preset with lots of mapped CCs can use up the rest. It looks like a dead encoder. Free a slot by removing a mapping you do not use.</p>
+    <h3 id="mute-and-solo">Mute and Solo</h3>
+    <p>Drop pads out with Mute, or isolate them with Solo, from your controller. Solo the kick for the last bar before a drop, then let go on the one.</p>
+    <p>Mute is the Mixer's own mute, so the Mixer screen shows it. Solo several pads and they all play, and when you release the last solo, the mutes you had before come back. <a href="SETTINGS.html#keep-ccs">Keep CCs</a> can carry both into the next preset. The <a href="CC-REFERENCE.html">CC reference</a> has the numbers.</p>
   </div>
   </section>
     <footer><span>Unofficial. Not endorsed by or affiliated with 1010music. Supplied as is, under the MIT licence in LICENSE.</span><span>Bitbox Micro Firmware: Pad Controls</span></footer>

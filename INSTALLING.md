@@ -174,14 +174,21 @@ You should see something like this:
      ok   Live Flip modes, per pad     CC 117
      ok   Hold buttons, per pad        CC 78, 102, 104, 105, 107, 118, 119
      ok   SD card waits, bounded       a stuck card no longer restarts it
+     ok   Gate In, Round Robin         Pad Parameters, below Excl Group
+     ok   Gate Action, Hold FX         Hold FX by gate, on Clip pads
+     ok   CV Action                    Live Flip modes and Hold FX by CV
+     ok   Rec In, Gate Rec             recording by gate
+     ok   Clip Tempo                   the Clip mode, saved with the preset
+     ok   Compressor sidechain, ch 1   CC 49
+     ok   Mute and Solo, per pad       CC 94, 95
      ok   ProgChange: OFF/ON/NEW ONLY  TOOLS > Settings
      ok   Clk Loss: INTERNAL/HOLD      TOOLS > Settings
      ok   Flip UI, screen and touch    TOOLS > Settings
      ok   Splash screen, so nobody blames 1010music for my work
 
-  Done. MICRO.BIN is ready -- 813,824 bytes.
+  Done. MICRO.BIN is ready -- 823,680 bytes.
 
-     Fingerprint  f5fa62b3fe5e18a2a941e200a054230fef9fd32834d342b379d8702ca0ec109b
+     Fingerprint  371452dfeb818f1a9accb4f44f669ac317d26476f71351e19816ce4b412d5248
 ```
 
 Check that the fingerprint matches the one above. If it does, your firmware is
@@ -214,7 +221,7 @@ The splash on the next boot should read:
 ```text
 bitbox micro
 community fw
-2.3.11-mod
+2.3.12-mod
 ```
 
 Check the splash after every flash. It takes a second, and it saves you chasing
@@ -223,7 +230,7 @@ a CC on firmware that was never installed.
 Then send one of the patch's CCs. A pop-up in the middle of the screen should
 name what it changed. That proves the patch is running and your controller is
 getting through. The [CC reference](CC-REFERENCE.md) has the full list, and
-[Settings](SETTINGS.md) covers the new rows on the Settings screen.
+[Settings](SETTINGS.md) covers the new settings on the Settings page.
 
 ### Presets That Use It
 

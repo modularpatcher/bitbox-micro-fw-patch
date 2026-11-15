@@ -452,10 +452,10 @@
 <div class="wrap">
   <aside class="side">
     <p class="brand">Bitbox Micro<br>community modification</p>
-    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html" aria-current="page">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html" aria-current="page">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
-      <a href="#what-it-will-not-do"><span class="n">1</span><span>What It Will Not Do</span></a><a class="sub" href="#the-modules-pages-dont-follow-ccs"><span class="n"></span><span>The Module&#x27;s Pages Don&#x27;t Follow CCs</span></a><a class="sub" href="#a-preset-load-resets-your-ccs"><span class="n"></span><span>A Preset Load Resets Your CCs</span></a><a class="sub" href="#can-cv-control-these"><span class="n"></span><span>Can CV Control These?</span></a><a href="#strict-build-by-design"><span class="n">2</span><span>Strict Build by Design</span></a><a href="#your-mileage-may-vary"><span class="n">3</span><span>Your Mileage May Vary</span></a><a href="#known-limitations"><span class="n">4</span><span>Known Limitations</span></a><a href="#how-it-works-briefly"><span class="n">5</span><span>How It Works, Briefly</span></a>
+      <a href="#what-it-will-not-do"><span class="n">1</span><span>What It Will Not Do</span></a><a class="sub" href="#the-modules-pages-dont-follow-ccs"><span class="n"></span><span>The Module&#x27;s Pages Don&#x27;t Follow CCs</span></a><a class="sub" href="#a-preset-load-resets-your-ccs"><span class="n"></span><span>A Preset Load Resets Your CCs</span></a><a class="sub" href="#can-cv-control-them"><span class="n"></span><span>Can CV Control Them?</span></a><a href="#strict-build-by-design"><span class="n">2</span><span>Strict Build by Design</span></a><a href="#your-mileage-may-vary"><span class="n">3</span><span>Your Mileage May Vary</span></a><a href="#known-limitations"><span class="n">4</span><span>Known Limitations</span></a><a href="#how-it-works-briefly"><span class="n">5</span><span>How It Works, Briefly</span></a>
     </nav>
   </aside>
   <main class="main">
@@ -470,13 +470,13 @@
   <section class="section" id="what-it-will-not-do">
   <h2 class="sec"><span class="n">1</span>What It Will Not Do</h2>
   <div class="doc">
-    <p>No CC changes these three things. None of them is caused by the patch.</p>
+    <p>Three things catch people out. None of them is caused by the patch.</p>
     <h3 id="the-modules-pages-dont-follow-ccs">The Module's Pages Don't Follow CCs</h3>
     <p>A CC changes the sound, but the module's own pages keep showing the old value. The module has always worked this way. Watch the <a href="SETTINGS.html#the-pop-up">pop-up</a> instead: it shows every patch CC as it lands. With the OSD on OFF or CPU there's no pop-up, so trust your ears.</p>
     <h3 id="a-preset-load-resets-your-ccs">A Preset Load Resets Your CCs</h3>
     <p>Loading a preset brings its pads back as saved, so anything you changed on the pads by CC is gone. Turn on <a href="SETTINGS.html#keep-ccs">Keep CCs</a> to carry your changes over, or resend them from your controller.</p>
-    <h3 id="can-cv-control-these">Can CV Control These?</h3>
-    <p>No. CV cannot reach these controls, and the patch does not change that. Use a CV-to-MIDI converter. To the module, its output is ordinary Control Change.</p>
+    <h3 id="can-cv-control-them">Can CV Control Them?</h3>
+    <p>Partly. Use CV Action to sequence a Clip pad's Live Flip mode or choose its Hold FX from a CV input, as <a href="GATES-AND-CV.html">Gates and CV</a> describes. Every other control needs a CV-to-MIDI converter, whose output the module reads as ordinary Control Change.</p>
   </div>
   </section>
   <section class="section" id="strict-build-by-design">
@@ -499,7 +499,7 @@
       <li><strong>It runs on 2.3.4 only.</strong> It refuses every other version, including future ones. A new 1010music release means the patch has to be redone, not just re-run.</li>
       <li><strong>This adds no modulation targets.</strong> The module's own LFOs and envelopes still cannot reach the granular controls, the sends or the rest. The manual's "Mod Target? No" is as true as before. Drive them from an external sequencer or controller.</li>
       <li><strong>Recorded-sample pads get no sends.</strong> They have none in stock firmware. See <a href="CC-REFERENCE.html#which-pad-types-work">which pad types work</a>.</li>
-      <li><strong>The Character chain is not saved</strong>, in a preset or anywhere else. Set it up again after power-on.</li>
+      <li><strong>The Character chain is not saved in a preset.</strong> It survives preset changes and power-off instead.</li>
       <li><strong>Pad values are set, not smoothed.</strong> Fast sweeps can sound stepped, and 14-bit is no cure, because <a href="CC-REFERENCE.html#use-14-bit-cc">the patch's CCs stay 7-bit</a>.</li>
       <li><strong>Start, Length, Loop Start and Loop End are not included.</strong> They already work over MIDI without the patch, but you place them by eye on the waveform, and the screen does not redraw for MIDI. Use the encoders.</li>
     </ul>
@@ -508,7 +508,7 @@
   <section class="section" id="how-it-works-briefly">
   <h2 class="sec"><span class="n">5</span>How It Works, Briefly</h2>
   <div class="doc">
-    <p>The patch adds its code to the end of the firmware image and points a few existing instructions at it. Nothing in the original is removed or moved. The one piece of data it rewrites is the list of rows on the Settings screen, which gains five.</p>
+    <p>The patch adds its code to the end of the firmware image and points a few existing instructions at it. Nothing in the original is removed or moved. Most of the data it rewrites is in the lists of settings on the Settings page and on each pad's Main Parameters page.</p>
     <p>A patch CC does exactly what turning the encoder does. Any CC the patch does not use behaves as before. The three devices are different: the patch holds their values itself, so a preset change leaves them alone.</p>
   </div>
   </section>

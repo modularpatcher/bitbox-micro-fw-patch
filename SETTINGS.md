@@ -1,6 +1,6 @@
 # Bitbox Micro Firmware: Settings
 
-Seven of the patch's additions live on the module's own Settings screen, not on
+Eight of the patch's additions live on the module's own Settings page, not on
 a CC. Set them once and they stay set, through preset changes and power cycles.
 Preset BPM is the exception: it belongs to each preset, and saves with it.
 
@@ -10,6 +10,7 @@ this order:
 
 ```text
 MIDI Rec:    1010music's, unchanged
+Gate Rec:    OFF / RECORD 1 to 8 / REPLACE 1 to 8
 ProgChange:  OFF / ON / NEW ONLY
 Clk Loss:    INTERNAL / HOLD
 Preset BPM:  1 to 255
@@ -22,7 +23,7 @@ Theme:       STOCK / AMBER / STAGE / CONTRAST / PHOSPHOR / SYNTHWAVE / CUSTOM
 
 ## OSD
 
-This row turns on the pop-up, the CPU bar, or both. They appear on top of
+Use OSD to turn on the pop-up, the CPU bar, or both. They appear on top of
 whichever screen you are on.
 
 - OFF: neither.
@@ -70,8 +71,8 @@ the red. The white tick is the recent peak.
 
 ## Preset BPM
 
-Set a preset's tempo on the module and save it with the preset. That was never
-possible before. The only way was to edit the preset file on a computer.
+Set a preset's tempo on the module and save it with the preset. Before, the only
+way was to edit the preset file on a computer.
 
 ### Using It
 
@@ -127,8 +128,8 @@ theme. Missing or invalid colours fall back to Stock's.
 
 ## Keep CCs
 
-Loading a preset puts every pad back the way it was saved. Keep CCs keeps the
-changes you made from your controller instead.
+Loading a preset puts every pad back the way it was saved. Turn on Keep CCs to
+carry the changes you made from your controller into the next preset.
 
 Say your vocal pad is on channel 6 and you have pushed its delay and reverb
 sends up for the last chorus. Load the next preset and both sends drop back to
@@ -136,10 +137,21 @@ their saved values. With Keep CCs ON, the new preset's channel 6 pad comes up
 with the sends where you left them.
 
 It covers the per-pad controls this patch adds: the sends, Reverse, Sustain,
-the loop, granular and LFO controls. Only the ones you have moved since
+the loop, granular and LFO controls, mute and solo, and the
+[Clip modes](CLIP-MODES.md). It also covers the delay's Beat Sync, Ping-pong
+and filter settings. Only the ones you have moved from your controller since
 power-on carry over. The rest load as saved.
 
+Changes made on the module's screen stay with their preset. Set a Clip pad to
+Jungle on the screen and only that preset has it. Send CC 112 and Jungle
+follows you into the next preset.
+
 OFF is the default: presets load exactly as saved.
+
+## Gate Rec
+
+Use Gate Rec to record into whichever pad you select, by gate, as MIDI Rec does
+for a note. See [Gates and CV](GATES-AND-CV.md#gate-rec).
 
 ## Clk Loss
 
@@ -156,7 +168,7 @@ HOLD stops the jump. The module carries on at the last tempo the clock gave it.
 - INTERNAL: what the module has always done. This is the default.
 - HOLD: keep the last external tempo until a clock returns.
 
-Set the fallback tempo with the Preset BPM row above.
+Set the fallback tempo with Preset BPM, above.
 
 ### What HOLD Keeps Through
 

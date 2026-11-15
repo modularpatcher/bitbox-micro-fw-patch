@@ -4,7 +4,7 @@ Your Bitbox has always had a bus compressor across Out 1 and 2, but the module
 only lets you switch it on and off. Threshold, ratio, attack, release and makeup
 gain were fixed. This patch puts all five on MIDI, adds auto makeup, and starts
 you on a classic glue setting. It also adds three Airwindows compressors to
-choose from.
+choose from. Duck the mix from a gate or a MIDI note with its sidechain.
 
 ## Where It Sits
 
@@ -140,6 +140,27 @@ While it is on, CC 45 is ignored, including the makeup a glue button sends. The
 pop-up says `Makeup  Auto` if you move it. Switch auto off and the makeup stays
 where auto left it until you move CC 45.
 
+## Sidechain
+
+Use the sidechain to duck the whole mix from a gate or a MIDI note, for the
+classic pumping sound. Choose what the compressor listens to with SC In, on CC 49
+on channel 1. Its range is split into ten steps.
+
+| SC In | The mix ducks |
+| ----- | ------------- |
+| Self | as usual: the compressor listens to the mix itself |
+| Gate 1 to 8 | while that input is high |
+| MIDI 16 | while a note is held on MIDI channel 16, deeper for a harder note |
+
+Try it with a kick. Send the kick's gate to input 8, set the kick pad's
+[Gate In](GATES-AND-CV.md#gate-in) to 8, and set SC In to Gate 8. Every kick now
+plays and pumps the mix. Route the kick pad to Out 3/4 so it skips the
+compressor and stays loud.
+
+The compressor's own settings shape the duck. On Stock, Ratio sets how deep it
+goes and Release how quickly the mix swells back. Stock, VariMu and Thunder
+take the sidechain. Logical4 does not, and its pop-up says `SC In  N/A`.
+
 
 ## Setting It by Ear
 
@@ -170,10 +191,9 @@ first touch it, the sound vanishes. Nothing is broken. Turn it up to halfway.
 
 ## What It Will Not Do
 
-There is no sidechain. The module has no key input, so you cannot duck the mix
-from a kick on another channel. Bus compression with a fast attack and a loud
-kick already pumps convincingly, though the kick is compressed too. If you
-sequence CCs, you can also draw a threshold envelope in time with the kick.
+The [sidechain](#sidechain) takes a gate or a MIDI note, not audio. The module
+has no spare audio input to listen to, so a kick on another channel cannot key
+it directly. Send the kick's gate or MIDI note instead.
 
 Stock has no wet/dry mix, though Logical4 and VariMu do, on CC 44. For Stock,
 use the outputs instead. Put the same sample on
@@ -185,6 +205,6 @@ pair.
 ## What Power-On Keeps
 
 Settings survive a preset change. Through power-off, the module also keeps the
-type, the Airwindows types' settings and auto makeup. Stock returns to the glue
+type, the Airwindows types' settings, auto makeup and SC In. Stock returns to the glue
 settings above. See
 [what they have in common](DEVICES.md#what-they-have-in-common).

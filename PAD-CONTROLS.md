@@ -54,7 +54,7 @@ preset you care about.
 
 ## The Controls
 
-The controls fall into five groups. Take them in any order.
+The controls fall into six groups. Take them in any order.
 
 ### Delay and Reverb
 
@@ -179,3 +179,13 @@ If the bottom knob will not change a `None` slot, the pad is full. Each pad has
 twelve modulation slots and the firmware keeps three, so a preset with lots of
 mapped CCs can use up the rest. It looks like a dead encoder. Free a slot by
 removing a mapping you do not use.
+
+### Mute and Solo
+
+Drop pads out with Mute, or isolate them with Solo, from your controller. Solo
+the kick for the last bar before a drop, then let go on the one.
+
+Mute is the Mixer's own mute, so the Mixer screen shows it. Solo several pads
+and they all play, and when you release the last solo, the mutes you had before
+come back. [Keep CCs](SETTINGS.md#keep-ccs) can carry both into the next preset.
+The [CC reference](CC-REFERENCE.md) has the numbers.

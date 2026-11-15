@@ -4,7 +4,7 @@ This page lists every CC, its channel and the pad types that answer it, and what
 to check when one seems dead. [Pad controls](PAD-CONTROLS.md) says what each one
 does, [Clip modes](CLIP-MODES.md) covers the Clip pad's tempo, Live Flip modes and
 hold buttons, and [devices](DEVICES.md) covers the three that act on the whole
-mix.
+mix. [Gates and CV](GATES-AND-CV.md) covers what gates and CV can do to a pad.
 
 ## Which CC, Which Channel
 
@@ -19,6 +19,7 @@ mix.
 | Play Thru | 90 | — | — | — | ✅ | — | ❌ |
 | Sustain + LFO | 87, 91–93 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Stop | 120/123 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Mute, Solo | 94, 95 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Clip modes, Live Flip modes, hold buttons | 78, 102, 104, 105, 107, 112–119 | — | — | ✅ | — | — | ❌ |
 
 **Multi-Sample**: this is a Sample pad with a folder of WAVs loaded into it, not
@@ -32,7 +33,8 @@ The gaps are the module's, not the patch's:
 - **Loop Mode and Loop Crossfade**: Clip and Slicer pads loop their own way,
   with no equivalent setting.
 - **Recorded-sample pads**: these have no FX sends in stock firmware. The delay
-  and reverb knobs on the FX screen do nothing on them either.
+  and reverb knobs on the FX screen do nothing on them either, and Mute and Solo
+  don't reach them.
 
 Sustain and the LFO controls work on Clip and Slicer pads too.
 
@@ -56,6 +58,7 @@ whatever its type.
 | **46** | Compressor auto makeup | **1 only** | any value above `0` steps Off, Normal, Hot | button |
 | **47** | Compressor type | **1 only** | four bands: Stock / Logical4 / VariMu / Thunder | stepped, 4 |
 | **48** | Compressor next type | **1 only** | any value above `0` | button |
+| **49** | Compressor sidechain, SC In | **1 only** | ten bands: Self / Gate 1–8 / MIDI 16 | stepped, 10 |
 | **50** | EQ mode | **1 only** | ten bands, one per mode | stepped, 10 |
 | **51** | EQ encoder 2 | **1 only** | `0`–`127`, centre neutral | linear |
 | **52** | EQ encoder 3 | **1 only** | `0`–`127`, centre neutral | linear |
@@ -81,6 +84,8 @@ whatever its type.
 | **91** | LFO Wave | pad channel | ten bands across the waveform list | stepped, 10 |
 | **92** | LFO Beat Sync | pad channel | `≥64` on, `<64` off | button |
 | **93** | LFO Retrigger | pad channel | `≥64` on, `<64` off | button |
+| **94** | Mute | pad channel | `≥64` muted, `<64` plays | button |
+| **95** | Solo | pad channel | `≥64` soloed, `<64` released | button |
 | **102** | Brake | pad channel | `≥64` held, `<64` released | button |
 | **104** | Freeze | pad channel | `≥64` held, `<64` released | button |
 | **105** | Pull Up | pad channel | `≥64` held, `<64` released | button |
@@ -89,7 +94,7 @@ whatever its type.
 | **109** | Delay ping-pong | any (global) | `≥64` on, `<64` off | button |
 | **110** | Delay filter on/off | any (global) | `≥64` on, `<64` off | button |
 | **111** | Delay filter width | any (global) | `0`–`127` | linear |
-| **112** | Clip method: Stock, Vinyl, Jungle, Key Lock | pad channel | any value above `0` steps to the next | button |
+| **112** | Clip mode: Stock, Vinyl, Jungle, Key Lock | pad channel | any value above `0` steps to the next | button |
 | **113** | Clip tempo: clock or Manual | pad channel | any value above `0` switches | button |
 | **114** | Manual tempo | pad channel | 1 … 255 BPM | linear |
 | **115** | Jungle cycle | pad channel | short to long | **exponential** |
@@ -103,11 +108,12 @@ whatever its type.
 There is nothing to set up on the module. Each control has a fixed CC that works
 on every preset, with no MIDI Learn and no modulation slot. Set your controller
 to send these CCs on the channel shown and you are playing. Every one but the
-pad stop opens a [pop-up](SETTINGS.md#the-pop-up).
+pad stop, Mute and Solo opens a [pop-up](SETTINGS.md#the-pop-up). Mute and Solo
+show on the Mixer screen instead.
 
 ### Which Channel to Send On
 
-- **CC 79 to 93, and 120/123**: per pad. Send them on the channel the pad
+- **CC 79 to 95, and 120/123**: per pad. Send them on the channel the pad
   listens on, the one you trigger it with. Eight pads on eight channels answer
   independently.
 - **CC 78, 102, 104, 105, 107 and 112 to 119**: the [Clip modes](CLIP-MODES.md),
@@ -115,7 +121,7 @@ pad stop opens a [pop-up](SETTINGS.md#the-pop-up).
 - **CC 108 to 111**: the delay, which the whole preset shares. Send them on
   any channel.
 - **CC 14 to 29**: the [Character chain](CHARACTER.md), channel 1 only.
-- **CC 40 to 48**: the [compressor](COMPRESSOR.md), channel 1 only. All four
+- **CC 40 to 49**: the [compressor](COMPRESSOR.md), channel 1 only. All four
   types share CC 41–45. Each uses them differently.
 - **CC 50 to 57, and 59**: the [EQ and filter](EQ-FILTER.md), channel 1 only.
 
@@ -219,8 +225,10 @@ pop-up means nothing arrived on channel 1.
 A pop-up with no sound means the CC arrived and the cause is elsewhere, such as
 an LFO pointed at nothing, or Scatter with Density up.
 
-No pop-up opens for the value already showing, or with the OSD row on OFF or
-CPU.
+No pop-up opens for the value already showing, or with OSD set to OFF or CPU.
+
+On a Clip pad with CV Action set to Flip In, CC 117 leaves the Live Flip mode
+alone. Its pop-up shows the input instead, such as `CV 3: Rotate`.
 
 ### Does the Encoder Do It?
 

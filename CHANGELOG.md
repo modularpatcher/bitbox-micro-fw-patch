@@ -5,6 +5,38 @@ something you would notice: what the module does differently once it is
 flashed, what the patcher does differently to your files, or what changed in
 the guide you are reading. None of them covers how any of it is built.
 
+## 2.3.12-mod — November 2026
+
+- Get much more from the gate and CV inputs, as
+  [Gates and CV](GATES-AND-CV.md) describes.
+- On Clip pads only:
+  - Sequence or modulate the Live Flip mode, or choose the Hold FX its gates
+    trigger, from a CV input, using CV Action. Each semitone selects the next
+    mode.
+  - Trigger Hold FX by gate using Gate Action, for as long as the gate is high.
+    Choose Roll, Pitch Roll, Freeze, Pull Up, Power Down, Brake, Scratch or
+    Random.
+  - Set a Clip pad's Clip mode (Vinyl, Jungle or Key Lock) on the module, and
+    save it with the preset.
+- Reassign gate inputs using Gate In, so one gate can trigger several pads.
+  This was a common community request. Thanks to ricardopeixoto on Mod Wiggler
+  for asking recently.
+- Use Round Robin to alternate between pads that share an input or a MIDI
+  channel, or to pick one at random on each hit.
+- Record into a pad by gate using Rec In. The first gate starts recording, and
+  the next stops it. Replace re-records on every gate, and pads that share an input
+  take turns.
+- Record into whichever pad you select, by gate, using Gate Rec on the Settings
+  page. Thanks to ekloiber, whose looper mod gave us the idea for Gate Rec and
+  Replace.
+- Duck the mix by gate or MIDI note using the new sidechain on the Stock,
+  VariMu and Thunder compressors.
+- Mute or solo pads from your controller.
+- Carry mutes, solos and the delay's Beat Sync, Ping-pong and filter settings
+  into the next preset using Keep CCs.
+- Read and rebuild the patch's C sources, now included in the `character`
+  folder. `--reassemble` checks every release against them.
+
 ## 2.3.11-mod — November 2026
 
 - Functionality from 2.3.10-mod is unchanged. A new

@@ -452,10 +452,10 @@
 <div class="wrap">
   <aside class="side">
     <p class="brand">Bitbox Micro<br>community modification</p>
-    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html" aria-current="page">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html" aria-current="page">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
-      <a href="#2311-mod--november-2026"><span class="n">1</span><span>2.3.11-mod — November 2026</span></a><a href="#2310-mod--october-2026"><span class="n">2</span><span>2.3.10-mod — October 2026</span></a><a href="#239-mod--october-2026"><span class="n">3</span><span>2.3.9-mod — October 2026</span></a><a href="#238-mod--october-2026"><span class="n">4</span><span>2.3.8-mod — October 2026</span></a><a href="#237-mod--september-2026"><span class="n">5</span><span>2.3.7-mod — September 2026</span></a><a href="#236-mod--september-2026"><span class="n">6</span><span>2.3.6-mod — September 2026</span></a><a href="#235-mod--august-2026"><span class="n">7</span><span>2.3.5-mod — August 2026</span></a>
+      <a href="#2312-mod--november-2026"><span class="n">1</span><span>2.3.12-mod — November 2026</span></a><a href="#2311-mod--november-2026"><span class="n">2</span><span>2.3.11-mod — November 2026</span></a><a href="#2310-mod--october-2026"><span class="n">3</span><span>2.3.10-mod — October 2026</span></a><a href="#239-mod--october-2026"><span class="n">4</span><span>2.3.9-mod — October 2026</span></a><a href="#238-mod--october-2026"><span class="n">5</span><span>2.3.8-mod — October 2026</span></a><a href="#237-mod--september-2026"><span class="n">6</span><span>2.3.7-mod — September 2026</span></a><a href="#236-mod--september-2026"><span class="n">7</span><span>2.3.6-mod — September 2026</span></a><a href="#235-mod--august-2026"><span class="n">8</span><span>2.3.5-mod — August 2026</span></a>
     </nav>
   </aside>
   <main class="main">
@@ -467,8 +467,31 @@
   <div class="doc">
     <p>Changes to the Bitbox Micro firmware patch, newest first. Each entry describes something you would notice: what the module does differently once it is flashed, what the patcher does differently to your files, or what changed in the guide you are reading. None of them covers how any of it is built.</p>
   </div>
+  <section class="section" id="2312-mod--november-2026">
+  <h2 class="sec"><span class="n">1</span>2.3.12-mod — November 2026</h2>
+  <div class="doc">
+    <ul>
+      <li>Get much more from the gate and CV inputs, as <a href="GATES-AND-CV.html">Gates and CV</a> describes.</li>
+      <li>On Clip pads only:
+        <ul>
+          <li>Sequence or modulate the Live Flip mode, or choose the Hold FX its gates trigger, from a CV input, using CV Action. Each semitone selects the next mode.</li>
+          <li>Trigger Hold FX by gate using Gate Action, for as long as the gate is high. Choose Roll, Pitch Roll, Freeze, Pull Up, Power Down, Brake, Scratch or Random.</li>
+          <li>Set a Clip pad's Clip mode (Vinyl, Jungle or Key Lock) on the module, and save it with the preset.</li>
+        </ul>
+      </li>
+      <li>Reassign gate inputs using Gate In, so one gate can trigger several pads. This was a common community request. Thanks to ricardopeixoto on Mod Wiggler for asking recently.</li>
+      <li>Use Round Robin to alternate between pads that share an input or a MIDI channel, or to pick one at random on each hit.</li>
+      <li>Record into a pad by gate using Rec In. The first gate starts recording, and the next stops it. Replace re-records on every gate, and pads that share an input take turns.</li>
+      <li>Record into whichever pad you select, by gate, using Gate Rec on the Settings page. Thanks to ekloiber, whose looper mod gave us the idea for Gate Rec and Replace.</li>
+      <li>Duck the mix by gate or MIDI note using the new sidechain on the Stock, VariMu and Thunder compressors.</li>
+      <li>Mute or solo pads from your controller.</li>
+      <li>Carry mutes, solos and the delay's Beat Sync, Ping-pong and filter settings into the next preset using Keep CCs.</li>
+      <li>Read and rebuild the patch's C sources, now included in the <code>character</code> folder. <code>--reassemble</code> checks every release against them.</li>
+    </ul>
+  </div>
+  </section>
   <section class="section" id="2311-mod--november-2026">
-  <h2 class="sec"><span class="n">1</span>2.3.11-mod — November 2026</h2>
+  <h2 class="sec"><span class="n">2</span>2.3.11-mod — November 2026</h2>
   <div class="doc">
     <ul>
       <li>Functionality from 2.3.10-mod is unchanged. A new <a href="patcher.html">web patcher</a> just makes installing easier: drop in 1010music's <code>MICRO234.zip</code> and download the patched <code>MICRO.BIN</code>, with nothing to install. Earlier versions, back to 2.3.5-mod, are under Advanced.</li>
@@ -482,7 +505,7 @@
   </div>
   </section>
   <section class="section" id="2310-mod--october-2026">
-  <h2 class="sec"><span class="n">2</span>2.3.10-mod — October 2026</h2>
+  <h2 class="sec"><span class="n">3</span>2.3.10-mod — October 2026</h2>
   <div class="doc">
     <ul>
       <li>Loops that really follow your tempo, 24 Live Flip modes to re-cut a loop live, and turntablist skills.</li>
@@ -507,7 +530,7 @@
   </div>
   </section>
   <section class="section" id="239-mod--october-2026">
-  <h2 class="sec"><span class="n">3</span>2.3.9-mod — October 2026</h2>
+  <h2 class="sec"><span class="n">4</span>2.3.9-mod — October 2026</h2>
   <div class="doc">
     <ul>
       <li>Sixteen Airwindows effects on the master bus, and a pop-up that shows what every CC in the patch just did.</li>
@@ -531,7 +554,7 @@
   </div>
   </section>
   <section class="section" id="238-mod--october-2026">
-  <h2 class="sec"><span class="n">4</span>2.3.8-mod — October 2026</h2>
+  <h2 class="sec"><span class="n">5</span>2.3.8-mod — October 2026</h2>
   <div class="doc">
     <ul>
       <li>Three new rows on the module's own Settings screen, the first additions that are not on a CC.</li>
@@ -544,7 +567,7 @@
   </div>
   </section>
   <section class="section" id="237-mod--september-2026">
-  <h2 class="sec"><span class="n">5</span>2.3.7-mod — September 2026</h2>
+  <h2 class="sec"><span class="n">6</span>2.3.7-mod — September 2026</h2>
   <div class="doc">
     <ul>
       <li>A master EQ and filter, which the module has never had. Ten algorithms: a DJ filter, a dual cut, a band pass, a three-band mixer EQ, tone and filter together, a tilt, a notch, a peak, a phaser, and a formant filter.</li>
@@ -558,7 +581,7 @@
   </div>
   </section>
   <section class="section" id="236-mod--september-2026">
-  <h2 class="sec"><span class="n">6</span>2.3.6-mod — September 2026</h2>
+  <h2 class="sec"><span class="n">7</span>2.3.6-mod — September 2026</h2>
   <div class="doc">
     <ul>
       <li>The module's master bus compressor is now reachable over MIDI. All five parameters that were previously fixed and invisible are on the table: Threshold, Ratio, Attack, Release and Makeup gain.</li>
@@ -569,7 +592,7 @@
   </div>
   </section>
   <section class="section" id="235-mod--august-2026">
-  <h2 class="sec"><span class="n">7</span>2.3.5-mod — August 2026</h2>
+  <h2 class="sec"><span class="n">8</span>2.3.5-mod — August 2026</h2>
   <div class="doc">
     <ul>
       <li>Per-pad Delay send and Reverb send, so each pad can sit in its own place in the mix rather than sharing one blend across the whole preset.</li>

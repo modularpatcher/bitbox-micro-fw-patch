@@ -8,8 +8,8 @@ master bus, after the delay and reverb returns, so they hear the finished sound.
 - **[The master EQ and filter](EQ-FILTER.md)**: tone and colour, with ten
   algorithms on one encoder.
 - **[The compressor](COMPRESSOR.md)**: dynamics, set up as a glue compressor
-  when it arrives, with three Airwindows compressors to switch to. Every
-  setting is on MIDI, with auto makeup.
+  when it arrives, with three Airwindows compressors to switch to and a
+  sidechain. Every setting is on MIDI, with auto makeup.
 
 All three answer on **MIDI channel 1**, not on a pad's channel. They act on
 everything routed to Out 1 and Out 2. Pads on Out 3–6 skip them completely,

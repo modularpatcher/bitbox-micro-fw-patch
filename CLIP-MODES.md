@@ -10,13 +10,17 @@ Stock Clip Sync keeps a loop in time by jumping back into place when it drifts.
 Clip modes stretch it instead, so a 170 BPM break plays smoothly at 134 and
 follows the tempo as it changes.
 
-Every control is a CC on the pad's own MIDI channel. They need a Clip pad.
+Play every control by CC on a Clip pad's own MIDI channel. You can also set the
+Clip mode on the module, trigger Hold FX by gate and sequence the Live Flip mode
+by CV, as [Gates and CV](GATES-AND-CV.md) describes.
 
-## Choosing a Method
+## Choosing a Clip Mode
 
-Each press of CC 112 steps the pad to the next method.
+Each press of CC 112 steps the pad to the next Clip mode. Set it on the module
+with Clip Tempo, just below Sync, and it saves with the preset. CC 112 changes
+that setting too.
 
-| Method | Sound | Pitch |
+| Clip mode | Sound | Pitch |
 | ------ | ----- | ----- |
 | **Stock** | the module's own Clip Sync: jumps back into time when the loop drifts | unchanged |
 | **Vinyl** | speeds up or slows down, like a record | follows the speed |
@@ -56,7 +60,8 @@ You can sequence a melody into a vocal chop, or drop a break by a fourth.
 
 CC 117 selects a Live Flip mode, which re-cuts the loop as it plays, in time.
 Its range is split into 25 steps, starting with Off. The modes need Vinyl, Jungle
-or Key Lock.
+or Key Lock. A sequencer's pitch CV can pick them by note, with
+[Flip In](GATES-AND-CV.md#cv-action).
 
 The chop modes find the hits and syllables in the audio, so they work on vocals
 and chords as well as drums. The harmony modes, 20 to 24, cut the loop into
@@ -94,7 +99,8 @@ short grains and pitch every other grain. CC 115 sets their length.
 
 A hold button acts while held and stops when released. Send `64` or more to
 hold and less than `64` to release. When you let go, the loop returns to where
-it would have been. Hold buttons need Vinyl, Jungle or Key Lock.
+it would have been. Hold buttons need Vinyl, Jungle or Key Lock. A gate can
+trigger them too, with [Gate Action](GATES-AND-CV.md#gate-action-and-hold-fx).
 
 | CC | Button | While held | On release |
 | -- | ------ | ---------- | ---------- |
@@ -109,15 +115,18 @@ it would have been. Hold buttons need Vinyl, Jungle or Key Lock.
 Rolls last four beats. Each press of Pitch Roll reverses its direction, rising
 first. Pitch Roll is also a Live Flip mode.
 
+These are the Hold FX that [Gate Action](GATES-AND-CV.md#gate-action-and-hold-fx)
+triggers. Baby Scratch is called Scratch there.
+
 Pull Up, Power Down, Brake and Baby Scratch play one at a time. Pressing another
 takes over. As the record slows, the sound fades, and a stopped record is
 silent.
 
 ## Pop-Ups
 
-CC 112 and 113 show the method above the tempo the pad follows.
+CC 112 and 113 show the Clip mode above the tempo the pad follows.
 
-| Method | Top line | Bottom line |
+| Clip mode | Top line | Bottom line |
 | ------ | -------- | ----------- |
 | Vinyl | `VINYL` | `Clock  134  0.0st`, with the pitch shift in semitones |
 | Jungle | `JUNGLE` | `Clock  134  Modern`, with the flavour |
@@ -125,7 +134,8 @@ CC 112 and 113 show the method above the tempo the pad follows.
 | Stock | `CLIP TEMPO` | `Stock` |
 
 In Manual, the top line adds `MANUAL` and the bottom line starts `Manual`. Any
-other pad type shows `Clip pads only`.
+other pad type shows `Clip pads only`. While a CV input sets the Live Flip mode,
+CC 117 shows the input and the mode playing, such as `CV 3: Rotate`.
 
 ## Things to Know
 
@@ -143,9 +153,10 @@ follow Preset BPM. So restart your sequencer once.
 
 ### Preset Loads
 
-A preset load returns every pad to Stock with its Live Flip mode off, as it does
-with your other CCs. [Keep CCs](SETTINGS.md#keep-ccs) carries them over.
-Power-on always starts in Stock.
+Each pad loads with the Clip mode saved in its Clip Tempo setting. Older presets load
+Stock. The Live Flip mode and Manual start off, as your
+other CCs do. [Keep CCs](SETTINGS.md#keep-ccs) carries what your controller
+changed.
 
 ### Long Holds
 
