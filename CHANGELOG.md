@@ -5,6 +5,20 @@ something you would notice: what the module does differently once it is
 flashed, what the patcher does differently to your files, or what changed in
 the guide you are reading. None of them covers how any of it is built.
 
+## 2.3.13-mod — November 2026
+
+- Improved compatibility for older modules that said *Unable to verify* when
+  you flashed 2.3.10-mod, 2.3.11-mod or 2.3.12-mod. Otherwise a maintenance
+  release with no new features.
+- There are at least two versions of the bootloader, the installer 1010music
+  puts on each module at the factory to flash firmware from the card. Older
+  ones only take firmware up to 768 KB, and recent releases had grown past
+  that. 2.3.13-mod is packed to fit, and unpacks itself each time the module
+  starts.
+- Confirmed to work on modules from 2020 to 2026, across both bootloaders.
+- Thanks to nikoleterrible for reporting it, and to stoermelder for tracing it
+  to the bootloader and testing the fix.
+
 ## 2.3.12-mod — November 2026
 
 - Get much more from the gate and CV inputs, as

@@ -587,14 +587,15 @@ python3 patch_micro.py MICRO.BIN patched/MICRO.BIN</code></pre>
      ok   Clip Tempo                   the Clip mode, saved with the preset
      ok   Compressor sidechain, ch 1   CC 49
      ok   Mute and Solo, per pad       CC 94, 95
+     ok   Older modules                packed to fit, unpacked at power-on
      ok   ProgChange: OFF/ON/NEW ONLY  TOOLS &gt; Settings
      ok   Clk Loss: INTERNAL/HOLD      TOOLS &gt; Settings
      ok   Flip UI, screen and touch    TOOLS &gt; Settings
      ok   Splash screen, so nobody blames 1010music for my work
 
-  Done. MICRO.BIN is ready -- 823,680 bytes.
+  Done. MICRO.BIN is ready -- 767,852 bytes.
 
-     Fingerprint  371452dfeb818f1a9accb4f44f669ac317d26476f71351e19816ce4b412d5248</code></pre>
+     Fingerprint  8585c30be1b4dd0bcfb99530099193324858ff9728d2725c535d1af28fc0d65e</code></pre>
     <p>Check that the fingerprint matches the one above. If it does, your firmware is byte-for-byte the same as everyone else's running this patch.</p>
     <p>Add <code>-v</code> to see every change it makes.</p>
   </div>
@@ -619,7 +620,7 @@ python3 patch_micro.py MICRO.BIN patched/MICRO.BIN</code></pre>
     <p>The splash on the next boot should read:</p>
     <pre><code>bitbox micro
 community fw
-2.3.12-mod</code></pre>
+2.3.13-mod</code></pre>
     <p>Check the splash after every flash. It takes a second, and it saves you chasing a CC on firmware that was never installed.</p>
     <p>Then send one of the patch's CCs. A pop-up in the middle of the screen should name what it changed. That proves the patch is running and your controller is getting through. The <a href="CC-REFERENCE.html">CC reference</a> has the full list, and <a href="SETTINGS.html">Settings</a> covers the new settings on the Settings page.</p>
     <h3 id="presets-that-use-it">Presets That Use It</h3>
@@ -630,6 +631,7 @@ community fw
   <h2 class="sec"><span class="n">6</span>If Something Goes Wrong</h2>
   <div class="doc">
     <p>If the splash still says <code>by 1010music</code> and <code>2.3.4</code>, nothing was flashed. Check that the file is named exactly <code>MICRO.BIN</code> and sits in the card root, not in a folder. Then flash again.</p>
+    <p>If 2.3.10-mod, 2.3.11-mod or 2.3.12-mod stopped with <em>Unable to verify</em>, your module has an older bootloader that only takes firmware up to 768 KB. 2.3.13-mod fits, so flash it instead.</p>
     <details class="subfold" id="if-you-used-the-python-script">
     <summary class="subsec">If you used the Python script</summary>
     <h3 id="windows-cannot-find-python">Windows Cannot Find Python</h3>
