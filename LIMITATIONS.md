@@ -57,6 +57,10 @@ or simplify the preset.
   [which pad types work](CC-REFERENCE.md#which-pad-types-work).
 - **The Character chain is not saved in a preset.** It survives preset changes
   and power-off instead.
+- **External FX has one Return, and its outputs skip the master bus.** Both
+  effects come back on In 1/2, and the sends go out without the Character chain,
+  the EQ, the compressor or the master volume. See
+  [External FX](EXTERNAL-FX.md#things-to-know).
 - **Pad values are set, not smoothed.** Fast sweeps can sound stepped, and
   14-bit is no cure, because
   [the patch's CCs stay 7-bit](CC-REFERENCE.md#use-14-bit-cc).

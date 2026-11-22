@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Bitbox Micro Firmware: External FX</title>
+<style>
+/* Bitbox Micro — shared design system.
+ * Single source of truth for palette, typography and common document
+ * furniture. Consumed by bitbox_micro_presets/slice_map.py (slice maps)
+ * and docs/bitbox-firmware/render_docs.py (published documentation).
+ * Component CSS specific to one consumer stays with that consumer.
+ */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  :root {
+    --paper: #E7E9E3; --panel: #F2F3EE; --sunk: #DDE0D8;
+    --rule: #C7CBC1; --rule-lo: #D8DBD2;
+    --ink: #171A16; --muted: #6C7268;
+    --k1: #2E5E8C; --k1-lo: #2E5E8C1F;
+    --k2: #8C3A5E; --k2-lo: #8C3A5E1F;
+    --k3: #2F6B5B; --k3-lo: #2F6B5B1F;
+    --k4: #8A5A1F; --k4-lo: #8A5A1F1F;
+    --k5: #4B4A8C; --k5-lo: #4B4A8C1F;
+    --k6: #7A4030; --k6-lo: #7A40301F;
+    --warn: #8A6A1F; --warn-lo: #8A6A1F1A;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #141815; --panel: #1D211D; --sunk: #101412;
+      --rule: #343B34; --rule-lo: #262C26;
+      --ink: #E2E6DD; --muted: #969E93;
+      --k1: #77ADDC; --k1-lo: #77ADDC24;
+      --k2: #DE8CAF; --k2-lo: #DE8CAF24;
+      --k3: #6FBBA4; --k3-lo: #6FBBA424;
+      --k4: #D5A055; --k4-lo: #D5A05524;
+      --k5: #9A98DE; --k5-lo: #9A98DE24;
+      --k6: #D08A72; --k6-lo: #D08A7224;
+      --warn: #C8A44E; --warn-lo: #C8A44E1F;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #141815; --panel: #1D211D; --sunk: #101412;
+    --rule: #343B34; --rule-lo: #262C26;
+    --ink: #E2E6DD; --muted: #969E93;
+    --k1: #77ADDC; --k1-lo: #77ADDC24;
+    --k2: #DE8CAF; --k2-lo: #DE8CAF24;
+    --k3: #6FBBA4; --k3-lo: #6FBBA424;
+    --k4: #D5A055; --k4-lo: #D5A05524;
+    --k5: #9A98DE; --k5-lo: #9A98DE24;
+    --k6: #D08A72; --k6-lo: #D08A7224;
+    --warn: #C8A44E; --warn-lo: #C8A44E1F;
+  }
+
+  :root[data-theme="light"] {
+    --paper: #E7E9E3; --panel: #F2F3EE; --sunk: #DDE0D8;
+    --rule: #C7CBC1; --rule-lo: #D8DBD2;
+    --ink: #171A16; --muted: #6C7268;
+    --k1: #2E5E8C; --k1-lo: #2E5E8C1F;
+    --k2: #8C3A5E; --k2-lo: #8C3A5E1F;
+    --k3: #2F6B5B; --k3-lo: #2F6B5B1F;
+    --k4: #8A5A1F; --k4-lo: #8A5A1F1F;
+    --k5: #4B4A8C; --k5-lo: #4B4A8C1F;
+    --k6: #7A4030; --k6-lo: #7A40301F;
+    --warn: #8A6A1F; --warn-lo: #8A6A1F1A;
+  }
+
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans);
+         line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 1.5rem 5rem;
+          display: flex; flex-direction: column; gap: 3rem; }
+
+  .eyebrow { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em;
+             text-transform: uppercase; color: var(--muted); }
+
+  .masthead { display: flex; flex-direction: column; gap: 1rem; }
+  .masthead h1 { font-family: var(--mono); font-size: clamp(1.4rem, 4vw, 2.1rem);
+                 font-weight: 700; letter-spacing: -0.02em; line-height: 1.15;
+                 text-wrap: balance; margin: 0; overflow-wrap: anywhere; }
+  .masthead p { margin: 0; max-width: 64ch; color: var(--muted); font-size: 0.95rem; }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+  .facts li { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em;
+              padding: 0.3rem 0.6rem; border: 1px solid var(--rule);
+              background: var(--panel); font-variant-numeric: tabular-nums; }
+
+  h2.sec { font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+           letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+           margin: 0; padding-bottom: 0.6rem; border-bottom: 1px solid var(--rule); }
+
+  .section { display: flex; flex-direction: column; gap: 1rem; }
+
+  code { font-family: var(--mono); font-size: 0.87em; background: var(--sunk);
+         padding: 0.05em 0.35em; border: 1px solid var(--rule); }
+
+  /* ---- tables ---- */
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--rule); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-family: var(--mono);
+          font-size: 0.76rem; font-variant-numeric: tabular-nums; background: var(--panel); }
+  thead th { text-align: right; font-weight: 600; font-size: 0.63rem; letter-spacing: 0.1em;
+             text-transform: uppercase; color: var(--muted); padding: 0.6rem 0.8rem;
+             border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  thead th:first-child, thead th.l { text-align: left; }
+  tbody td { text-align: right; padding: 0.45rem 0.8rem; border-bottom: 1px solid var(--rule-lo); white-space: nowrap; }
+  tbody td:first-child, tbody td.l { text-align: left; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody td.key { color: var(--rowkey); font-weight: 700; box-shadow: inset 3px 0 0 var(--rowkey); }
+  tbody tr.on td { background: var(--accent-lo); }
+  tbody tr.on td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+  .src { color: var(--muted); max-width: 26ch; overflow: hidden; text-overflow: ellipsis; }
+  .barcell { width: 30%; }
+  .minibar { display: block; height: 8px; background: var(--accent); opacity: 0.55; min-width: 1px; }
+
+  /* ---- definition cards ---- */
+
+  .settinggrid { display: grid; gap: 0.5rem;
+                 grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .settingcard { background: var(--panel); border: 1px solid var(--rule); padding: 0.7rem 0.85rem; }
+  .settingcard.wide { margin-top: 0.5rem; }
+  .settingcard-head { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em;
+                      text-transform: uppercase; color: var(--muted);
+                      padding-bottom: 0.45rem; margin-bottom: 0.45rem;
+                      border-bottom: 1px solid var(--rule); }
+  .settingcard dl { margin: 0; display: grid; grid-template-columns: auto 1fr;
+                    gap: 0.2rem 0.9rem; font-family: var(--mono); font-size: 0.72rem;
+                    font-variant-numeric: tabular-nums; }
+  .settingcard dt { color: var(--muted); white-space: nowrap; }
+  .settingcard dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+  .settings-source { font-family: var(--mono); font-size: 0.64rem; color: var(--muted);
+                     margin-top: 0.5rem; }
+  .settings-missing { font-size: 0.9rem; color: var(--muted); max-width: 70ch; margin: 0; }
+
+  /* ---- observations ---- */
+
+  .notes { display: flex; flex-direction: column; gap: 1rem; }
+  .note { border-left: 3px solid var(--rule); background: var(--panel);
+          padding: 0.85rem 1.1rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .note.warn { border-left-color: var(--warn); background: var(--warn-lo); }
+  .note-where { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em;
+                text-transform: uppercase; color: var(--muted); }
+  .note h3 { font-family: var(--mono); font-size: 0.76rem; letter-spacing: 0.06em;
+             text-transform: uppercase; margin: 0; font-weight: 700; }
+  .note.warn h3 { color: var(--warn); }
+  .note p { margin: 0; font-size: 0.9rem; max-width: 70ch; }
+  .note .hits { margin: 0.35rem 0 0; padding: 0; list-style: none;
+                display: flex; flex-direction: column; gap: 0.25rem; }
+  .note .hits li { font-family: var(--mono); font-size: 0.7rem;
+                   font-variant-numeric: tabular-nums; color: var(--ink);
+                   padding-left: 0.85rem; text-indent: -0.85rem; overflow-wrap: anywhere; }
+  .note .hits li::before { content: "\2192 "; color: var(--muted); }
+
+  footer { font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
+           border-top: 1px solid var(--rule); padding-top: 1rem; line-height: 1.7; }
+
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 2rem 1rem 3.5rem; gap: 2.25rem; }
+  }
+
+  /* ---- documentation layer -------------------------------------------
+     The shared file supplies the substrate: paper, hairline rules, spacing,
+     tabular figures. The documents express it as an editorial manual --
+     serif display against sans body, one restrained accent, numbered
+     sections.
+     Fonts are system stacks only: a downloaded folder must render with no
+     network and no bundled assets.
+     ------------------------------------------------------------------- */
+
+  :root {
+    --measure: 54rem;
+    --serif: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --accent: #8C3A2E;
+    --accent-lo: #8C3A2E14;
+    --callout: #EFEDE7;
+    --paper: #FBFAF7; --panel: #F4F2ED; --sunk: #EFEDE7;
+    --rule: #D8D4CC; --rule-lo: #E7E3DB;
+    --ink: #1A1815; --muted: #6E6A62;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent: #D98A78; --accent-lo: #D98A7820; --callout: #22201D;
+      --paper: #14130F; --panel: #1C1A17; --sunk: #100F0D;
+      --rule: #35322C; --rule-lo: #262420;
+      --ink: #E8E4DC; --muted: #9A948A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --accent: #D98A78; --accent-lo: #D98A7820; --callout: #22201D;
+    --paper: #14130F; --panel: #1C1A17; --sunk: #100F0D;
+    --rule: #35322C; --rule-lo: #262420;
+    --ink: #E8E4DC; --muted: #9A948A;
+  }
+
+  body { background: var(--paper); color: var(--ink); }
+
+  /* Sidebar and text column. The measure stays near 70ch for readability --
+     widening prose to fill a large screen is worse to read, not better -- so
+     the horizontal space goes to persistent navigation instead, which also
+     lifts the contents list out of the vertical flow. */
+  .wrap { display: grid; gap: 0 3rem; align-items: start;
+          grid-template-columns: 16.5rem minmax(0, 1fr);
+          justify-content: center; max-width: 100rem; margin: 0 auto;
+          padding: 2rem 2rem 4rem; }
+  .main { min-width: 0; }
+
+  .side { position: sticky; top: 2.5rem; display: flex; flex-direction: column;
+          gap: 1.5rem; padding-right: 1.5rem;
+          border-right: 1px solid var(--rule);
+          max-height: calc(100vh - 5rem); overflow-y: auto;
+          scrollbar-width: thin; }
+  .brand { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.09em;
+           text-transform: uppercase; color: var(--muted); margin: 0;
+           line-height: 1.5; }
+
+  /* ---- running head and foot ---- */
+
+  footer { font-family: var(--sans); font-size: 0.68rem; color: var(--muted);
+           border-top: 1px solid var(--rule); padding-top: 0.9rem;
+           margin-top: 2.5rem; display: flex; justify-content: space-between;
+           gap: 1rem; line-height: 1.6; }
+
+  /* ---- masthead ---- */
+
+  .masthead { gap: 0; margin-bottom: 2.2rem; }
+  .masthead h1 { font-family: var(--serif); font-weight: 700;
+                 font-size: clamp(2rem, 6vw, 3.1rem); letter-spacing: -0.015em;
+                 line-height: 1.05; margin: 0 0 0.5rem; text-wrap: balance; }
+  .masthead .eyebrow { font-family: var(--sans); font-weight: 700; color: var(--accent);
+                       letter-spacing: 0.1em; font-size: 0.7rem;
+                       border-top: 2px solid var(--ink); padding-top: 0.55rem; }
+  .masthead p { font-family: var(--sans); color: var(--muted); font-size: 0.95rem;
+                max-width: 78ch; margin: 0.9rem 0 0; }
+
+  .nav { display: flex; flex-direction: column; gap: 0.15rem; margin: 0; }
+  .nav a { font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.02em;
+           font-weight: 600; padding: 0.28rem 0; border: 0; background: none;
+           color: var(--muted); text-decoration: none; }
+  .nav a:hover { color: var(--ink); }
+  .nav a[aria-current] { color: var(--accent); box-shadow: none; }
+
+  /* ---- contents ---- */
+
+  .toc { display: flex; flex-direction: column; gap: 0.1rem; margin: 0;
+         padding-top: 1.2rem; border-top: 1px solid var(--rule); }
+  .toc-label { font-family: var(--sans); font-weight: 700; font-size: 0.62rem;
+               letter-spacing: 0.12em; text-transform: uppercase;
+               color: var(--muted); margin: 0 0 0.5rem; }
+  .toc a { display: grid; grid-template-columns: 1rem 1fr; gap: 0.5rem;
+           align-items: baseline; font-family: var(--sans); font-size: 0.8rem;
+           color: var(--muted); text-decoration: none; padding: 0.24rem 0;
+           border: 0; background: none; line-height: 1.35; }
+  .toc a:hover { color: var(--accent); }
+  .toc a .n { font-variant-numeric: tabular-nums; color: var(--accent);
+              font-weight: 700; }
+  .toc a.sub { color: var(--muted); }
+  .toc a.sub:hover { color: var(--accent); }
+
+  /* ---- numbered sections ---- */
+
+  /* Major sections get real air between them. A numbered heading under a
+     heavy rule is a strong signal, and it needs room above it or the page
+     reads as one continuous column. */
+  .section { display: block; margin: 3.4rem 0 0; }
+  h2.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+           font-weight: 700; letter-spacing: -0.01em; text-transform: none;
+           color: var(--ink); margin: 0 0 1.9rem; padding-bottom: 0.5rem;
+           border-bottom: 2px solid var(--ink); display: flex; gap: 0.7rem;
+           align-items: baseline; text-wrap: balance; }
+  h2.sec .n { font-variant-numeric: tabular-nums; color: var(--ink);
+              font-weight: 400; flex: none; }
+  h2.sec .n::after { content: " /"; color: var(--muted); }
+
+  /* A fold: one numbered heading that opens the sections inside it. */
+  details.fold { display: block; margin: 3.4rem 0 0; }
+  summary.sec { font-family: var(--serif); font-size: clamp(1.35rem, 3.4vw, 1.75rem);
+                font-weight: 700; letter-spacing: -0.01em; color: var(--ink);
+                padding-bottom: 0.5rem; border-bottom: 2px solid var(--ink);
+                display: flex; gap: 0.7rem; align-items: baseline; cursor: pointer;
+                list-style: none; }
+  summary.sec::-webkit-details-marker { display: none; }
+  summary.sec .n { font-variant-numeric: tabular-nums; font-weight: 400; flex: none; }
+  summary.sec .n::after { content: " /"; color: var(--muted); }
+  summary.sec::after { content: "Show"; margin-left: auto; font-family: var(--sans);
+                       font-size: 0.8rem; font-weight: 600; color: var(--accent); }
+  details.fold[open] > summary.sec::after { content: "Hide"; }
+  summary.sec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  details.fold > .section:first-of-type { margin-top: 2.2rem; }
+  /* A smaller fold inside a section, styled like the section's ### headings. */
+  details.subfold { margin: 1.6rem 0 0; border: 1px solid var(--rule); border-radius: 6px;
+                    padding: 0.7rem 1rem; }
+  summary.subsec { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+                   letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+                   cursor: pointer; list-style: none; display: flex; }
+  summary.subsec::-webkit-details-marker { display: none; }
+  summary.subsec::after { content: "Show"; margin-left: auto; letter-spacing: 0;
+                          text-transform: none; font-weight: 600; font-size: 0.8rem; }
+  details.subfold[open] > summary.subsec::after { content: "Hide"; }
+  summary.subsec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ---- prose ---- */
+
+  .doc { font-family: var(--sans); font-size: 1.02rem; }
+  .doc h3 { font-family: var(--sans); font-size: 0.9rem; font-weight: 700;
+            letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent);
+            margin: 2.6rem 0 1rem; border: 0; padding: 0; }
+  .doc h3:first-child { margin-top: 0; }
+  .doc h4 { font-family: var(--sans); font-size: 0.98rem; font-weight: 700;
+            color: var(--ink); letter-spacing: 0; text-transform: none;
+            margin: 1.8rem 0 0.6rem; }
+
+  .doc p { margin: 0.75rem 0 0; max-width: var(--measure); }
+  .doc > :first-child { margin-top: 0; }
+  .doc h3 + p, .doc h4 + p, .doc h3 + ul, .doc h3 + ol,
+  .doc h3 + .tablewrap { margin-top: 0; }
+  .doc a { color: var(--accent); text-underline-offset: 0.18em;
+           text-decoration-thickness: 1px; }
+  .doc a:hover { text-decoration-thickness: 2px; }
+
+  .doc ul { margin: 0.75rem 0 0; padding-left: 1.1rem; max-width: var(--measure);
+            display: flex; flex-direction: column; gap: 0.4rem; }
+  .doc ul li::marker { color: var(--accent); }
+  .doc li > ul { margin-top: 0.4rem; list-style-type: circle; }
+
+  /* numbered procedures: accent numeral in its own column */
+  .doc ol { margin: 0.9rem 0 0; padding: 0; max-width: var(--measure); list-style: none;
+            counter-reset: step; display: flex; flex-direction: column; gap: 0.6rem; }
+  .doc ol { padding-left: 2.1rem; }
+  .doc ol li { counter-increment: step; position: relative; }
+  .doc ol li::before { content: counter(step); position: absolute;
+                       left: -2.1rem; width: 1.5rem; text-align: right;
+                       color: var(--accent); font-weight: 700;
+                       font-variant-numeric: tabular-nums; font-size: 0.86rem; }
+
+  .doc pre { font-family: var(--mono); font-size: 0.82rem; line-height: 1.65;
+             background: var(--sunk); border: 1px solid var(--rule);
+             padding: 0.85rem 1rem; margin: 1rem 0 0; overflow-x: auto; }
+  .doc pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  code { background: var(--sunk); border: 1px solid var(--rule-lo);
+         font-size: 0.85em; padding: 0.02em 0.22em; }
+
+  .doc img { display: block; width: 100%; max-width: var(--measure); height: auto;
+             margin: 1.4rem 0 0; }
+  /* Screenshots of the module are pixel art: natural size, never blurred. */
+  .doc img[src$=".png"] { width: auto; max-width: 100%; image-rendering: pixelated; }
+  /* The web patcher's picture is a page, not pixel art: 800 px shown at 400, smooth. */
+  .doc img[src$="web-patcher.png"] { width: 400px; image-rendering: auto; }
+
+  .doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2.2rem 0 0; }
+
+  /* Commands are meant to be run, so they are meant to be copied. The button
+     is only drawn once the script has attached, so a page with no scripting
+     shows a plain block rather than a control that does nothing. */
+  .doc .pre-wrap { position: relative; }
+  .doc .pre-wrap .copy { position: absolute; top: 0.45rem; right: 0.45rem;
+                         font-family: var(--sans); font-size: 0.68rem;
+                         letter-spacing: 0.04em; line-height: 1;
+                         padding: 0.35rem 0.5rem; cursor: pointer;
+                         color: var(--muted); background: var(--panel);
+                         border: 1px solid var(--rule); border-radius: 0;
+                         opacity: 0; transition: opacity 0.12s ease; }
+  .doc .pre-wrap:hover .copy,
+  .doc .pre-wrap .copy:focus-visible { opacity: 1; }
+  .doc .pre-wrap .copy:hover { color: var(--ink); border-color: var(--ink); }
+  .doc .pre-wrap .copy[data-done] { color: var(--accent); border-color: var(--accent);
+                                    opacity: 1; }
+  @media print { .doc .pre-wrap .copy { display: none; } }
+
+  /* ---- callout ---- */
+
+  .doc .note { margin: 1.3rem 0 0; max-width: var(--measure); background: var(--callout);
+               border: 0; border-left: 4px solid var(--muted);
+               padding: 0.9rem 1.1rem; }
+  .doc .note.warn { border-left-color: var(--accent); background: var(--accent-lo); }
+  .doc .note p { margin: 0; max-width: none; font-size: 0.97rem; }
+  .doc .note p + p { margin-top: 0.5rem; }
+
+  /* ---- tables ----
+     Two-column tables are definition lists and get the borderless treatment:
+     bold term, hairline row rules, no header. Wider tables keep a shaded
+     header row so a 5-column CC map stays readable. */
+
+  .doc .tablewrap { margin-top: 1.2rem; border: 0; overflow-x: auto; }
+  .doc table { width: auto; max-width: min(100%, var(--measure)); }
+  .doc table.defs, .doc table.wide { width: 100%; }
+  .doc table { background: none; font-family: var(--sans); font-size: 0.94rem;
+               min-width: 0; }
+  .doc thead th { font-family: var(--sans); font-size: 0.68rem; font-weight: 700;
+                  letter-spacing: 0.08em; text-transform: uppercase;
+                  color: var(--ink); background: var(--panel);
+                  border-bottom: 1px solid var(--rule); padding: 0.6rem 0.8rem;
+                  text-align: left; }
+  .doc thead th.num { text-align: right; }
+  .doc tbody td { padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--rule-lo);
+                  text-align: left; white-space: normal; vertical-align: top; }
+  .doc tbody td.num { text-align: right; white-space: nowrap;
+                      font-variant-numeric: tabular-nums; }
+  .doc tbody tr:last-child td { border-bottom: 1px solid var(--rule); }
+
+  /* A boxed code chip reads well in a sentence and badly in a 27-row table,
+     where every cell would carry one. Inside a table it keeps the monospace
+     and loses the box. */
+  .doc table code { background: none; border: 0; padding: 0;
+                    color: var(--ink); font-size: 0.88em; }
+
+  .doc table.defs thead { display: none; }
+  .doc table.defs tbody td:first-child { font-weight: 700; width: 12rem;
+                                         padding-left: 0; }
+  .doc table.defs tbody td:last-child { padding-right: 0; }
+
+  @media (max-width: 74rem) {
+    .wrap { grid-template-columns: minmax(0, 1fr); gap: 2rem;
+            padding: 1.75rem 1.5rem 3rem; }
+    .side { position: static; border-right: 0; padding-right: 0;
+            padding-bottom: 1.25rem; border-bottom: 1px solid var(--rule);
+            flex-direction: row; flex-wrap: wrap; align-items: baseline;
+            gap: 0.5rem 1.5rem; }
+    .side .brand { width: 100%; }
+    .nav { flex-direction: row; flex-wrap: wrap; gap: 1.1rem; }
+    .toc { border-top: 0; padding-top: 0; width: 100%; }
+    .toc a { display: inline-grid; }
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 1.5rem 1rem 3rem; }
+    .doc table.defs tbody td:first-child { width: auto; }
+    .doc table.defs tbody tr { display: grid; }
+    .doc table.defs tbody td { border-bottom: 0; padding: 0.15rem 0; }
+    .doc table.defs tbody tr { border-bottom: 1px solid var(--rule-lo);
+                               padding: 0.5rem 0; }
+  }
+
+  @media print {
+    .side { display: none; }
+    .wrap { display: block; max-width: none; padding: 0; }
+    h2.sec { break-after: avoid; }
+    .doc table, .doc .note, .doc pre { break-inside: avoid; }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="side">
+    <p class="brand">Bitbox Micro<br>community modification</p>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="reference-card.html">Reference card</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="EXTERNAL-FX.html" aria-current="page">External FX</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="toc">
+      <p class="toc-label">On this page</p>
+      <a href="#before-you-start"><span class="n">1</span><span>Before You Start</span></a><a href="#the-settings"><span class="n">2</span><span>The Settings</span></a><a class="sub" href="#delay-mode-and-reverb-mode"><span class="n"></span><span>Delay Mode and Reverb Mode</span></a><a class="sub" href="#delay-out-and-reverb-out"><span class="n"></span><span>Delay Out and Reverb Out</span></a><a class="sub" href="#aux-hp-and-aux-mono"><span class="n"></span><span>Aux HP and Aux Mono</span></a><a class="sub" href="#return-return-hp-and-return-lvl"><span class="n"></span><span>Return, Return HP and Return Lvl</span></a><a href="#dub-throw"><span class="n">3</span><span>Dub Throw</span></a><a class="sub" href="#by-gate"><span class="n"></span><span>By Gate</span></a><a class="sub" href="#by-midi"><span class="n"></span><span>By MIDI</span></a><a href="#cc-63-return-lvl"><span class="n">4</span><span>CC 63: Return Lvl</span></a><a href="#ideas"><span class="n">5</span><span>Ideas</span></a><a href="#things-to-know"><span class="n">6</span><span>Things to Know</span></a><a class="sub" href="#one-return"><span class="n"></span><span>One Return</span></a><a class="sub" href="#outputs"><span class="n"></span><span>Outputs</span></a><a class="sub" href="#switching-modes"><span class="n"></span><span>Switching Modes</span></a><a class="sub" href="#muted-pads"><span class="n"></span><span>Muted Pads</span></a>
+    </nav>
+  </aside>
+  <main class="main">
+    <header class="masthead">
+      <p class="eyebrow">External FX</p>
+      <h1>Bitbox Micro Firmware: External FX</h1>
+      <p>Your own effects on the delay and reverb sends, a return, and dub throws.</p>
+    </header>
+  <div class="doc">
+    <p>Use your own effects as the Bitbox's delay and reverb. External FX turns each pad's delay and reverb sends into a send and return: the sends go out on an output of your choice to a spring reverb, a tape echo or a pedal, and the effect comes back on In 1/2 into the mix. Dub Throws open a pad's send fully from a gate or a MIDI button, for the classic dub move.</p>
+    <p>The rows on the Settings page are module settings, kept through a power-off. Dub Throw is a pad setting, and it saves with the preset.</p>
+    <p><img src="signal-chain.svg" alt="The signal chain with External FX. Every pad&#x27;s delay and reverb sends, which Dub Throws open fully, go to the module&#x27;s own delay and reverb in Effect or Both mode, and out to the outputs in Aux or Both mode, through Aux HP and Aux Mono. The delay and the reverb each have their own output, so each can feed a different external effect. Both come back through the one Return on In 1/2, which joins the mix before the Character chain, the EQ and filter and the compressor. On Delay or Reverb, the Return also feeds the module&#x27;s own delay or reverb. Five ideas follow below the diagram."></p>
+  </div>
+  <section class="section" id="before-you-start">
+  <h2 class="sec"><span class="n">1</span>Before You Start</h2>
+  <div class="doc">
+    <p>Here is a reverb on Aux, from scratch:</p>
+    <ol>
+      <li>Patch outputs 5 and 6 to your reverb's inputs, and its outputs to inputs 1 and 2.</li>
+      <li>Set inputs 1 and 2 to Audio on the module's Input screen: push TOOLS twice and select each input.</li>
+      <li>Press TOOLS once for the Settings page, and scroll past Theme. Set Reverb Mode to AUX and Return to MIX. Reverb Out is already Out5/6.</li>
+      <li>Turn up a pad's reverb send.</li>
+    </ol>
+    <p>The reverb you hear is now yours. The module's own reverb is switched off, which frees CPU for the Character chain.</p>
+  </div>
+  </section>
+  <section class="section" id="the-settings">
+  <h2 class="sec"><span class="n">2</span>The Settings</h2>
+  <div class="doc">
+    <p>These rows follow Theme on the Settings page, in this order. Turn the top knob to pick a row and the bottom knob to change it.</p>
+    <pre><code>Delay Mode:   EFFECT / AUX / BOTH
+Delay Out:    Out3/4 / Out5/6 / Out7/8 / Out3 to Out8
+Reverb Mode:  EFFECT / AUX / BOTH
+Reverb Out:   Out3/4 / Out5/6 / Out7/8 / Out3 to Out8
+Aux HP:       OFF / 60 Hz to 1.2 kHz
+Aux Mono:     L+R / LEFT / RIGHT
+Return:       OFF / MIX / DELAY / REVERB
+Return HP:    OFF / 60 Hz to 1.2 kHz
+Return Lvl:   -60.0 dB to +6.0 dB</code></pre>
+    <h3 id="delay-mode-and-reverb-mode">Delay Mode and Reverb Mode</h3>
+    <p>Choose where each effect's sends go.</p>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>Mode</th>
+      <th>The sends go to</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>EFFECT</td>
+        <td>the module's own effect, as in stock firmware. This is the default.</td>
+      </tr>
+      <tr>
+        <td>AUX</td>
+        <td>the output you choose below, and the module's effect switches off</td>
+      </tr>
+      <tr>
+        <td>BOTH</td>
+        <td>both, so your effect and the module's run side by side</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <h3 id="delay-out-and-reverb-out">Delay Out and Reverb Out</h3>
+    <p>Choose the output for each effect's sends, from the same list as a pad's Output. A pair, such as Out3/4, is stereo. A single output, Out3 to Out8, is mono, and Aux Mono sets how the stereo send folds into it. Delay Out starts on Out3/4 and Reverb Out on Out5/6, so each effect can feed a different external effect.</p>
+    <h3 id="aux-hp-and-aux-mono">Aux HP and Aux Mono</h3>
+    <p>Aux HP cuts the low end from both sends before they leave, from 60 Hz up to 1.2 kHz, so kicks and basslines stay out of your external reverb. OFF is the default.</p>
+    <p>Aux Mono sets what a single output takes: both sides mixed (L+R, the default), or only the LEFT or RIGHT side.</p>
+    <h3 id="return-return-hp-and-return-lvl">Return, Return HP and Return Lvl</h3>
+    <p>Return sets where In 1/2 come back.</p>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>Return</th>
+      <th>In 1/2 join</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>OFF</td>
+        <td>nothing. This is the default.</td>
+      </tr>
+      <tr>
+        <td>MIX</td>
+        <td>the mix, before the Character chain, the EQ and filter and the compressor</td>
+      </tr>
+      <tr>
+        <td>DELAY</td>
+        <td>the mix, and the module's own delay, so it echoes your effect</td>
+      </tr>
+      <tr>
+        <td>REVERB</td>
+        <td>the mix, and the module's own reverb, so it tails your effect</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>DELAY and REVERB need that effect on EFFECT or BOTH. On AUX the module's effect is off, so they act as MIX.</p>
+    <p>Return HP cuts the low end from the return, with the same choices as Aux HP. It acts on the mix and on the module's delay or reverb alike.</p>
+    <p>Return Lvl sets the return's level, from -60.0 dB to +6.0 dB in tenths of a dB. It starts at +0.0 dB. CC 63 on channel 1 sweeps it too.</p>
+  </div>
+  </section>
+  <section class="section" id="dub-throw">
+  <h2 class="sec"><span class="n">3</span>Dub Throw</h2>
+  <div class="doc">
+    <p>Use Dub Throw to open a pad's send fully, for as long as a gate is high or a button is held. Let go and the send drops back to its knob, while the echoes ring on. A throw follows Delay Mode and Reverb Mode, so on AUX it goes to your external effect.</p>
+    <h3 id="by-gate">By Gate</h3>
+    <p>Dub Throw is on the pad's Main Parameters page, below Rec In.</p>
+  <div class="tablewrap">
+  <table class="wide">
+    <thead><tr>
+      <th>Dub Throw</th>
+      <th>While the gate on that input is high</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td>Off</td>
+        <td>nothing. This is the default.</td>
+      </tr>
+      <tr>
+        <td>Del 1 to 8</td>
+        <td>the delay send opens fully</td>
+      </tr>
+      <tr>
+        <td>Rev 1 to 8</td>
+        <td>the reverb send opens fully</td>
+      </tr>
+      <tr>
+        <td>D+R 1 to 8</td>
+        <td>both sends open fully</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+    <p>Put a gate on the last beat of every bar, and the snare on that pad flies into the delay while the rest of the bar stays dry. <a href="GATES-AND-CV.html">Gates and CV</a> covers the inputs.</p>
+    <h3 id="by-midi">By MIDI</h3>
+    <p>On the pad's own MIDI channel, CC 103 throws the delay and CC 106 throws the reverb. Send 64 or more to throw and less than 64 to let go, so set each up as a momentary button. Hold both to throw both. Each press opens a <code>DUB THROW</code> <a href="SETTINGS.html#the-pop-up">pop-up</a>. A gate and a CC together keep the send open until both let go.</p>
+  </div>
+  </section>
+  <section class="section" id="cc-63-return-lvl">
+  <h2 class="sec"><span class="n">4</span>CC 63: Return Lvl</h2>
+  <div class="doc">
+    <p>On channel 1, CC 63 sets Return Lvl in half-dB steps. 115 is 0 dB, 127 is +6.0 dB and 0 is -57.5 dB, so a fader at the bottom is nearly silent rather than off. Return switches the return on and off. The pop-up shows <code>RETURN</code> and the level, and the Return Lvl row follows.</p>
+  </div>
+  </section>
+  <section class="section" id="ideas">
+  <h2 class="sec"><span class="n">5</span>Ideas</h2>
+  <div class="doc">
+    <ul>
+      <li><strong>Real spring or plate:</strong> set Reverb Mode to AUX, patch Reverb Out into a real spring or plate, and bring it back on Return. The module's reverb switches off, which frees CPU for the Character chain.</li>
+      <li><strong>Parallel echoes:</strong> set Delay Mode to BOTH. The send feeds your tape echo while the module's delay keeps running, so the two blend and drift against each other.</li>
+      <li><strong>Dub throws:</strong> with the delay on AUX into your own echo, sequence a Dub Throw on the snare, by gate or CC, on the last beat of each bar. That hit flies into your delay, and its echoes ring out under the next bar.</li>
+      <li><strong>Dirty reverb:</strong> send pads out on the delay's AUX to a distortion or a filter, and set Return to REVERB. The module's reverb then tails the processed sound rather than the clean one.</li>
+      <li><strong>Clean lows:</strong> set Aux HP to 150 Hz, so kicks and basslines stay out of the external reverb and the low end stays tight.</li>
+    </ul>
+  </div>
+  </section>
+  <section class="section" id="things-to-know">
+  <h2 class="sec"><span class="n">6</span>Things to Know</h2>
+  <div class="doc">
+    <h3 id="one-return">One Return</h3>
+    <p>There is one Return, on In 1/2, for both effects. To bring two external effects back, mix them first.</p>
+    <p>The Return takes only the inputs set to Audio on the Input screen. With both on Audio it is stereo. With one, that input feeds both sides. With neither, it is silent.</p>
+    <p>While the module monitors In 1/2 itself, with Rec Mon on and Mon Output on Out 1/2, the Return steps aside so you don't hear the inputs twice. The module's delay or reverb keeps hearing them on DELAY or REVERB.</p>
+    <h3 id="outputs">Outputs</h3>
+    <p>Out7/8, and Out7 and Out8 on their own, reach no output until you map them on the module's Output screen, the third page of TOOLS. The map saves with each preset, so set it in every preset that uses them.</p>
+    <p>The outputs carry the sends alone. They skip the Character chain, the EQ and filter, the compressor and the master volume, so turning the module down leaves them as loud as before.</p>
+    <h3 id="switching-modes">Switching Modes</h3>
+    <p>AUX switches the module's own effect off, which frees CPU. BOTH runs both, so it frees nothing.</p>
+    <p>An effect switched back from AUX starts clean, with no old tail. Switch back straight away and it stays silent for a moment, up to about a third of a second, while it clears.</p>
+    <h3 id="muted-pads">Muted Pads</h3>
+    <p>Throws come after the mixer's mute, so a muted pad stays silent when its Dub Throw opens.</p>
+  </div>
+  </section>
+    <footer><span>Unofficial. Not endorsed by or affiliated with 1010music. Supplied as is, under the MIT licence in LICENSE.</span><span>Bitbox Micro Firmware: External FX</span></footer>
+  </main>
+</div>
+<script>
+// Adds a copy control to each code block. Written here rather than fetched:
+// a downloaded folder has no network, and the pages must work from file://.
+// navigator.clipboard is unavailable on file:// in some browsers, so fall
+// back to a selection-based copy rather than failing silently.
+(function () {
+  var blocks = document.querySelectorAll('.doc pre');
+  Array.prototype.forEach.call(blocks, function (pre) {
+    var wrap = document.createElement('div');
+    wrap.className = 'pre-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy this block');
+    wrap.appendChild(btn);
+
+    btn.addEventListener('click', function () {
+      var text = pre.innerText;
+      var done = function () {
+        btn.textContent = 'Copied';
+        btn.setAttribute('data-done', '');
+        setTimeout(function () {
+          btn.textContent = 'Copy';
+          btn.removeAttribute('data-done');
+        }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'Select and copy'; }
+        document.body.removeChild(ta);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

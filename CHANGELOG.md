@@ -5,6 +5,24 @@ something you would notice: what the module does differently once it is
 flashed, what the patcher does differently to your files, or what changed in
 the guide you are reading. None of them covers how any of it is built.
 
+## 2.3.14-mod — November 2026
+
+- Use your own effects as the delay and reverb with
+  [External FX](EXTERNAL-FX.md), a send and return, as Mndscrpt asked on Mod
+  Wiggler. Send the delay and reverb to the Micro's own effects, out to your
+  gear on any output from 3 to 8, or both at once. Bring your effects back on
+  In 1/2, into the mix or into the Micro's own delay or reverb.
+- Throw a pad into the delay, the reverb or both with Dub Throw, by gate or by
+  pressing a button on your controller using CC 103 or 106.
+- Cut the low end from the sends with Aux HP and from the return with Return
+  HP, and set the return's level with Return Lvl or CC 63.
+- An effect sent out on Aux switches off the delay or reverb, which frees CPU
+  for the Character chain.
+- Fix: The delay and reverb sends (CC 84 and 85), and Sustain on Clip and
+  Slicer pads (CC 87), now reach 100% at 127. They stopped just short before.
+- The send pop-ups name where the sends go: `Del Aux Send` to an output, and
+  `Del+Aux Send` to both.
+
 ## 2.3.13-mod — November 2026
 
 - Improved compatibility for older modules that said *Unable to verify* when

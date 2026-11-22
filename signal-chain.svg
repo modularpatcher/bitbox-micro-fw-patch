@@ -1,63 +1,157 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 400" width="560" height="400"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 693" width="640" height="693"
      role="img" aria-labelledby="t d">
-<title id="t">The master bus signal chain</title>
-<desc id="d">Pads routed to Out 1 and 2, joined by the delay and reverb returns,
-pass into the Character chain, then the master EQ and filter, then the
-compressor, then a safety limiter, then master volume, then out. The Character
-chain, the EQ and the compressor are the three stages this patch gives you
-control of. The limiter is untouched.</desc>
+<title id="t">The signal chain, with External FX</title>
+<desc id="d">Every pad's delay and reverb sends, which Dub Throws by MIDI or gate open fully, go to the
+internal delay and reverb in Effect or Both mode, and to the aux outputs in Aux or Both
+mode, after the Aux HP and mono fold. Delay and reverb each have their own aux output,
+any of Out 3/4 to Out 8, so each can feed a different external effect. Both come back
+through the one Return on In 1/2, which has its own high-pass. Pads on Out 1/2, the internal returns and the Return
+join the mix, which passes the Character chain, the EQ and filter, the compressor, a
+safety limiter and master volume, then out on Out 1/2. On Delay or Reverb, the Return
+also feeds the internal delay or reverb.</desc>
 <style>
   .bx  { fill: #F4F2ED; stroke: #D8D4CC; }
   .yrs { fill: #8C3A2E14; stroke: #8C3A2E; }
+  .ext { fill: none; stroke: #6E6A62; stroke-dasharray: 5 4; }
   .tx  { fill: #1A1815; font: 600 13px ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .tx2 { fill: #1A1815; font: 600 12px ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif; }
   .sub { fill: #6E6A62; font: 400 11px ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif; }
   .acc { fill: #8C3A2E; font: 700 11px ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif; }
   .ln  { stroke: #6E6A62; stroke-width: 1.5; }
-  .hd  { fill: #6E6A62; }
+  .nd  { fill: #F4F2ED; stroke: #6E6A62; stroke-width: 1.5; }
+  .dl  { stroke: #8C3A2E; stroke-width: 1.5; stroke-dasharray: 5 4; }
+  .hd  { fill: #6E6A62; } .ha { fill: #8C3A2E; }
   @media (prefers-color-scheme: dark) {
     .bx  { fill: #1C1A17; stroke: #35322C; }
     .yrs { fill: #D98A7820; stroke: #D98A78; }
-    .tx  { fill: #E8E4DC; } .sub { fill: #9A948A; }
-    .acc { fill: #D98A78; } .ln { stroke: #9A948A; } .hd { fill: #9A948A; }
+    .ext { stroke: #9A948A; }
+    .tx  { fill: #E8E4DC; } .tx2 { fill: #E8E4DC; } .sub { fill: #9A948A; }
+    .acc { fill: #D98A78; } .ln { stroke: #9A948A; } .nd { fill: #1C1A17; stroke: #9A948A; } .hd { fill: #9A948A; }
+    .dl  { stroke: #D98A78; } .ha { fill: #D98A78; }
   }
 </style>
-<defs><marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
-  <path d="M0,0 L9,4.5 L0,9 z" class="hd"/></marker></defs>
+<defs>
+  <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+    <path d="M0,0 L9,4.5 L0,9 z" class="hd"/></marker>
+  <marker id="b" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+    <path d="M0,0 L9,4.5 L0,9 z" class="ha"/></marker>
+</defs>
 
-<rect class="bx" x="40"  y="8" width="215" height="42"/>
-<text class="tx" x="147" y="27" text-anchor="middle">pads routed to Out 1/2</text>
-<text class="sub" x="147" y="42" text-anchor="middle">everything you play</text>
+<!-- your pads: dry to the mix, sends to the right -->
+<rect class="bx" x="20" y="8" width="220" height="42"/>
+<text class="tx"  x="130" y="34" text-anchor="middle">pads</text>
 
-<rect class="bx" x="305" y="8" width="215" height="42"/>
-<text class="tx" x="412" y="27" text-anchor="middle">delay and reverb</text>
-<text class="sub" x="412" y="42" text-anchor="middle">returns</text>
+<path class="ln" d="M240,29 h58" fill="none" marker-end="url(#a)"/>
+<text class="sub" x="268" y="22" text-anchor="middle">sends</text>
+<rect class="yrs" x="300" y="8" width="330" height="42" stroke-width="2"/>
+<text class="tx"  x="465" y="27" text-anchor="middle">delay and reverb sends</text>
+<text class="acc" x="465" y="42" text-anchor="middle">on every pad; MIDI or gate Dub Throws open them fully</text>
 
-<path class="ln" d="M147,50 v14 h133 v18" fill="none" marker-end="url(#a)"/>
-<path class="ln" d="M412,50 v14 h-133"    fill="none"/>
+<!-- the mode split -->
+<path class="ln" d="M465,50 v14 h-85 v18" fill="none" marker-end="url(#a)"/>
+<path class="ln" d="M465,64 h85 v18"      fill="none" marker-end="url(#a)"/>
 
-<rect class="yrs" x="170" y="84" width="220" height="42" stroke-width="2"/>
-<text class="tx"  x="280" y="102" text-anchor="middle">CHARACTER CHAIN</text>
-<text class="acc" x="280" y="118" text-anchor="middle">four effect slots on MIDI</text>
+<rect class="bx" x="300" y="84" width="160" height="42"/>
+<text class="tx"  x="380" y="102" text-anchor="middle">internal FX</text>
+<text class="sub" x="380" y="117" text-anchor="middle">Effect or Both</text>
 
-<path class="ln" d="M280,126 v18" fill="none" marker-end="url(#a)"/>
-<rect class="yrs" x="170" y="146" width="220" height="42" stroke-width="2"/>
-<text class="tx"  x="280" y="164" text-anchor="middle">EQ AND FILTER</text>
-<text class="acc" x="280" y="180" text-anchor="middle">parameters on MIDI</text>
+<rect class="yrs" x="470" y="84" width="160" height="42" stroke-width="2"/>
+<text class="tx"  x="550" y="102" text-anchor="middle">AUX</text>
+<text class="acc" x="550" y="117" text-anchor="middle">Aux or Both</text>
 
-<path class="ln" d="M280,188 v18" fill="none" marker-end="url(#a)"/>
-<rect class="yrs" x="170" y="208" width="220" height="42" stroke-width="2"/>
-<text class="tx"  x="280" y="226" text-anchor="middle">COMPRESSOR</text>
-<text class="acc" x="280" y="242" text-anchor="middle">parameters on MIDI</text>
+<!-- the aux taps' shaping, then two lanes: each effect its own output and external effect -->
+<path class="ln" d="M550,126 v18" fill="none" marker-end="url(#a)"/>
+<rect class="yrs" x="470" y="146" width="160" height="40" stroke-width="2"/>
+<text class="tx"  x="550" y="163" text-anchor="middle">Aux HP and Aux Mono</text>
+<text class="acc" x="550" y="178" text-anchor="middle">Off … 1.2 kHz · L+R, L or R</text>
 
-<path class="ln" d="M280,250 v18" fill="none" marker-end="url(#a)"/>
-<rect class="bx" x="170" y="270" width="220" height="38"/>
-<text class="tx"  x="280" y="287" text-anchor="middle">safety limiter</text>
-<text class="sub" x="280" y="301" text-anchor="middle">no control of it</text>
+<path class="ln" d="M550,186 v8 h-42 v10" fill="none" marker-end="url(#a)"/>
+<path class="ln" d="M550,194 h42 v10"     fill="none" marker-end="url(#a)"/>
 
-<path class="ln" d="M280,308 v18" fill="none" marker-end="url(#a)"/>
-<rect class="bx" x="170" y="328" width="220" height="30"/>
-<text class="tx" x="280" y="348" text-anchor="middle">master volume</text>
+<rect class="yrs" x="470" y="206" width="76" height="40" stroke-width="2"/>
+<text class="tx2" x="508" y="223" text-anchor="middle">Delay Out</text>
+<text class="sub" x="508" y="238" text-anchor="middle">Out 3/4 … 8</text>
+<rect class="yrs" x="554" y="206" width="76" height="40" stroke-width="2"/>
+<text class="tx2" x="592" y="223" text-anchor="middle">Reverb Out</text>
+<text class="sub" x="592" y="238" text-anchor="middle">Out 3/4 … 8</text>
 
-<path class="ln" d="M280,358 v18" fill="none" marker-end="url(#a)"/>
-<text class="tx" x="280" y="393" text-anchor="middle">Out 1/2</text>
+<path class="ln" d="M508,246 v20" fill="none" marker-end="url(#a)"/>
+<path class="ln" d="M592,246 v20" fill="none" marker-end="url(#a)"/>
+<rect class="ext" x="470" y="268" width="76" height="42"/>
+<text class="tx2" x="508" y="286" text-anchor="middle">external</text>
+<text class="tx2" x="508" y="301" text-anchor="middle">effect A</text>
+<rect class="ext" x="554" y="268" width="76" height="42"/>
+<text class="tx2" x="592" y="286" text-anchor="middle">external</text>
+<text class="tx2" x="592" y="301" text-anchor="middle">effect B</text>
+
+<path class="ln" d="M508,310 v20" fill="none" marker-end="url(#a)"/>
+<path class="ln" d="M592,310 v20" fill="none" marker-end="url(#a)"/>
+
+<!-- the one Return, under both the lanes and the internal FX -->
+<rect class="yrs" x="300" y="332" width="330" height="42" stroke-width="2"/>
+<text class="tx"  x="465" y="350" text-anchor="middle">RETURN</text>
+<text class="acc" x="465" y="365" text-anchor="middle">In 1/2, one for both · Return HP · level on CC 63</text>
+
+<!-- Return: Delay or Reverb also feeds the internal FX -->
+<path class="dl" d="M380,332 v-204" fill="none" marker-end="url(#b)"/>
+<text class="acc" x="388" y="226">on Delay</text>
+<text class="acc" x="388" y="240">or Reverb</text>
+
+<!-- every return joins the mix, before the Character chain -->
+<path class="ln" d="M300,105 h-10 v13" fill="none"/>
+<path class="ln" d="M300,353 h-10 v-235" fill="none"/>
+<path class="ln" d="M290,118 h-148" fill="none" marker-end="url(#a)"/>
+<text class="sub" x="211" y="112" text-anchor="middle">returns join the mix</text>
+
+<!-- the master chain -->
+<path class="ln" d="M130,50 v57" fill="none" marker-end="url(#a)"/>
+<circle class="nd" cx="130" cy="118" r="9"/>
+<text class="tx" x="130" y="123" text-anchor="middle">+</text>
+<path class="ln" d="M130,127 v17" fill="none" marker-end="url(#a)"/>
+<text class="sub" x="137" y="76">on Out 1/2</text>
+<rect class="yrs" x="20" y="146" width="220" height="42" stroke-width="2"/>
+<text class="tx"  x="130" y="164" text-anchor="middle">CHARACTER CHAIN</text>
+<text class="acc" x="130" y="180" text-anchor="middle">four effect slots on MIDI</text>
+
+<path class="ln" d="M130,188 v18" fill="none" marker-end="url(#a)"/>
+<rect class="yrs" x="20" y="208" width="220" height="42" stroke-width="2"/>
+<text class="tx"  x="130" y="226" text-anchor="middle">EQ AND FILTER</text>
+<text class="acc" x="130" y="242" text-anchor="middle">parameters on MIDI</text>
+
+<path class="ln" d="M130,250 v18" fill="none" marker-end="url(#a)"/>
+<rect class="yrs" x="20" y="270" width="220" height="42" stroke-width="2"/>
+<text class="tx"  x="130" y="288" text-anchor="middle">COMPRESSOR</text>
+<text class="acc" x="130" y="304" text-anchor="middle">parameters on MIDI</text>
+
+<path class="ln" d="M130,312 v18" fill="none" marker-end="url(#a)"/>
+<rect class="bx" x="20" y="332" width="220" height="38"/>
+<text class="tx"  x="130" y="349" text-anchor="middle">safety limiter</text>
+<text class="sub" x="130" y="363" text-anchor="middle">no control of it</text>
+
+<path class="ln" d="M130,370 v18" fill="none" marker-end="url(#a)"/>
+<rect class="bx" x="20" y="390" width="220" height="30"/>
+<text class="tx" x="130" y="410" text-anchor="middle">master volume</text>
+
+<path class="ln" d="M130,420 v18" fill="none" marker-end="url(#a)"/>
+<text class="tx" x="130" y="455" text-anchor="middle">Out 1/2</text>
+
+<!-- key -->
+<rect class="yrs" x="315" y="396" width="16" height="12" stroke-width="2"/>
+<text class="sub" x="339" y="406">this patch, on MIDI or Settings</text>
+<rect class="bx"  x="315" y="418" width="16" height="12"/>
+<text class="sub" x="339" y="428">stock</text>
+<rect class="ext" x="315" y="440" width="16" height="12"/>
+<text class="sub" x="339" y="450">your gear, outside the module</text>
+
+<!-- use cases -->
+<path class="ln" d="M20,478 h610" fill="none" stroke-width="1"/>
+<text class="sub" x="20" y="504"><tspan class="acc">Real spring or plate:</tspan> Put the reverb on Aux, patch its output into a real spring or plate, and bring it back on Return.</text>
+<text class="sub" x="20" y="520">The Micro's own reverb switches off, which frees CPU for the Character chain.</text>
+<text class="sub" x="20" y="547"><tspan class="acc">Parallel echoes:</tspan> Set the delay to Both. Its send feeds your tape echo while the Micro's delay keeps running, so the two</text>
+<text class="sub" x="20" y="563">blend and drift against each other.</text>
+<text class="sub" x="20" y="590"><tspan class="acc">Dub throws:</tspan> With the delay on Aux into your own echo, sequence a Dub Throw on the snare, by gate or CC, on the last beat</text>
+<text class="sub" x="20" y="606">of each bar. That hit flies into your external delay, the rest stay dry, and its echoes ring out under the next bar.</text>
+<text class="sub" x="20" y="633"><tspan class="acc">Dirty reverb:</tspan> Send pads out on the delay's Aux to a distortion or filter, and set Return to Reverb. The Micro's reverb</text>
+<text class="sub" x="20" y="649">then tails the processed sound rather than the clean one.</text>
+<text class="sub" x="20" y="676"><tspan class="acc">Clean lows:</tspan> Set Aux HP to 150 Hz, so kicks and basslines stay out of the external reverb and the low end stays tight.</text>
 </svg>

@@ -228,6 +228,9 @@ static int store_ok(const chr_store_t *st)
 #include "sidechain.h"                            /* 2.3.11: SC In, the compressor's sidechain */
 #include "rec.h"                                  /* 2.3.12-b15: recording from the gate inputs */
 #endif
+#ifdef CHR_AUX
+#include "aux.h"                                  /* 2.3.14-a1: AUX sends, the return */
+#endif
 #endif
 
 /* 2.3.10 (b9): chr_cc returns the value the hooks behind it see -- hook N's
@@ -248,6 +251,9 @@ CHR_CC_RET chr_cc(uint32_t chan, uint32_t cc, uint32_t val14)
     if (chan != CHR_CHANNEL) CHR_CC_DONE;
 #ifdef CHR_SC
     if (cc == SC_CC_IN) return sc_cc(cc, val14);  /* SC In, the compressor's sidechain input */
+#endif
+#ifdef CHR_AUX
+    if (cc == AUX_CC_RET) { aux_cc(val14); CHR_CC_DONE; }   /* Return Lvl, the only AUX CC */
 #endif
 #ifdef CHR_CMP
     if (cc >= 40 && cc <= 48) return cmp_cc(cc, val14);   /* Type, next, the types' controls, OSD */
@@ -413,6 +419,9 @@ static int guard(float *b, int n)
 
 void chr_block(chr_buf_t *h)
 {
+#ifdef CHR_AUX
+    aux_ret(h);                                  /* In 1/2 joins the bus first, so the chain hears it */
+#endif
     if (h->stale) return;                        /* nothing valid to colour */
     int n = h->frames ? h->frames : h->cap;
     if (n <= 0 || n > 256) return;

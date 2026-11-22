@@ -59,9 +59,17 @@ The controls fall into six groups. Take them in any order.
 ### Delay and Reverb
 
 **Delay send and Reverb send**: each pad has its own, so it sits in the effects
-by its own amount. They are the fastest way to make a static loop move.
-Recorded-sample pads have no FX sends in stock firmware, so there is nothing to
-reach.
+by its own amount. They are the fastest way to make a static loop move. At 127 a
+send is fully open, as the knob is at its top. Recorded-sample pads have no FX
+sends in stock firmware, so there is nothing to reach.
+
+With [External FX](EXTERNAL-FX.md) the sends can also go out to your own
+effects, and the pop-up names where they go: `Delay Send` to the module's delay,
+`Del Aux Send` to an output, and `Del+Aux Send` to both. The reverb's read
+`Reverb Send`, `Rev Aux Send` and `Rev+Aux Send`.
+
+**Dub Throw**: open a pad's delay or reverb send fully for as long as a gate is
+high, or CC 103 or 106 is held. See [Dub Throw](EXTERNAL-FX.md#dub-throw).
 
 Four controls set up the delay itself, which the whole preset shares. They
 answer on any channel.

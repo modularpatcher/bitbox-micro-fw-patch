@@ -9,6 +9,8 @@ them on MIDI and adds what the module never had:
 - More from gates and CV: reassign gate inputs so one gate plays several pads,
   trigger Hold FX and record loops by gate, and sequence Live Flip modes and
   Hold FX by CV.
+- External FX: send the delay and reverb out to your own effects, with a return
+  and dub throws.
 - Airwindows effects across the whole mix: four slots, sixteen effects.
 - A master EQ and filter, and four compressors, three of them Airwindows, with
   a sidechain.
@@ -21,8 +23,6 @@ It is unofficial. Nobody at 1010music wrote or endorsed it, so do not ask them
 for support. The splash reads `community fw`, so a patched unit is never
 mistaken for theirs. Assume it affects your warranty. Use at your own risk.
 It [cannot brick the module](INSTALLING.md#can-this-brick-my-module), though.
-
-Help documentation: https://modularpatcher.github.io/bitbox-micro-fw-patch/
 
 ## A Patcher, Not Firmware
 
@@ -52,6 +52,7 @@ copy the `MICRO.BIN` it gives you to your card. The splash should then read
   hold buttons.
 - [Gates and CV](GATES-AND-CV.md): reassign gate inputs, trigger Hold FX and set
   Live Flip modes by gate and CV, and record by gate.
+- [External FX](EXTERNAL-FX.md): your own effects on the sends, and dub throws.
 - [Devices](DEVICES.md): the three that act on the whole mix, and where they sit.
 - [The Character chain](CHARACTER.md): sixteen Airwindows effects in four slots.
 - [The EQ and filter](EQ-FILTER.md): ten algorithms on one encoder.

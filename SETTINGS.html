@@ -452,10 +452,10 @@
 <div class="wrap">
   <aside class="side">
     <p class="brand">Bitbox Micro<br>community modification</p>
-    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="reference-card.html">Reference card</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html" aria-current="page">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="reference-card.html">Reference card</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="EXTERNAL-FX.html">External FX</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html" aria-current="page">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
-      <a href="#osd"><span class="n">1</span><span>OSD</span></a><a class="sub" href="#the-pop-up"><span class="n"></span><span>The Pop-Up</span></a><a class="sub" href="#the-cpu-bar"><span class="n"></span><span>The CPU Bar</span></a><a href="#preset-bpm"><span class="n">2</span><span>Preset BPM</span></a><a class="sub" href="#using-it"><span class="n"></span><span>Using It</span></a><a class="sub" href="#with-a-clock"><span class="n"></span><span>With a Clock</span></a><a class="sub" href="#capturing-a-tempo"><span class="n"></span><span>Capturing a Tempo</span></a><a href="#theme"><span class="n">3</span><span>Theme</span></a><a class="sub" href="#the-five-themes"><span class="n"></span><span>The Five Themes</span></a><a class="sub" href="#your-own-theme"><span class="n"></span><span>Your Own Theme</span></a><a href="#keep-ccs"><span class="n">4</span><span>Keep CCs</span></a><a href="#gate-rec"><span class="n">5</span><span>Gate Rec</span></a><a href="#clk-loss"><span class="n">6</span><span>Clk Loss</span></a><a class="sub" href="#what-it-fixes"><span class="n"></span><span>What It Fixes</span></a><a class="sub" href="#what-hold-keeps-through"><span class="n"></span><span>What HOLD Keeps Through</span></a><a href="#flip-ui"><span class="n">7</span><span>Flip UI</span></a><a class="sub" href="#what-turns"><span class="n"></span><span>What Turns</span></a><a class="sub" href="#what-stays-put"><span class="n"></span><span>What Stays Put</span></a><a href="#progchange"><span class="n">8</span><span>ProgChange</span></a><a class="sub" href="#new-only"><span class="n"></span><span>NEW ONLY</span></a>
+      <a href="#osd"><span class="n">1</span><span>OSD</span></a><a class="sub" href="#the-pop-up"><span class="n"></span><span>The Pop-Up</span></a><a class="sub" href="#the-cpu-bar"><span class="n"></span><span>The CPU Bar</span></a><a href="#preset-bpm"><span class="n">2</span><span>Preset BPM</span></a><a class="sub" href="#using-it"><span class="n"></span><span>Using It</span></a><a class="sub" href="#with-a-clock"><span class="n"></span><span>With a Clock</span></a><a class="sub" href="#capturing-a-tempo"><span class="n"></span><span>Capturing a Tempo</span></a><a href="#theme"><span class="n">3</span><span>Theme</span></a><a class="sub" href="#the-five-themes"><span class="n"></span><span>The Five Themes</span></a><a class="sub" href="#your-own-theme"><span class="n"></span><span>Your Own Theme</span></a><a href="#keep-ccs"><span class="n">4</span><span>Keep CCs</span></a><a href="#gate-rec"><span class="n">5</span><span>Gate Rec</span></a><a href="#external-fx"><span class="n">6</span><span>External FX</span></a><a href="#clk-loss"><span class="n">7</span><span>Clk Loss</span></a><a class="sub" href="#what-it-fixes"><span class="n"></span><span>What It Fixes</span></a><a class="sub" href="#what-hold-keeps-through"><span class="n"></span><span>What HOLD Keeps Through</span></a><a href="#flip-ui"><span class="n">8</span><span>Flip UI</span></a><a class="sub" href="#what-turns"><span class="n"></span><span>What Turns</span></a><a class="sub" href="#what-stays-put"><span class="n"></span><span>What Stays Put</span></a><a href="#progchange"><span class="n">9</span><span>ProgChange</span></a><a class="sub" href="#new-only"><span class="n"></span><span>NEW ONLY</span></a>
     </nav>
   </aside>
   <main class="main">
@@ -465,7 +465,7 @@
       <p>The pop-up, Preset BPM, Keep CCs, themes and the rest, on the module itself.</p>
     </header>
   <div class="doc">
-    <p>Eight of the patch's additions live on the module's own Settings page, not on a CC. Set them once and they stay set, through preset changes and power cycles. Preset BPM is the exception: it belongs to each preset, and saves with it.</p>
+    <p>Seventeen of the patch's additions live on the module's own Settings page, not on a CC. Set them once and they stay set, through preset changes and power cycles. Preset BPM is the exception: it belongs to each preset, and saves with it.</p>
     <p>Press TOOLS once to open Settings. Turn the top knob to pick a row and the bottom knob to change it. Scroll past MIDI Keys and you reach these rows, in this order:</p>
     <pre><code>MIDI Rec:    1010music's, unchanged
 Gate Rec:    OFF / RECORD 1 to 8 / REPLACE 1 to 8
@@ -476,7 +476,16 @@ SD Mode:     1010music's, unchanged
 Flip UI:     OFF / ON
 OSD:         OFF / POP-UP / CPU / BOTH
 Keep CCs:    OFF / ON
-Theme:       STOCK / AMBER / STAGE / CONTRAST / PHOSPHOR / SYNTHWAVE / CUSTOM</code></pre>
+Theme:       STOCK / AMBER / STAGE / CONTRAST / PHOSPHOR / SYNTHWAVE / CUSTOM
+Delay Mode:  EFFECT / AUX / BOTH
+Delay Out:   Out3/4 / Out5/6 / Out7/8 / Out3 to Out8
+Reverb Mode: EFFECT / AUX / BOTH
+Reverb Out:  Out3/4 / Out5/6 / Out7/8 / Out3 to Out8
+Aux HP:      OFF / 60 Hz to 1.2 kHz
+Aux Mono:    L+R / LEFT / RIGHT
+Return:      OFF / MIX / DELAY / REVERB
+Return HP:   OFF / 60 Hz to 1.2 kHz
+Return Lvl:  -60.0 dB to +6.0 dB</code></pre>
   </div>
   <section class="section" id="osd">
   <h2 class="sec"><span class="n">1</span>OSD</h2>
@@ -549,8 +558,23 @@ Theme:       STOCK / AMBER / STAGE / CONTRAST / PHOSPHOR / SYNTHWAVE / CUSTOM</c
     <p>Use Gate Rec to record into whichever pad you select, by gate, as MIDI Rec does for a note. See <a href="GATES-AND-CV.html#gate-rec">Gates and CV</a>.</p>
   </div>
   </section>
+  <section class="section" id="external-fx">
+  <h2 class="sec"><span class="n">6</span>External FX</h2>
+  <div class="doc">
+    <p>Use these rows to send the delay and reverb out to your own effects and bring them back on In 1/2. <a href="EXTERNAL-FX.html#the-settings">External FX</a> explains each one.</p>
+    <ul>
+      <li>Delay Mode and Reverb Mode choose where each effect's sends go: the module's own effect, an output, or both.</li>
+      <li>Delay Out and Reverb Out choose the output for each effect's sends.</li>
+      <li>Aux HP cuts the low end from the sends before they leave.</li>
+      <li>Aux Mono sets how a stereo send folds into a single output.</li>
+      <li>Return sets where In 1/2 come back: the mix, or the mix and the module's own delay or reverb.</li>
+      <li>Return HP cuts the low end from the return.</li>
+      <li>Return Lvl sets the return's level. CC 63 sweeps it too.</li>
+    </ul>
+  </div>
+  </section>
   <section class="section" id="clk-loss">
-  <h2 class="sec"><span class="n">6</span>Clk Loss</h2>
+  <h2 class="sec"><span class="n">7</span>Clk Loss</h2>
   <div class="doc">
     <p>Clk Loss keeps the tempo when the clock goes away.</p>
     <h3 id="what-it-fixes">What It Fixes</h3>
@@ -569,7 +593,7 @@ Theme:       STOCK / AMBER / STAGE / CONTRAST / PHOSPHOR / SYNTHWAVE / CUSTOM</c
   </div>
   </section>
   <section class="section" id="flip-ui">
-  <h2 class="sec"><span class="n">7</span>Flip UI</h2>
+  <h2 class="sec"><span class="n">8</span>Flip UI</h2>
   <div class="doc">
     <p>Flip UI is for a module mounted upside down. It turns the screen, touch, buttons and knobs the other way up, all together.</p>
     <h3 id="what-turns">What Turns</h3>
@@ -586,7 +610,7 @@ Theme:       STOCK / AMBER / STAGE / CONTRAST / PHOSPHOR / SYNTHWAVE / CUSTOM</c
   </div>
   </section>
   <section class="section" id="progchange">
-  <h2 class="sec"><span class="n">8</span>ProgChange</h2>
+  <h2 class="sec"><span class="n">9</span>ProgChange</h2>
   <div class="doc">
     <p>Stock firmware offers OFF and ON. The patch adds a third choice.</p>
     <h3 id="new-only">NEW ONLY</h3>

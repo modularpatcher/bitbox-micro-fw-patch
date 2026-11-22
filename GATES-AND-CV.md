@@ -140,6 +140,13 @@ it is kept through a power-off.
 A pad is always selected after power-on. With Gate Rec on REPLACE, a sequence
 that is already running re-records that pad straight away.
 
+## Dub Throws by Gate
+
+Use Dub Throw to open a pad's delay or reverb send fully while a gate is high,
+so one hit flies into the echo at the end of a bar. It sits on the pad's Main
+Parameters page, below Rec In. Choose Del, Rev or D+R, and the input. See
+[Dub Throw](EXTERNAL-FX.md#dub-throw).
+
 ## With MIDI
 
 Gates, CV and MIDI work together on the same pad. This is what happens when they

@@ -181,15 +181,16 @@ You should see something like this:
      ok   Clip Tempo                   the Clip mode, saved with the preset
      ok   Compressor sidechain, ch 1   CC 49
      ok   Mute and Solo, per pad       CC 94, 95
+     ok   External FX                  TOOLS > Settings, Dub Throw, CC 63
      ok   Older modules                packed to fit, unpacked at power-on
      ok   ProgChange: OFF/ON/NEW ONLY  TOOLS > Settings
      ok   Clk Loss: INTERNAL/HOLD      TOOLS > Settings
      ok   Flip UI, screen and touch    TOOLS > Settings
      ok   Splash screen, so nobody blames 1010music for my work
 
-  Done. MICRO.BIN is ready -- 767,852 bytes.
+  Done. MICRO.BIN is ready -- 774,972 bytes.
 
-     Fingerprint  8585c30be1b4dd0bcfb99530099193324858ff9728d2725c535d1af28fc0d65e
+     Fingerprint  4289d18d1137d77d342cc3e9f7a759a4174c7eaf5b26d62d576d57f5fa4d80b3
 ```
 
 Check that the fingerprint matches the one above. If it does, your firmware is
@@ -222,7 +223,7 @@ The splash on the next boot should read:
 ```text
 bitbox micro
 community fw
-2.3.13-mod
+2.3.14-mod
 ```
 
 Check the splash after every flash. It takes a second, and it saves you chasing
@@ -248,7 +249,7 @@ not in a folder. Then flash again.
 
 If 2.3.10-mod, 2.3.11-mod or 2.3.12-mod stopped with *Unable to verify*, your
 module has an older bootloader that only takes firmware up to 768 KB.
-2.3.13-mod fits, so flash it instead.
+2.3.13-mod and later fit, so flash this release instead.
 
 <details>
 <summary>If you used the Python script</summary>

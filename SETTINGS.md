@@ -1,7 +1,7 @@
 # Bitbox Micro Firmware: Settings
 
-Eight of the patch's additions live on the module's own Settings page, not on
-a CC. Set them once and they stay set, through preset changes and power cycles.
+Seventeen of the patch's additions live on the module's own Settings page, not
+on a CC. Set them once and they stay set, through preset changes and power cycles.
 Preset BPM is the exception: it belongs to each preset, and saves with it.
 
 Press TOOLS once to open Settings. Turn the top knob to pick a row and the
@@ -19,6 +19,15 @@ Flip UI:     OFF / ON
 OSD:         OFF / POP-UP / CPU / BOTH
 Keep CCs:    OFF / ON
 Theme:       STOCK / AMBER / STAGE / CONTRAST / PHOSPHOR / SYNTHWAVE / CUSTOM
+Delay Mode:  EFFECT / AUX / BOTH
+Delay Out:   Out3/4 / Out5/6 / Out7/8 / Out3 to Out8
+Reverb Mode: EFFECT / AUX / BOTH
+Reverb Out:  Out3/4 / Out5/6 / Out7/8 / Out3 to Out8
+Aux HP:      OFF / 60 Hz to 1.2 kHz
+Aux Mono:    L+R / LEFT / RIGHT
+Return:      OFF / MIX / DELAY / REVERB
+Return HP:   OFF / 60 Hz to 1.2 kHz
+Return Lvl:  -60.0 dB to +6.0 dB
 ```
 
 ## OSD
@@ -152,6 +161,22 @@ OFF is the default: presets load exactly as saved.
 
 Use Gate Rec to record into whichever pad you select, by gate, as MIDI Rec does
 for a note. See [Gates and CV](GATES-AND-CV.md#gate-rec).
+
+## External FX
+
+Use these rows to send the delay and reverb out to your own effects and bring
+them back on In 1/2. [External FX](EXTERNAL-FX.md#the-settings) explains each
+one.
+
+- Delay Mode and Reverb Mode choose where each effect's sends go: the module's
+  own effect, an output, or both.
+- Delay Out and Reverb Out choose the output for each effect's sends.
+- Aux HP cuts the low end from the sends before they leave.
+- Aux Mono sets how a stereo send folds into a single output.
+- Return sets where In 1/2 come back: the mix, or the mix and the module's own
+  delay or reverb.
+- Return HP cuts the low end from the return.
+- Return Lvl sets the return's level. CC 63 sweeps it too.
 
 ## Clk Loss
 

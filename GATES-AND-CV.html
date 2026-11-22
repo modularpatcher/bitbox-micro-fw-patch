@@ -452,10 +452,10 @@
 <div class="wrap">
   <aside class="side">
     <p class="brand">Bitbox Micro<br>community modification</p>
-    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="reference-card.html">Reference card</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html" aria-current="page">Gates and CV</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="reference-card.html">Reference card</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html" aria-current="page">Gates and CV</a><a href="EXTERNAL-FX.html">External FX</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
-      <a href="#before-you-start"><span class="n">1</span><span>Before You Start</span></a><a href="#on-clip-pads"><span class="n">2</span><span>On Clip Pads</span></a><a class="sub" href="#cv-action"><span class="n"></span><span>CV Action</span></a><a class="sub" href="#gate-action-and-hold-fx"><span class="n"></span><span>Gate Action and Hold FX</span></a><a href="#playing-pads-from-gates"><span class="n">3</span><span>Playing Pads from Gates</span></a><a class="sub" href="#gate-in"><span class="n"></span><span>Gate In</span></a><a class="sub" href="#round-robin"><span class="n"></span><span>Round Robin</span></a><a href="#recording-from-a-gate"><span class="n">4</span><span>Recording from a Gate</span></a><a class="sub" href="#rec-in"><span class="n"></span><span>Rec In</span></a><a class="sub" href="#gate-rec"><span class="n"></span><span>Gate Rec</span></a><a href="#with-midi"><span class="n">5</span><span>With MIDI</span></a><a href="#things-to-know"><span class="n">6</span><span>Things to Know</span></a><a class="sub" href="#empty-inputs"><span class="n"></span><span>Empty Inputs</span></a><a class="sub" href="#inputs-1-and-2"><span class="n"></span><span>Inputs 1 and 2</span></a><a class="sub" href="#one-input-several-jobs"><span class="n"></span><span>One Input, Several Jobs</span></a><a class="sub" href="#other-pad-types"><span class="n"></span><span>Other Pad Types</span></a>
+      <a href="#before-you-start"><span class="n">1</span><span>Before You Start</span></a><a href="#on-clip-pads"><span class="n">2</span><span>On Clip Pads</span></a><a class="sub" href="#cv-action"><span class="n"></span><span>CV Action</span></a><a class="sub" href="#gate-action-and-hold-fx"><span class="n"></span><span>Gate Action and Hold FX</span></a><a href="#playing-pads-from-gates"><span class="n">3</span><span>Playing Pads from Gates</span></a><a class="sub" href="#gate-in"><span class="n"></span><span>Gate In</span></a><a class="sub" href="#round-robin"><span class="n"></span><span>Round Robin</span></a><a href="#recording-from-a-gate"><span class="n">4</span><span>Recording from a Gate</span></a><a class="sub" href="#rec-in"><span class="n"></span><span>Rec In</span></a><a class="sub" href="#gate-rec"><span class="n"></span><span>Gate Rec</span></a><a href="#dub-throws-by-gate"><span class="n">5</span><span>Dub Throws by Gate</span></a><a href="#with-midi"><span class="n">6</span><span>With MIDI</span></a><a href="#things-to-know"><span class="n">7</span><span>Things to Know</span></a><a class="sub" href="#empty-inputs"><span class="n"></span><span>Empty Inputs</span></a><a class="sub" href="#inputs-1-and-2"><span class="n"></span><span>Inputs 1 and 2</span></a><a class="sub" href="#one-input-several-jobs"><span class="n"></span><span>One Input, Several Jobs</span></a><a class="sub" href="#other-pad-types"><span class="n"></span><span>Other Pad Types</span></a>
     </nav>
   </aside>
   <main class="main">
@@ -655,8 +655,14 @@
     <p>A pad is always selected after power-on. With Gate Rec on REPLACE, a sequence that is already running re-records that pad straight away.</p>
   </div>
   </section>
+  <section class="section" id="dub-throws-by-gate">
+  <h2 class="sec"><span class="n">5</span>Dub Throws by Gate</h2>
+  <div class="doc">
+    <p>Use Dub Throw to open a pad's delay or reverb send fully while a gate is high, so one hit flies into the echo at the end of a bar. It sits on the pad's Main Parameters page, below Rec In. Choose Del, Rev or D+R, and the input. See <a href="EXTERNAL-FX.html#dub-throw">Dub Throw</a>.</p>
+  </div>
+  </section>
   <section class="section" id="with-midi">
-  <h2 class="sec"><span class="n">5</span>With MIDI</h2>
+  <h2 class="sec"><span class="n">6</span>With MIDI</h2>
   <div class="doc">
     <p>Gates, CV and MIDI work together on the same pad. This is what happens when they meet.</p>
   <div class="tablewrap">
@@ -698,7 +704,7 @@
   </div>
   </section>
   <section class="section" id="things-to-know">
-  <h2 class="sec"><span class="n">6</span>Things to Know</h2>
+  <h2 class="sec"><span class="n">7</span>Things to Know</h2>
   <div class="doc">
     <h3 id="empty-inputs">Empty Inputs</h3>
     <p>An input with nothing plugged in reads 0 V, so Flip In on it switches the Live Flip mode off.</p>

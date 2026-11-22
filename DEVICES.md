@@ -19,10 +19,15 @@ Every change shows in the [pop-up](SETTINGS.md#the-pop-up).
 
 ## Where They Sit
 
-![Signal chain: pads routed to Out 1 and 2 join the delay and reverb returns,
-then pass through the Character chain, the master EQ and filter, the
-compressor, a safety limiter and master volume before reaching the
-outputs.](signal-chain.svg)
+![Signal chain: pads routed to Out 1 and 2 join the delay and reverb returns
+and the External FX Return from In 1/2, then pass through the Character chain,
+the master EQ and filter, the compressor, a safety limiter and master volume
+before Out 1/2. Every pad's delay and reverb sends feed the module's own delay
+and reverb, and with External FX they can also go out to your own effects on
+other outputs.](signal-chain.svg)
+
+The right-hand side of the diagram is [External FX](EXTERNAL-FX.md), which
+sends the delay and reverb out to your own effects and brings them back.
 
 They hear everything. Every pad on Out 1/2 is in there, delay and reverb tails
 included. These are mix processors, not channel strips.

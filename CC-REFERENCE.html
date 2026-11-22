@@ -452,7 +452,7 @@
 <div class="wrap">
   <aside class="side">
     <p class="brand">Bitbox Micro<br>community modification</p>
-    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html" aria-current="page">CC reference</a><a href="reference-card.html">Reference card</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html" aria-current="page">CC reference</a><a href="reference-card.html">Reference card</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="EXTERNAL-FX.html">External FX</a><a href="DEVICES.html">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
       <a href="#which-cc-which-channel"><span class="n">1</span><span>Which CC, Which Channel</span></a><a class="sub" href="#which-pad-types-work"><span class="n"></span><span>Which Pad Types Work</span></a><a class="sub" href="#midi-cc-map"><span class="n"></span><span>MIDI CC Map</span></a><a class="sub" href="#which-channel-to-send-on"><span class="n"></span><span>Which Channel to Send On</span></a><a href="#setting-up-your-controller"><span class="n">2</span><span>Setting Up Your Controller</span></a><a class="sub" href="#recommended-controller"><span class="n"></span><span>Recommended Controller</span></a><a class="sub" href="#encoder-types"><span class="n"></span><span>Encoder Types</span></a><a class="sub" href="#getting-the-full-range"><span class="n"></span><span>Getting the Full Range</span></a><a class="sub" href="#use-14-bit-cc"><span class="n"></span><span>Use 14-Bit CC</span></a><a href="#when-a-control-seems-dead"><span class="n">3</span><span>When a Control Seems Dead</span></a><a class="sub" href="#is-there-a-pop-up"><span class="n"></span><span>Is There a Pop-Up?</span></a><a class="sub" href="#does-the-encoder-do-it"><span class="n"></span><span>Does the Encoder Do It?</span></a>
@@ -465,7 +465,7 @@
       <p>Which CC, which channel, which pad types answer it.</p>
     </header>
   <div class="doc">
-    <p>This page lists every CC, its channel and the pad types that answer it, and what to check when one seems dead. <a href="PAD-CONTROLS.html">Pad controls</a> says what each one does, <a href="CLIP-MODES.html">Clip modes</a> covers the Clip pad's tempo, Live Flip modes and hold buttons, and <a href="DEVICES.html">devices</a> covers the three that act on the whole mix. <a href="GATES-AND-CV.html">Gates and CV</a> covers what gates and CV can do to a pad. To build your controller mappings, print the <a href="reference-card.html">reference card</a>: every CC and setting on two pages.</p>
+    <p>This page lists every CC, its channel and the pad types that answer it, and what to check when one seems dead. <a href="PAD-CONTROLS.html">Pad controls</a> says what each one does, <a href="CLIP-MODES.html">Clip modes</a> covers the Clip pad's tempo, Live Flip modes and hold buttons, and <a href="DEVICES.html">devices</a> covers the three that act on the whole mix. <a href="GATES-AND-CV.html">Gates and CV</a> covers what gates and CV can do to a pad, and <a href="EXTERNAL-FX.html">External FX</a> the sends to your own effects. To build your controller mappings, print the <a href="reference-card.html">reference card</a>: every CC and setting on two pages.</p>
   </div>
   <section class="section" id="which-cc-which-channel">
   <h2 class="sec"><span class="n">1</span>Which CC, Which Channel</h2>
@@ -557,6 +557,16 @@
       <tr>
         <td>Mute, Solo</td>
         <td>94, 95</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td>Dub Throw</td>
+        <td>103, 106</td>
         <td>✅</td>
         <td>✅</td>
         <td>✅</td>
@@ -760,6 +770,13 @@
         <td>button</td>
       </tr>
       <tr>
+        <td class="num"><strong>63</strong></td>
+        <td>External FX Return Lvl</td>
+        <td><strong>1 only</strong></td>
+        <td>−57.5 … +6 dB, <code>115</code> is 0 dB</td>
+        <td>linear</td>
+      </tr>
+      <tr>
         <td class="num"><strong>78</strong></td>
         <td>Baby Scratch</td>
         <td>pad channel</td>
@@ -893,6 +910,13 @@
         <td>button</td>
       </tr>
       <tr>
+        <td class="num"><strong>103</strong></td>
+        <td>Dub Throw, delay</td>
+        <td>pad channel</td>
+        <td><code>≥64</code> throws, <code>&lt;64</code> lets go</td>
+        <td>button</td>
+      </tr>
+      <tr>
         <td class="num"><strong>104</strong></td>
         <td>Freeze</td>
         <td>pad channel</td>
@@ -904,6 +928,13 @@
         <td>Pull Up</td>
         <td>pad channel</td>
         <td><code>≥64</code> held, <code>&lt;64</code> released</td>
+        <td>button</td>
+      </tr>
+      <tr>
+        <td class="num"><strong>106</strong></td>
+        <td>Dub Throw, reverb</td>
+        <td>pad channel</td>
+        <td><code>≥64</code> throws, <code>&lt;64</code> lets go</td>
         <td>button</td>
       </tr>
       <tr>
@@ -1019,10 +1050,12 @@
     <ul>
       <li><strong>CC 79 to 95, and 120/123</strong>: per pad. Send them on the channel the pad listens on, the one you trigger it with. Eight pads on eight channels answer independently.</li>
       <li><strong>CC 78, 102, 104, 105, 107 and 112 to 119</strong>: the <a href="CLIP-MODES.html">Clip modes</a>, per Clip pad, on its channel in the same way.</li>
+      <li><strong>CC 103 and 106</strong>: <a href="EXTERNAL-FX.html#dub-throw">Dub Throw</a>, per pad, on its channel. Set them up as momentary buttons.</li>
       <li><strong>CC 108 to 111</strong>: the delay, which the whole preset shares. Send them on any channel.</li>
       <li><strong>CC 14 to 29</strong>: the <a href="CHARACTER.html">Character chain</a>, channel 1 only.</li>
       <li><strong>CC 40 to 49</strong>: the <a href="COMPRESSOR.html">compressor</a>, channel 1 only. All four types share CC 41–45. Each uses them differently.</li>
       <li><strong>CC 50 to 57, and 59</strong>: the <a href="EQ-FILTER.html">EQ and filter</a>, channel 1 only.</li>
+      <li><strong>CC 63</strong>: <a href="EXTERNAL-FX.html">External FX</a>'s Return Lvl, channel 1 only.</li>
     </ul>
     <p>If a device ignores everything, put your controller on MIDI channel 1.</p>
   </div>

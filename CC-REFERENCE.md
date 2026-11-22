@@ -4,7 +4,8 @@ This page lists every CC, its channel and the pad types that answer it, and what
 to check when one seems dead. [Pad controls](PAD-CONTROLS.md) says what each one
 does, [Clip modes](CLIP-MODES.md) covers the Clip pad's tempo, Live Flip modes and
 hold buttons, and [devices](DEVICES.md) covers the three that act on the whole
-mix. [Gates and CV](GATES-AND-CV.md) covers what gates and CV can do to a pad.
+mix. [Gates and CV](GATES-AND-CV.md) covers what gates and CV can do to a pad,
+and [External FX](EXTERNAL-FX.md) the sends to your own effects.
 To build your controller mappings, print the
 [reference card](reference-card.html): every CC and setting on two pages.
 
@@ -22,6 +23,7 @@ To build your controller mappings, print the
 | Sustain + LFO | 87, 91–93 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Stop | 120/123 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Mute, Solo | 94, 95 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Dub Throw | 103, 106 | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Clip modes, Live Flip modes, hold buttons | 78, 102, 104, 105, 107, 112–119 | — | — | ✅ | — | — | ❌ |
 
 **Multi-Sample**: this is a Sample pad with a folder of WAVs loaded into it, not
@@ -70,6 +72,7 @@ whatever its type.
 | **56** | EQ encoder 4 push | **1 only** | `≥64` held, `<64` released | button |
 | **57** | EQ master bypass | **1 only** | `≥64` out, `<64` in | button |
 | **59** | EQ filter slope | **1 only** | `≥64` is 24 dB, `<64` is 12 dB | button |
+| **63** | External FX Return Lvl | **1 only** | −57.5 … +6 dB, `115` is 0 dB | linear |
 | **78** | Baby Scratch | pad channel | `≥64` held, `<64` released | button |
 | **79** | Granular Density | pad channel | `0`–`127` | linear |
 | **80** | Granular Grain Size | pad channel | `0`–`127` | linear |
@@ -89,8 +92,10 @@ whatever its type.
 | **94** | Mute | pad channel | `≥64` muted, `<64` plays | button |
 | **95** | Solo | pad channel | `≥64` soloed, `<64` released | button |
 | **102** | Brake | pad channel | `≥64` held, `<64` released | button |
+| **103** | Dub Throw, delay | pad channel | `≥64` throws, `<64` lets go | button |
 | **104** | Freeze | pad channel | `≥64` held, `<64` released | button |
 | **105** | Pull Up | pad channel | `≥64` held, `<64` released | button |
+| **106** | Dub Throw, reverb | pad channel | `≥64` throws, `<64` lets go | button |
 | **107** | Power Down | pad channel | `≥64` held, `<64` released | button |
 | **108** | Delay beat-sync | any (global) | `≥64` on, `<64` off | button |
 | **109** | Delay ping-pong | any (global) | `≥64` on, `<64` off | button |
@@ -120,12 +125,15 @@ show on the Mixer screen instead.
   independently.
 - **CC 78, 102, 104, 105, 107 and 112 to 119**: the [Clip modes](CLIP-MODES.md),
   per Clip pad, on its channel in the same way.
+- **CC 103 and 106**: [Dub Throw](EXTERNAL-FX.md#dub-throw), per pad, on its
+  channel. Set them up as momentary buttons.
 - **CC 108 to 111**: the delay, which the whole preset shares. Send them on
   any channel.
 - **CC 14 to 29**: the [Character chain](CHARACTER.md), channel 1 only.
 - **CC 40 to 49**: the [compressor](COMPRESSOR.md), channel 1 only. All four
   types share CC 41–45. Each uses them differently.
 - **CC 50 to 57, and 59**: the [EQ and filter](EQ-FILTER.md), channel 1 only.
+- **CC 63**: [External FX](EXTERNAL-FX.md)'s Return Lvl, channel 1 only.
 
 If a device ignores everything, put your controller on MIDI channel 1.
 

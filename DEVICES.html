@@ -452,7 +452,7 @@
 <div class="wrap">
   <aside class="side">
     <p class="brand">Bitbox Micro<br>community modification</p>
-    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="reference-card.html">Reference card</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="DEVICES.html" aria-current="page">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
+    <nav class="nav"><a href="index.html">Overview</a><a href="INSTALLING.html">Installing</a><a href="CC-REFERENCE.html">CC reference</a><a href="reference-card.html">Reference card</a><a href="PAD-CONTROLS.html">Pad controls</a><a href="CLIP-MODES.html">Clip modes</a><a href="GATES-AND-CV.html">Gates and CV</a><a href="EXTERNAL-FX.html">External FX</a><a href="DEVICES.html" aria-current="page">Devices</a><a href="CHARACTER.html">Character</a><a href="COMPRESSOR.html">Compressor</a><a href="EQ-FILTER.html">EQ and Filter</a><a href="SETTINGS.html">Settings</a><a href="LIMITATIONS.html">Limitations</a><a href="CHANGELOG.html">Changelog</a><a href="LICENSE.html">Licence</a></nav>
     <nav class="toc">
       <p class="toc-label">On this page</p>
       <a href="#where-they-sit"><span class="n">1</span><span>Where They Sit</span></a><a href="#what-they-have-in-common"><span class="n">2</span><span>What They Have in Common</span></a>
@@ -477,7 +477,8 @@
   <section class="section" id="where-they-sit">
   <h2 class="sec"><span class="n">1</span>Where They Sit</h2>
   <div class="doc">
-    <p><img src="signal-chain.svg" alt="Signal chain: pads routed to Out 1 and 2 join the delay and reverb returns, then pass through the Character chain, the master EQ and filter, the compressor, a safety limiter and master volume before reaching the outputs."></p>
+    <p><img src="signal-chain.svg" alt="Signal chain: pads routed to Out 1 and 2 join the delay and reverb returns and the External FX Return from In 1/2, then pass through the Character chain, the master EQ and filter, the compressor, a safety limiter and master volume before Out 1/2. Every pad&#x27;s delay and reverb sends feed the module&#x27;s own delay and reverb, and with External FX they can also go out to your own effects on other outputs."></p>
+    <p>The right-hand side of the diagram is <a href="EXTERNAL-FX.html">External FX</a>, which sends the delay and reverb out to your own effects and brings them back.</p>
     <p>They hear everything. Every pad on Out 1/2 is in there, delay and reverb tails included. These are mix processors, not channel strips.</p>
     <p>Each one feeds the next. A filter sweep after heavy drive is a filter on a distorted mix. An EQ boost makes the compressor work harder.</p>
     <p>Master volume comes after all three. Turning the module down does not change how hard any of them works.</p>

@@ -2977,10 +2977,17 @@ static void clip_method_go(uint8_t *pad, clip_ram_t *c, int idx, uint32_t was, u
  * (any value above 0) of CC 112, 113 or 116 steps this pad's setting, the
  * release does nothing; CC 114 sets the Manual tempo, CC 115 Jungle's cycle; CC
  * 104 and 117-119 are the Jungle Modes', 78, 102, 105 and 107 the deck buttons'. */
+#ifdef CHR_AUX
+static void aux_throw_cc(uint8_t *pad, uint32_t cc, uint32_t v);   /* aux.h: CC 103 / 106, Dub Throw (a5) */
+#endif
+
 void clip_cc(uint8_t *pad, uint32_t clk, uint32_t cc, uint32_t val14)
 {
     if (cc != CLIP_CC_SCRATCH && (cc < CLIP_CC_FIRST || cc > CLIP_CC_LAST)) return;
     uint32_t v = (val14 >> 7) & 0x7fu;
+#ifdef CHR_AUX
+    if (cc == 103u || cc == 106u) { aux_throw_cc(pad, cc, v); return; }
+#endif
 #ifdef CHR_SC
     uint32_t quiet = (val14 & 0x7fu) == CLIP_GATE_MARK;   /* the Gate hook's gbtn */
 #else

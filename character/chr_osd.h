@@ -148,6 +148,10 @@ _Static_assert(__builtin_offsetof(chr_osd2_t, col) % 8 == 0, "aligned for the de
 _Static_assert(sizeof(chr_osd2_t) <= CHR_OSD2_BYTES, "OSD2 size");
 
 enum { OSD_CHR = 1, OSD_EQ = 2, OSD_COMP = 3, OSD_PAD = 4, OSD_DLY = 5, OSD_CLIP = 6 };
+#ifdef CHR_AUX
+enum { OSD_AUX = 7 };                 /* aux.h: CC 63, Return Lvl */
+static const char *aux_send_name(uint32_t cc);  /* aux.h: CC 84/85's title, by the effect's mode (a4) */
+#endif
 #ifdef CHR_SC
 #define CLIP_SHOW_JCV    11u          /* clip_tempo.h's pop-up: CC 117 while input n's CV owns the mode, this
                                          + n - 1 (b24; the value, a byte, is CC 117's) */
@@ -666,14 +670,19 @@ static void osd_compose_comp(uint32_t ctrl, uint32_t value, osd_text_t *tx)
  * pads. The continuous ones in the module's own format for these parameters
  * (the screen's "%d.%01d%%" of the 0-1000 value): the jump arms deliver
  * (cc7 * 8063) >> 10; the sends, and Sustain on a Clip/Slicer voice, deliver
- * the float v14/16383, i.e. v14 * 1000 / 16383 in the same units. -------- */
+ * the float v14/16383, i.e. v14 * 1000 / 16383 in the same units; with
+ * CHR_AUX (2.3.14) they divide by 16256, so 127 reads 100.0%. -------- */
 static const char *const chr_pad_cont[11] = {
     "Density", "Grain Size", "Window", "Scatter", "Pan Rnd",    /* 79-83, Granular */
     "Delay Send", "Reverb Send", 0, "Sustain", 0, "Loop Crossfade",
 };
 
 static int32_t osd_jump1000(uint32_t v14) { return (int32_t)(((v14 >> 7) * 8063u) >> 10); }
+#ifdef CHR_AUX
+static int32_t osd_float1000(uint32_t v14) { return (int32_t)((v14 * 1000u + 8128u) / 16256u); }
+#else
 static int32_t osd_float1000(uint32_t v14) { return (int32_t)((v14 * 1000u + 8191u) / 16383u); }
+#endif
 static int osd_permille(char *d, int i, int32_t p) { i = osd_fix(d, i, p, 1, 5, 0); return osd_put(d, i, "%"); }
 
 static void osd_compose_pad(uint32_t chan, uint32_t cc, uint32_t cls, uint32_t v14, osd_text_t *tx)
@@ -685,7 +694,11 @@ static void osd_compose_pad(uint32_t chan, uint32_t cc, uint32_t cls, uint32_t v
     osd_fix(tx->t[0], i, (int32_t)(chan + 1u), 0, 0, 0);
     tx->n = 2;
     if (cc >= 79 && cc <= 89 && cc != 86 && cc != 88) {
-        i = osd_put(d, 0, chr_pad_cont[cc - 79]);
+        const char *name = chr_pad_cont[cc - 79];
+#ifdef CHR_AUX
+        if (cc == 84 || cc == 85) name = aux_send_name(cc);
+#endif
+        i = osd_put(d, 0, name);
         i = osd_put(d, i, " ");
         int floaty = cc == 84 || cc == 85 || (cc == 87 && cls == 2);
         osd_permille(d, i, floaty ? osd_float1000(v14) : osd_jump1000(v14));
@@ -979,6 +992,11 @@ static void chs_ui_tick(uint32_t now);           /* chr_save.h */
 #endif
 #ifdef CHR_SC
 static void clip_row_tick(void);                 /* sidechain.h: the Clip Tempo row (b21) */
+#ifdef CHR_AUX
+static void aux_ui_tick(uint32_t now);           /* aux.h: CC 63's change into the global store */
+static void aux_osd_compose(uint32_t ctrl, uint32_t value, osd_text_t *tx);
+static int aux_osd_offer(uint32_t ctrl, osd_text_t *tx, osd_text_t *out, int show);   /* own "last shown" (a2) */
+#endif
 #endif
 
 /* UI side: hook O calls this every UI tick with r0 = the display object. */
@@ -994,6 +1012,9 @@ void chr_osd_tick(uint8_t *display)
 #endif
 #ifdef CHR_SC
     clip_row_tick();                             /* CC 112's Clip Tempo, into the pad's row */
+#endif
+#ifdef CHR_AUX
+    aux_ui_tick(osd_now());                      /* CC 63, into the Return rows */
 #endif
     if (x->tmagic != CHR_OSD_TMAGIC) {          /* first tick after power-up */
         for (int k = 0; k < OSD_KEYS; k++) x->last[k] = 0;
@@ -1025,6 +1046,9 @@ void chr_osd_tick(uint8_t *display)
         case OSD_COMP: osd_compose_comp(ctrl, value, &tx); break;
 #endif
         case OSD_DLY: osd_compose_dly(ctrl, value, &tx); break;
+#ifdef CHR_AUX
+        case OSD_AUX: aux_osd_compose(ctrl, value, &tx); break;
+#endif
         default: break;
         }
         uint32_t salt = 0;
@@ -1038,6 +1062,9 @@ void chr_osd_tick(uint8_t *display)
 #ifdef CHR_SC
         if (kind == OSD_CLIP && ctrl - CLIP_SHOW_JCV < 8u) salt = value + 1u;   /* b24: each turn of CC 117 shows */
 #endif
+#endif
+#ifdef CHR_AUX
+        if (kind == OSD_AUX) { if (aux_osd_offer(ctrl, &tx, &nt, show)) fresh = 1; } else
 #endif
         if (osd_offer(x, osd_key(kind, slot, ctrl), &tx, &nt, show, salt)) fresh = 1;
     }
